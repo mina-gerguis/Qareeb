@@ -322,7 +322,7 @@ export default function MetroLineExplorer({
                       </div>
                       <button
                         type="button"
-                        className="btn btn-report min-h-min p-2 w-full mt-3 fs-sm"
+                        className="btn btn-error min-h-min p-2 w-full mt-3 fs-sm"
                         onClick={() => onOpenReportModal(station)}
                       >
                         <IconMessageReportFilled size={16} />

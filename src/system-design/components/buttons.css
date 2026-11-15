@@ -245,7 +245,9 @@ html.light .btn-danger:hover {
 }
 
 /* --- Delete --- */
-.btn-delete {
+.btn-delete,
+.btn-error,
+.btn-red {
   background: #ff0000;
   border: 1px solid rgba(255, 59, 48, 0.30);
   color: #ffffff;

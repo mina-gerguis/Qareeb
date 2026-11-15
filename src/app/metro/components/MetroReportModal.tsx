@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { LineId, MetroReportModalProps } from "../types";
 import { LINE_COLORS, METRO_PROBLEM_OPTIONS } from "../constants";
+import { IconMessageReportFilled, IconXFilled } from "@tabler/icons-react";
 
 export default function MetroReportModal({
   isOpen,
@@ -98,8 +99,8 @@ export default function MetroReportModal({
               gap: "8px",
             }}
           >
-            <i className="fa-solid fa-triangle-exclamation" style={{ color: "#ef4444", fontSize: "1.1rem" }}></i>
-            <span>مشكلة في خدمة مترو الأنفاق</span>
+            <IconMessageReportFilled size={20} className="color-error"/>
+            <span>غلط في بيانات مترو الأنفاق</span>
           </h5>
           <button
             type="button"
@@ -107,7 +108,7 @@ export default function MetroReportModal({
             disabled={loading}
             className="btn-close"
           >
-            <i className="bx bx-x"></i>
+           <IconXFilled size={18} />
           </button>
         </div>
 
@@ -342,7 +343,7 @@ export default function MetroReportModal({
                         borderRadius: "8px",
                         border: "none",
                         background: targetScope === "route" ? "var(--color-fg)" : "transparent",
-                        color: targetScope === "route" ? "var(--bgMode)" : "var(--color-fg)",
+                        color: targetScope === "route" ? "var(--color-bg)" : "var(--color-fg)",
                         fontWeight: "700",
                         fontSize: "0.8rem",
                         cursor: "pointer",
@@ -371,8 +372,8 @@ export default function MetroReportModal({
                   >
                     <span>اختر أو ابحث عن المحطة:</span>
                     {selectedStation && (
-                      <span style={{ fontSize: "0.74rem", color: color, fontWeight: "700" }}>
-                        تم تحديد: {selectedStation} ✔
+                      <span className="color-success" style={{ fontSize: "0.74rem", fontWeight: "700" }}>
+                        ✔ تم تحديد: {selectedStation} 
                       </span>
                     )}
                   </label>
@@ -1054,20 +1055,8 @@ export default function MetroReportModal({
               <div style={{ display: "flex", gap: "10px", marginTop: "8px" }}>
                 <button
                   type="submit"
-                  className="btn action-btn-delete"
-                  disabled={loading || uploading}
-                  style={{
-                    flex: 1,
-                    fontWeight: "700",
-                    fontSize: "0.92rem",
-                    cursor: loading ? "wait" : "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "6px",
-                    width: "50%",
-                  }}
-                >
+                  className="btn btn-error w-full"
+                  disabled={loading || uploading}>
                   {loading ? (
                     <>
                       <div
@@ -1091,14 +1080,9 @@ export default function MetroReportModal({
                 </button>
                 <button
                   type="button"
-                  className="btn btn-cancel"
+                  className="btn btn-cancel w-full"
                   disabled={loading}
                   onClick={onClose}
-                  style={{
-                    fontWeight: "700",
-                    fontSize: "0.92rem",
-                    width: "50%",
-                  }}
                 >
                   إلغاء
                 </button>

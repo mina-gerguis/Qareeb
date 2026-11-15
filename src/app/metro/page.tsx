@@ -15,7 +15,6 @@ import {
   MetroLineExplorer,
   MetroInterchangeGuide,
   MetroMapSection,
-  MetroReportBanner,
   MetroReportModal,
 } from "./components";
 import { LineId } from "./types";
@@ -269,6 +268,8 @@ export default function MetroPage() {
 
         {/* Official Cairo Metro Map Download Section */}
         <MetroMapSection mapPanelRef={mapPanelRef} />
+
+
       </div>
 
       {/* Report Problem Modal */}
