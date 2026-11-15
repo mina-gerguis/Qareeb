@@ -1,0 +1,173 @@
+/**
+ * ============================================================================
+ * DESIGN SYSTEM — INPUT FIELDS COMPONENT
+ * ============================================================================
+ * Text fields, search boxes, textarea controls with smooth transitions,
+ * focus states, and validation feedback.
+ */
+
+/* ==========================================================================
+   0. Input Fields Tokens
+   ========================================================================== */
+
+:root {
+  /* --- Form Inputs Tokens --- */
+  --input-bg: rgba(24, 24, 27, 0.70);
+  --input-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.10);
+}
+
+html.light {
+  --input-bg: rgb(250, 250, 250);
+  --input-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.10);
+}
+
+/* ==========================================================================
+   1. Base Input Fields
+   ========================================================================== */
+.input-fields {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border-radius: var(--input-radius);
+  outline: none;
+  background: var(--input-bg);
+  color: var(--color-fg);
+  border: 1px solid var(--border-glass);
+  font-size: 1rem;
+  line-height: 1.5;
+  transition: var(--transition-smooth);
+  height: 44px;
+  padding: 0 14px;
+  font-family: var(--font-heading);
+}
+
+input[type="date"].input-fields {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.input-fields::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+.input-fields:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 111, 238, 0.15);
+}
+
+.input-fields:disabled,
+.input-fields[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--bg-secondary);
+}
+
+/* ==========================================================================
+   2. Validation Error States
+   ========================================================================== */
+.input-fields[aria-invalid="true"],
+.input-fields.has-error {
+  border-color: #ef4444 !important;
+  background: rgba(239, 68, 68, 0.05) !important;
+}
+
+.input-fields[aria-invalid="true"]:focus,
+.input-fields.has-error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.20) !important;
+}
+
+/* ==========================================================================
+   3. MFA Digit Inputs
+   ========================================================================== */
+
+.otp-input {
+  width: 2.75rem;
+  height: 3rem;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background-color: transparent;
+  color: #09090b;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
+}
+
+.otp-input:focus {
+  border-color: #09090b;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+}
+
+.otp-input-filled {
+  border-color: #000000;
+  background: rgba(108, 99, 255, 0.08);
+}
+
+.otp-input-error {
+  border-color: #ef4444 !important;
+  background-color: rgba(239, 68, 68, 0.04) !important;
+  color: #dc2626 !important;
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.25) !important;
+}
+
+.otp-input-error:focus {
+  border-color: #ef4444 !important;
+  background-color: rgba(239, 68, 68, 0.04) !important;
+  color: #dc2626 !important;
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.25) !important;
+}
+
+/* ==========================================================================
+   4. Search box
+   ========================================================================== */
+.search-box {
+  flex: 1;
+  min-width: 260px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-box-icon {
+  position: absolute;
+  right: 14px;
+  color: #94a3b8;
+  font-size: 1.05rem;
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border-radius: var(--ra-8);
+  outline: none;
+  background: var(--input-bg);
+  color: var(--color-fg);
+  font-size: 1rem;
+  line-height: 1.5;
+  transition: var(--transition-smooth);
+  height: 44px;
+  font-family: var(--font-heading);
+  border: 1px solid var(--border-glass);
+  padding: 12px 42px 12px 38px;
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+.search-ra-full {
+  border-radius: var(--ra-full);
+}
+.search-input:focus {
+  border-color: var(--color-fg);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: var(--input-shadow);
+}

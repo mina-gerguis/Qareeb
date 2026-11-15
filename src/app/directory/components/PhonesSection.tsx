@@ -1,0 +1,195 @@
+import React from "react";
+import { formatBoxIcon } from "@/data/places";
+import { PhonesSectionProps } from "../types";
+import PhoneCard from "./PhoneCard";
+import DirectoryNotFound from "./DirectoryNotFound";
+import styles from "../directory.module.css";
+import { IconClearAll } from "@tabler/icons-react";
+
+export default function PhonesSection({
+  phonesPanelRef,
+  entries,
+  filteredEntries,
+  slicedEntries,
+  specialties,
+  specialtyIcons,
+  selectedSpecialty,
+  setSelectedSpecialty,
+  visibleCount,
+  setVisibleCount,
+  copiedId,
+  onCopy,
+  onOpenSuggestModal,
+  onOpenReportModal,
+  searchQuery,
+  hasMatchingCodes = false,
+  onResetSearch,
+}: PhonesSectionProps) {
+  const isSearching = !!searchQuery && searchQuery.trim() !== "";
+  const hasNoPhones = slicedEntries.length === 0;
+
+  // إذا كان المستخدم يبحث وهناك بالفعل أكواد محمول مطابقة معروضة بالأعلى ولكن لا توجد أرقام هواتف،
+  // نخفي قسم أرقام الهواتف ورسالة عدم العثور حتى لا تظهر رسالة 404 تحت نتائج الأكواد الناجحة
+  if (isSearching && hasNoPhones && hasMatchingCodes) {
+    return null;
+  }
+  return (
+    <div ref={phonesPanelRef} className="details-panel">
+      {/* Header with Title and Specialty Filter */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "10px",
+          marginBottom: "14px",
+        }}
+      >
+        <div>
+          <h2
+            style={{
+              fontSize: "1.15rem",
+              fontWeight: "800",
+              color: "var(--color-fg)",
+              margin: 0,
+            }}
+          >
+            أرقام خدمة العملاء والخطوط الساخنة
+          </h2>
+          <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+            عرض {slicedEntries.length} من أصل {filteredEntries.length} جهة مسجلة
+          </span>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => onOpenSuggestModal()}
+          className="btn btn-primary"
+          style={{
+            fontSize: "0.78rem",
+            padding: "6px 12px",
+            borderRadius: "6px",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "6px",
+            cursor: "pointer",
+          }}
+        >
+          <i className="fa-solid fa-plus"></i>
+          اقتراح إضافة رقم جديد
+        </button>
+      </div>
+
+      {/* Specialty Filter Badges Slider */}
+      <div
+        style={{
+          display: "flex",
+          gap: "6px",
+          overflowX: "auto",
+          paddingBottom: "8px",
+          marginBottom: "16px",
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => setSelectedSpecialty("all")}
+          className="flex gap-1"
+          style={{
+            background:
+              selectedSpecialty === "all"
+                ? "var(--tab-active-bg)"
+                : "var(--bg-secondary)",
+            border: `1px solid ${selectedSpecialty === "all"
+              ? "var(--tab-active-border)"
+              : "var(--border-glass)"
+              }`,
+            color: selectedSpecialty === "all" ? "var(--tab-active-color)" : "var(--text-secondary)",
+            padding: "4px 12px",
+            borderRadius: "6px",
+            fontSize: "0.78rem",
+            fontWeight: "700",
+            cursor: "pointer",
+            whiteSpace: "nowrap",
+            transition: "all 0.2s ease",
+          }}
+        >
+          <IconClearAll stroke={2} size={16} /> الكل ({entries.length})
+        </button>
+        {specialties.map((spec) => {
+          const count = entries.filter((e) => e.specialty === spec).length;
+          const active = selectedSpecialty === spec;
+          return (
+            <button
+              key={spec}
+              type="button"
+              onClick={() => setSelectedSpecialty(spec)}
+              style={{
+                background: active ? "var(--tab-active-bg)" : "var(--bg-secondary)",
+                border: `1px solid ${active ? "var(--tab-active-border)" : "var(--border-glass)"
+                  }`,
+                color: active ? "var(--tab-active-color)" : "var(--text-secondary)",
+                padding: "4px 12px",
+                borderRadius: "6px",
+                fontSize: "0.78rem",
+                fontWeight: "700",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                whiteSpace: "nowrap",
+                transition: "all 0.2s ease",
+              }}
+            >
+              <i className={formatBoxIcon(specialtyIcons[spec] || "bx-building")}></i>
+              {spec} ({count})
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Phone Cards Grid */}
+      {slicedEntries.length === 0 ? (
+        <DirectoryNotFound
+          searchQuery={searchQuery}
+          specialty={selectedSpecialty}
+          onOpenSuggestModal={() => onOpenSuggestModal(searchQuery)}
+          onResetSearch={onResetSearch}
+        />
+      ) : (
+        <div className={styles.phoneGrid}>
+          {slicedEntries.map((entry) => (
+            <PhoneCard
+              key={entry.id}
+              entry={entry}
+              isCopied={copiedId === entry.id}
+              onCopy={onCopy}
+              onReport={onOpenReportModal}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Load More Button */}
+      {filteredEntries.length > visibleCount && (
+        <div style={{ textAlign: "center", marginTop: "16px" }}>
+          <button
+            type="button"
+            onClick={() => setVisibleCount((prev) => prev + 8)}
+            className="btn"
+            style={{
+              background: "var(--bg-secondary)",
+              border: "1px solid var(--border-glass)",
+              color: "var(--color-fg)",
+              fontSize: "0.85rem",
+              fontWeight: "700",
+              padding: "8px 24px",
+            }}
+          >
+            عرض المزيد (+8 أرقام)
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

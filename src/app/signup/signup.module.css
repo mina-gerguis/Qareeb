@@ -1,0 +1,1089 @@
+/* ============================================================================
+   SIGNUP PAGE MODULE CSS
+   Clean Code & Design System Standards
+   ============================================================================ */
+
+/* ── Main Layout Wrapper ── */
+.authLayout {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+  background: #fafafa;
+  color: #09090b;
+  direction: rtl;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+:global(html.dark) .authLayout,
+:global(html:not(.light)) .authLayout {
+  background: #09090b;
+  color: #fafafa;
+}
+
+/* ── Ambient Background Glow Accents ── */
+.ambientOrb1 {
+  position: fixed;
+  top: -15%;
+  right: -10%;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(108, 99, 255, 0.08) 0%, transparent 65%);
+  border-radius: 50%;
+  filter: blur(70px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ambientOrb2 {
+  position: fixed;
+  bottom: -20%;
+  left: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0, 212, 170, 0.08) 0%, transparent 65%);
+  border-radius: 50%;
+  filter: blur(70px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ambientOrb3 {
+  position: fixed;
+  top: 50%;
+  left: 30%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 63, 142, 0.06) 0%, transparent 65%);
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+:global(html.dark) .ambientOrb1,
+:global(html:not(.light)) .ambientOrb1 {
+  background: radial-gradient(circle, rgba(108, 99, 255, 0.18) 0%, transparent 65%);
+}
+
+:global(html.dark) .ambientOrb2,
+:global(html:not(.light)) .ambientOrb2 {
+  background: radial-gradient(circle, rgba(0, 212, 170, 0.15) 0%, transparent 65%);
+}
+
+:global(html.dark) .ambientOrb3,
+:global(html:not(.light)) .ambientOrb3 {
+  background: radial-gradient(circle, rgba(255, 63, 142, 0.12) 0%, transparent 65%);
+}
+
+.formContainer {
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Glass Card Wrapper ── */
+.glassCard {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
+  padding: 32px 28px;
+  animation: slideInSection 0.5s ease-out;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+:global(html.dark) .glassCard,
+:global(html:not(.light)) .glassCard {
+  background: #121214;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Step Navigation Bar ── */
+.navBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.backButton {
+  padding: 6px 10px;
+  border: none;
+  color: #334155;
+  background-color: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  transition: all 0.2s ease;
+  border-radius: 8px;
+}
+
+.backButton:hover {
+  color: #0f172a;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+:global(html.dark) .backButton,
+:global(html:not(.light)) .backButton {
+  color: #94a3b8;
+}
+
+:global(html.dark) .backButton:hover,
+:global(html:not(.light)) .backButton:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.stepBadge {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #64748b;
+  background: #f8fafc;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  font-family: var(--font-sub);
+}
+
+:global(html.dark) .stepBadge,
+:global(html:not(.light)) .stepBadge {
+  background: #18181b;
+  color: #94a3b8;
+  border-color: #27272a;
+}
+
+/* ── Step Title Header ── */
+.stepHeader {
+  margin-bottom: 20px;
+}
+
+.headerTitle {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-heading);
+}
+
+:global(html.dark) .headerTitle,
+:global(html:not(.light)) .headerTitle {
+  color: #f8fafc;
+}
+
+.subTitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+  font-family: var(--font-sub);
+}
+
+:global(html.dark) .subTitle,
+:global(html:not(.light)) .subTitle {
+  color: #94a3b8;
+}
+
+/* ── 5-Step Progress Indicators ── */
+.progressTrack {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 24px;
+  align-items: center;
+}
+
+.progressBar {
+  height: 5px;
+  flex: 1;
+  border-radius: 3px;
+  background: #e2e8f0;
+  transition: all 0.5s ease;
+}
+
+:global(html.dark) .progressBar,
+:global(html:not(.light)) .progressBar {
+  background: #27272a;
+}
+
+.progressBarActive {
+  box-shadow: 0 0 8px rgba(108, 99, 255, 0.25);
+}
+
+/* ── Global Alert Banners ── */
+.errorBanner {
+  color: var(--color-error);
+  margin-bottom: 18px;
+  font-size: 0.85rem;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  animation: slideInSection 0.3s ease;
+  font-family: var(--font-sub);
+}
+
+.successBanner {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 14px;
+  padding: 16px;
+  color: #059669;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  animation: popIn 0.5s ease;
+  font-family: var(--font-heading);
+}
+
+:global(html.dark) .successBanner,
+:global(html:not(.light)) .successBanner {
+  background: rgba(5, 150, 105, 0.15);
+  border-color: rgba(5, 150, 105, 0.3);
+  color: #6ee7b7;
+}
+
+/* ── Form Layout Elements ── */
+.stepForm {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: slideInSection 0.4s ease;
+  font-family: var(--font-display);
+}
+
+.twoColGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 480px) {
+  .twoColGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-heading);
+}
+
+:global(html.dark) .fieldLabel,
+:global(html:not(.light)) .fieldLabel {
+  color: #e2e8f0;
+}
+
+.fieldLabelIcon {
+  font-size: 1rem;
+  color: #000000;
+  opacity: 0.9;
+}
+
+:global(html.dark) .fieldLabelIcon,
+:global(html:not(.light)) .fieldLabelIcon {
+  color: #ffffff;
+}
+
+.inputField {
+  height: 44px;
+  width: 100%;
+  min-width: 0;
+  border-radius: var(--ra-14, 14px);
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  padding: 0 14px;
+  font-size: 0.9rem;
+  font-family: var(--font-heading);
+  color: #0f172a;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+:global(html.dark) .inputField,
+:global(html:not(.light)) .inputField {
+  background: #18181b;
+  border-color: #27272a;
+  color: #f4f4f5;
+}
+
+.inputField:focus {
+  border-color: #000000;
+  box-shadow: 0 0 0 3px rgba(146, 146, 146, 0.15);
+}
+
+.inputFieldError {
+  border: 1.5px solid #ef4444 !important;
+}
+
+.fieldErrorText {
+  color: #dc2626;
+  font-size: 0.78rem;
+  font-family: var(--font-sub);
+}
+
+:global(html.dark) .fieldErrorText,
+:global(html:not(.light)) .fieldErrorText {
+  color: #f87171;
+}
+
+/* ── Suggestions Row ── */
+.suggestionsRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+  align-items: center;
+}
+
+.suggestionsLabel {
+  font-size: 0.75rem;
+  color: #64748b;
+  align-self: center;
+  font-family: var(--font-sub);
+}
+
+.suggestionPill {
+  font-size: 0.75rem;
+  background: rgba(108, 99, 255, 0.08);
+  border: 1px solid rgba(187, 183, 247, 0.25);
+  border-radius: 20px;
+  padding: 3px 10px;
+  color: #0f0f0f;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: monospace;
+  font-weight: 600;
+}
+
+.suggestionPill:hover {
+  background: rgba(108, 99, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+/* ── Email Field & OTP Button ── */
+.emailInputRow {
+  display: flex;
+  gap: 8px;
+}
+
+.sendOtpBtnActive {
+  background-color: #000;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.sendOtpBtnActive:hover {
+  opacity: 0.9;
+}
+
+.sendOtpBtnDisabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+:global(html.dark) .sendOtpBtnDisabled,
+:global(html:not(.light)) .sendOtpBtnDisabled {
+  background: #27272a;
+  color: #71717a;
+}
+
+/* ── 2FA OTP Code Verification Box ── */
+.otpBox {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: slideInSection 0.35s ease;
+}
+
+.otpHeader {
+  text-align: center;
+}
+
+.otpIconBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(108, 99, 255, 0.1);
+  color: var(--color-primary, #006fee);
+  font-size: 1.2rem;
+  margin-bottom: 6px;
+}
+
+.otpTitle {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.otpDesc {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.otpEmailHighlight {
+  color: var(--color-primary, #006fee);
+  font-weight: 700;
+  direction: ltr;
+  display: inline-block;
+}
+
+.otpDigitsRow {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  direction: ltr;
+}
+
+/* Shake / Vibration Animation for wrong code */
+.shake {
+  animation: signupOtpShake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes signupOtpShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-9px);
+  }
+  30% {
+    transform: translateX(8px);
+  }
+  45% {
+    transform: translateX(-6px);
+  }
+  60% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-3px);
+  }
+  90% {
+    transform: translateX(1px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shake {
+    animation: none;
+  }
+}
+
+.otpErrorMsg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #ef4444;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.5rem;
+  background-color: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  text-align: center;
+  animation: fadeIn 0.2s ease-out;
+  line-height: 1.4;
+}
+
+:global(html.dark) .otpErrorMsg,
+:global(html:not(.light)) .otpErrorMsg {
+  color: #f87171;
+  background-color: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.otpErrorIcon {
+  flex-shrink: 0;
+}
+
+.verifiedNoticeBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #16a34a;
+  font-size: 0.86rem;
+  font-weight: 700;
+  margin-top: 4px;
+  background: #f0fdf4;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #bbf7d0;
+}
+
+:global(html.dark) .verifiedNoticeBox,
+:global(html:not(.light)) .verifiedNoticeBox {
+  background: rgba(22, 163, 74, 0.15);
+  border-color: rgba(22, 163, 74, 0.3);
+  color: #86efac;
+}
+
+/* ── Primary Submission & Next Button ── */
+.submitBtn {
+  margin-top: 8px;
+  padding: 12px 26px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  border-radius: 50px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  font-family: Hagrid, var(--font-heading), sans-serif;
+  width: 100%;
+}
+
+.submitBtnEnabled {
+  background: var(--ios-blue, #2600fd);
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+.submitBtnEnabled:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(38, 0, 253, 0.25);
+}
+
+.submitBtnDisabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+:global(html.dark) .submitBtnDisabled,
+:global(html:not(.light)) .submitBtnDisabled {
+  background: #27272a;
+  color: #71717a;
+}
+
+/* ── Phone Input Prefix ── */
+.phonePrefix {
+  position: absolute;
+  left: 14px;
+  font-size: 0.85rem;
+  color: #475569;
+  font-weight: 700;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+:global(html.dark) .phonePrefix,
+:global(html:not(.light)) .phonePrefix {
+  color: #cbd5e1;
+}
+
+.phoneDivider {
+  height: 16px;
+  width: 1px;
+  background: #cbd5e1;
+  display: inline-block;
+}
+
+:global(html.dark) .phoneDivider,
+:global(html:not(.light)) .phoneDivider {
+  background: #475569;
+}
+
+/* ── Avatar Section ── */
+.avatarUploadZone {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  border: 2px dashed rgba(108, 99, 255, 0.4);
+  border-radius: 18px;
+  background: rgba(108, 99, 255, 0.03);
+  transition: all 0.3s ease;
+}
+
+.avatarUploadZone:hover {
+  background: rgba(108, 99, 255, 0.08);
+  border-color: #6c63ff;
+}
+
+.avatarUploadText {
+  color: #6c63ff;
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.avatarPreview {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #6c63ff;
+  box-shadow: 0 0 20px rgba(108, 99, 255, 0.2);
+}
+
+.avatarGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.avatarItem {
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 3px solid transparent;
+}
+
+.avatarItemActive {
+  border-color: #6c63ff;
+  box-shadow: 0 0 16px rgba(108, 99, 255, 0.3);
+}
+
+.avatarItemDimmed {
+  opacity: 0.45;
+}
+
+/* ── Password Toggle & Rules ── */
+.passwordToggleBtn {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #64748b;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+}
+
+.passwordRulesBox {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-family: var(--font-sub);
+}
+
+:global(html.dark) .passwordRulesBox,
+:global(html:not(.light)) .passwordRulesBox {
+  background: #18181b;
+  border-color: #27272a;
+}
+
+.passwordRuleItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.3s ease;
+}
+
+.ruleValid {
+  color: #059669;
+}
+
+:global(html.dark) .ruleValid,
+:global(html:not(.light)) .ruleValid {
+  color: #34d399;
+}
+
+.ruleInvalid {
+  color: #64748b;
+}
+
+:global(html.dark) .ruleInvalid,
+:global(html:not(.light)) .ruleInvalid {
+  color: #71717a;
+}
+
+/* ── Footer Terms Notice ── */
+.footerTerms {
+  text-align: center;
+  color: #64748b;
+  font-size: 0.8rem;
+  margin-top: 12px;
+  animation: fadeIn 0.8s ease 0.5s both;
+}
+
+:global(html.dark) .footerTerms,
+:global(html:not(.light)) .footerTerms {
+  color: #94a3b8;
+}
+
+.termsLink {
+  color: #6c63ff;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.termsLink:hover {
+  text-decoration: underline;
+}
+
+/* ── DOB Confirmation Modal ── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+.modalCard {
+  max-width: 420px;
+  width: 100%;
+  padding: 28px;
+  border-radius: 24px;
+  border: 1px solid #fed7aa;
+  background: #ffffff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  animation: slideUp 0.3s ease;
+}
+
+:global(html.dark) .modalCard,
+:global(html:not(.light)) .modalCard {
+  background: #18181b;
+  border-color: rgba(254, 215, 170, 0.2);
+}
+
+.modalWarningAlert {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 14px;
+  padding: 12px 14px;
+  color: #e11d48;
+  font-size: 0.83rem;
+  line-height: 1.5;
+  margin-bottom: 24px;
+  text-align: right;
+  font-family: var(--font-heading);
+}
+
+:global(html.dark) .modalWarningAlert,
+:global(html:not(.light)) .modalWarningAlert {
+  background: rgba(225, 29, 72, 0.15);
+  border-color: rgba(225, 29, 72, 0.3);
+  color: #fda4af;
+}
+
+/* ── Onboarding Centered Layout (Like Login Form) ── */
+.onboardingContainer {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  direction: rtl;
+  background-color: #09090b;
+  transition: background-color 0.2s ease;
+}
+
+/* Subtle tech dot grid matching login page */
+.onboardingContainer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.07) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.onboardingWrapper {
+  width: 100%;
+  max-width: 100%;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background-color: #09090b;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.12), 0 20px 40px -15px rgba(0, 0, 0, 0.15);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  animation: slideInSection 0.5s ease-out;
+}
+
+/* ── Upper Stage for Visual Effects (Dedicated space, never collides) ── */
+.sliderGraphicStage {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  min-height: 290px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.slideGraphicItem {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* ── Lower Stage for Texts & Buttons ── */
+.slideBottomContent {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  padding: 16px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-sizing: border-box;
+  background: linear-gradient(to top, #09090b 80%, rgba(9, 9, 11, 0.6) 92%, transparent 100%);
+  flex-shrink: 0;
+}
+
+.slideTitle {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 6px;
+  line-height: 1.35;
+  font-family: var(--font-display);
+}
+
+.slideDesc {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.oauthRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+}
+
+.sliderDotBtn {
+  border: none;
+  padding: 0;
+  height: 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.actionbtnWhite {
+  width: 100%;
+  padding: 12px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  border-radius: 50px;
+  border: none;
+  background: #ffffff;
+  color: #000000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  font-family: var(--font-heading);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.actionbtnWhite:hover {
+  transform: translateY(-1px);
+}
+
+.actionbtnGoogle,
+.actionbtnFacebook {
+  width: 100%;
+  padding: 12px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.95);
+  color: #1f2937;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  font-family: var(--font-heading);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.actionbtnGoogle:hover:not(:disabled),
+.actionbtnFacebook:hover:not(:disabled) {
+  background: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+}
+
+.actionbtnGoogle:disabled,
+.actionbtnFacebook:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.actionbtnOutline {
+  width: 100%;
+  padding: 12px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  font-family: var(--font-heading);
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+.actionbtnOutline:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.guestLink {
+  padding: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--font-heading);
+  text-decoration: none;
+  margin-top: 2px;
+}
+
+.guestLink:hover {
+  color: #ffffff;
+}
+
+/* ── Keyframe Animations ── */
+@keyframes slideInSection {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glassCard,
+  .onboardingWrapper,
+  .stepForm,
+  .errorBanner,
+  .successBanner,
+  .otpBox {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

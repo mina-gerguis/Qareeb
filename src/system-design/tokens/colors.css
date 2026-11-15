@@ -1,0 +1,188 @@
+/**
+ * ============================================================================
+ * DESIGN SYSTEM — COLOR TOKENS
+ * ============================================================================
+/* ==========================================================================
+   1. DARK THEME (Default Canvas)
+   ========================================================================== */
+:root {
+  /*========== COLOR TOKENS PRIMARY DARK MODE==========*/
+  --color-primary: rgb(0, 51, 255);
+  --color-secondary: #3b82f6;
+  --color-accent: #1a3eff;
+  --color-muted: rgba(126, 126, 126, 0.952);
+
+
+
+
+
+  /* Warning */
+  --alert-warning-bg: #FEF3C7;
+  --alert-warning-color: #92400E;
+  --color-warning: #ffe600;
+
+  /* Danger */
+  --alert-danger-bg: #FEE2E2;
+  --alert-danger-color: #991B1B;
+  --color-danger: #ff0000;
+  --color-error: #ff0000;
+
+  /* Info */
+  --alert-info-bg: #DBEAFE;
+  --alert-info-color: #1E40AF;
+  --color-info: #006eff;
+
+  /* Success */
+  --alert-success-bg: #D1FAE5;
+  --alert-success-color: #065F46;
+  --color-success: #00d37b;
+
+  /* Special */
+  --alert-special-bg: #F3E8FF;
+  --alert-special-color: #6B21A8;
+
+  /* --- Canvas & Background Layers --- */
+  --color-bg: #000000;
+  --bg-secondary: #070707;
+  --bgThird: #121212;
+  --bg-glass: rgba(0, 0, 0, 0.70);
+  --bg-glass-active: rgba(39, 39, 42, 0.90);
+  --bgAlert: linear-gradient(135deg, rgba(117, 117, 117, 0.08) 0%, rgba(32, 32, 32, 0.08) 100%);
+
+  /* --- Typography Colors --- */
+  --color-fg: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --text-muted: #71717a;
+
+  /* --- Border Tokens --- */
+  --border-glass: rgba(255, 255, 255, 0.1);
+  --border-primary: rgba(124, 124, 124, 0.21);
+  --border-secondary: rgb(32, 32, 32);
+  --borderDashed: rgba(255, 255, 255, 0.44);
+  --border-glass-bright: rgba(255, 255, 255, 0.15);
+  --border-break: rgba(39, 39, 39, 0.66);
+
+  /* --- shadcn UI Tokens --- */
+  --background: #000000;
+  --foreground: #f4f4f5;
+  --muted: #18181b;
+  --muted-foreground: #a1a1aa;
+  --border: rgba(255, 255, 255, 0.12);
+  --accent: rgba(255, 255, 255, 0.08);
+  --accent-foreground: #ffffff;
+  --primary: var(--color-primary);
+  --primary-foreground: #ffffff;
+
+  /* --- Button Component Tokens --- */
+  --mainBtn: var(--color-primary);
+  --mainBtnBorder: #2563eb;
+  --secondBtn: rgb(48, 48, 48);
+  --secondHoverBtn: rgb(78, 78, 78);
+  --btn-cancel: rgba(157, 159, 161, 0.27);
+  --cancelHoverBtn: rgb(78, 78, 78);
+  --successBtn: rgba(0, 219, 18, 0.23);
+  --warningBtn: #ffa500;
+  --btn-danger: rgb(255, 0, 0);
+  --accentBtn: #ffffff;
+  --hoverBtn: rgba(39, 39, 42, 0.80);
+
+
+  /* --- Glass Surface & Card Tokens --- */
+  --cardGlassBg: rgba(24, 24, 27, 0.70);
+  --cardGlassBorder: rgba(255, 255, 255, 0.10);
+  --cardGlassShadow: 0 4px 6px -1px rgba(0, 0, 0, 0.10);
+
+  /* --- Modal & Dialog Tokens --- */
+  --modelCardBg: #ffffff;
+  --modelCardBorder: rgb(34, 31, 31);
+  --modelCardShadow: 0 25px 60px rgba(0, 0, 0, 0.10);
+
+  /* --- Containers & Overlays --- */
+  --containerBorder: rgba(255, 255, 255, 0.16);
+  --containerBg: rgba(2, 2, 2, 0.70);
+  --containerShadow: 0 4px 6px -1px rgba(0, 0, 0, 0.10);
+  --overlay: rgba(0, 0, 0, 0.75);
+
+
+}
+
+/* ==========================================================================
+   2. LIGHT THEME OVERRIDES
+   ========================================================================== */
+html.light {
+  /*========== COLOR TOKENS PRIMARY Light Mode  */
+  --color-muted: rgba(46, 46, 46, 0.952);
+
+
+
+
+
+
+
+
+
+
+
+
+  /* --- Canvas & Background Layers --- */
+  --color-bg: #ffffff;
+  --bg-secondary: #f4f4f5;
+  --color-success: #008a50;
+  --bg-third: #f8f8f8;
+  --bg-glass: rgba(255, 255, 255, 0.80);
+  --bg-glass-active: rgba(228, 228, 231, 0.90);
+  --bgAlert: linear-gradient(135deg, rgba(85, 85, 85, 0.11) 0%, rgba(32, 32, 32, 0.20) 100%);
+
+  /* --- Typography Colors --- */
+  --color-fg: #000000;
+  --text-secondary: #52525b;
+  --text-muted: #7a7771;
+  --text-muted: #7a7771;
+
+
+  /*  */
+  --color-info: #0000ff;
+
+  /* --- Border Tokens --- */
+  --border-glass: rgba(0, 0, 0, 0.08);
+  --border-primary: rgba(151, 151, 151, 0.38);
+  --border-secondary: rgba(228, 228, 228, 0.86);
+  --borderDashed: rgba(0, 0, 0, 0.31);
+  --border-glass-bright: rgba(0, 0, 0, 0.15);
+  --border-break: rgba(114, 114, 114, 0.14);
+
+  /* --- shadcn UI Tokens --- */
+  --background: #ffffff;
+  --foreground: #09090b;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --border: rgba(0, 0, 0, 0.1);
+  --accent: rgba(0, 0, 0, 0.05);
+  --accent-foreground: #09090b;
+  --primary: var(--color-primary);
+  --primary-foreground: #ffffff;
+
+  /* --- Button Component Tokens --- */
+  --secondBtn: rgb(224, 224, 224);
+  --secondHoverBtn: rgb(182, 182, 182);
+  --cancelHoverBtn: rgb(205, 199, 199);
+  --btn-danger: rgba(255, 0, 0, 0.226);
+  --accentBtn: #000000;
+  --hoverBtn: rgba(244, 244, 245, 0.90);
+
+  /* --- Glass Surface & Card Tokens --- */
+  --cardGlassBg: rgba(255, 255, 255, 0.80);
+  --cardGlassBorder: rgba(105, 95, 95, 0.14);
+  --cardGlassShadow: var(--shadow-card);
+
+  /* --- Modal & Dialog Tokens --- */
+  --modelCardBg: #ffffff;
+  --modelCardBorder: rgb(211, 211, 211);
+
+  /* --- Containers & Overlays --- */
+  --containerBorder: rgba(0, 0, 0, 0.16);
+  --containerBg: rgba(255, 255, 255, 0.70);
+  --containerShadow: 0 4px 6px -1px rgba(0, 0, 0, 0.10);
+  --overlay: rgba(14, 13, 13, 0.60);
+}

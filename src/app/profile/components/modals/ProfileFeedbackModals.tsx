@@ -1,0 +1,601 @@
+"use client";
+
+import React from "react";
+import CustomModal from "@/components/common/Modals";
+import { AppFeedback, FaqItem } from "../../types";
+import { Send, X } from "lucide-react";
+
+interface ProfileFeedbackModalsProps {
+  // Suggestion Modal
+  showSuggestionModal: boolean;
+  setShowSuggestionModal: (show: boolean) => void;
+  suggestionType: string;
+  setSuggestionType: (type: string) => void;
+  suggestionMessage: string;
+  setSuggestionMessage: (msg: string) => void;
+  suggestionLoading: boolean;
+  isSuggestionFormValid: boolean;
+  handleSendSuggestion: () => Promise<void>;
+  // Bug Report Modal
+  showBugReportModal: boolean;
+  setShowBugReportModal: (show: boolean) => void;
+  bugType: string;
+  setBugType: (type: string) => void;
+  bugDetails: string;
+  setBugDetails: (details: string) => void;
+  bugImage: string;
+  setBugImage: (img: string) => void;
+  setBugImageFile: (file: File | null) => void;
+  bugLoading: boolean;
+  bugUploading: boolean;
+  isBugFormValid: boolean;
+  handleBugImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSendBugReport: () => Promise<void>;
+  // Delete Feedback
+  feedbackToDelete: AppFeedback | null;
+  setFeedbackToDelete: (fb: AppFeedback | null) => void;
+  handleDeleteFeedback: (id: string) => Promise<void>;
+  // Retract Proposal
+  proposalToRetract: string | null;
+  setProposalToRetract: (id: string | null) => void;
+  handleRetractProposal: (id: string) => Promise<void>;
+  // Retract Report
+  reportToRetract: string | null;
+  setReportToRetract: (id: string | null) => void;
+  handleRetractReport: (id: string) => Promise<void>;
+  // Edit FAQ Modal
+  faqToEdit?: FaqItem | null;
+  setFaqToEdit?: (faq: FaqItem | null) => void;
+  editFaqQuestion?: string;
+  setEditFaqQuestion?: (q: string) => void;
+  editFaqAnswer?: string;
+  setEditFaqAnswer?: (a: string) => void;
+  editFaqLoading?: boolean;
+  handleCloseEditFAQ?: () => void;
+  handleUpdateFAQ?: () => Promise<void>;
+}
+
+export const ProfileFeedbackModals: React.FC<ProfileFeedbackModalsProps> = ({
+  showSuggestionModal,
+  setShowSuggestionModal,
+  suggestionType,
+  setSuggestionType,
+  suggestionMessage,
+  setSuggestionMessage,
+  suggestionLoading,
+  isSuggestionFormValid,
+  handleSendSuggestion,
+  showBugReportModal,
+  setShowBugReportModal,
+  bugType,
+  setBugType,
+  bugDetails,
+  setBugDetails,
+  bugImage,
+  setBugImage,
+  setBugImageFile,
+  bugLoading,
+  bugUploading,
+  isBugFormValid,
+  handleBugImageChange,
+  handleSendBugReport,
+  feedbackToDelete,
+  setFeedbackToDelete,
+  handleDeleteFeedback,
+  proposalToRetract,
+  setProposalToRetract,
+  handleRetractProposal,
+  reportToRetract,
+  setReportToRetract,
+  handleRetractReport,
+  faqToEdit = null,
+  editFaqQuestion = "",
+  setEditFaqQuestion,
+  editFaqAnswer = "",
+  setEditFaqAnswer,
+  editFaqLoading = false,
+  handleCloseEditFAQ,
+  handleUpdateFAQ,
+}) => {
+  return (
+    <>
+      {/* Suggestions Modal */}
+      <CustomModal
+        isOpen={showSuggestionModal}
+        onClose={() => setShowSuggestionModal(false)}
+        title="تقديم اقتراح"
+        message="ساعدنا في تحسين الموقع لكي يمكنكم الاستفادة بشكل افضل من الموقع"
+        borderColor="var(--modelCardBorder)"
+        primaryButton={{
+          label: suggestionLoading ? "يتم الإرسال..." : "إرسال",
+          onClick: handleSendSuggestion,
+          disabled: suggestionLoading || !isSuggestionFormValid,
+          icon: <Send size={18} />
+        }}
+        secondaryButton={{
+          label: "إلغاء",
+          onClick: () => setShowSuggestionModal(false),
+          bgColor: "var(--btn-cancel)",
+          icon: <X size={18} />
+        }}
+      >
+        <div style={{ textAlign: "right" }}>
+          <div style={{ marginBottom: "16px" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "6px",
+                fontSize: "0.85rem",
+                color: "var(--text-secondary)",
+                fontWeight: "bold",
+              }}
+            >
+              نوع الاقتراح
+            </label>
+            <select
+              value={suggestionType}
+              onChange={(e) => setSuggestionType(e.target.value)}
+              className="input-fields help-select"
+              style={{ fontFamily: "var(--font-cairo)" }}
+            >
+              <option value="اقتراح لتحسين الشكل">تحسين الشكل</option>
+              <option value="اقتراح إضافة ميزة جديدة">إضافة ميزة جديدة</option>
+              <option value="اقتراح آخر">اقتراح آخر</option>
+            </select>
+          </div>
+
+          <div style={{ marginBottom: "20px" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "6px",
+                fontSize: "0.85rem",
+                color: "var(--text-secondary)",
+                fontWeight: "bold",
+              }}
+            >
+              اشرح اقتراحك
+            </label>
+            <textarea
+              className="input-fields"
+              style={{
+                width: "100%",
+                minHeight: "120px",
+                padding: "12px",
+                resize: "vertical",
+                fontFamily: "var(--font-cairo)",
+              }}
+              placeholder="اكتب تفاصيل اقتراحك هنا..."
+              value={suggestionMessage}
+              onChange={(e) => setSuggestionMessage(e.target.value)}
+            />
+          </div>
+        </div>
+      </CustomModal>
+
+      {/* Bug Report Modal */}
+      <CustomModal
+        isOpen={showBugReportModal}
+        onClose={() => {
+          if (!bugLoading && !bugUploading) {
+            setShowBugReportModal(false);
+            setBugType("");
+            setBugDetails("");
+            setBugImage("");
+            setBugImageFile(null);
+          }
+        }}
+        closeOnOverlayClick={!bugLoading && !bugUploading}
+        title="الإبلاغ عن مشكلة"
+        message="يرجى تزويدنا بتفاصيل المشكلة لحلها."
+        borderColor="var(--modelCardBorder)"
+        primaryButton={{
+          label: bugLoading ? "يتم الإرسال..." : "إرسال",
+          onClick: handleSendBugReport,
+          disabled: bugLoading || bugUploading || !isBugFormValid,
+          icon: <Send size={18} />,
+        }}
+        secondaryButton={{
+          label: "إلغاء",
+          onClick: () => {
+            if (!bugLoading && !bugUploading) {
+              setShowBugReportModal(false);
+              setBugType("");
+              setBugDetails("");
+              setBugImage("");
+              setBugImageFile(null);
+            }
+          },
+          icon: <X size={18} />,
+          disabled: bugLoading || bugUploading,
+        }}
+      >
+        <div style={{ textAlign: "right" }}>
+          <div style={{ marginBottom: "12px" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "6px",
+                fontSize: "0.85rem",
+                color: "var(--text-secondary)",
+                fontWeight: "bold",
+              }}
+            >
+              نوع المشكلة
+            </label>
+            <input
+              type="text"
+              className="input-fields"
+              placeholder="مثال: مشكلة في تسجيل الدخول، بطء الصفحة، إلخ."
+              value={bugType}
+              onChange={(e) => setBugType(e.target.value)}
+              style={{ width: "100%" }}
+            />
+          </div>
+
+          <div style={{ marginBottom: "12px" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "6px",
+                fontSize: "0.85rem",
+                color: "var(--text-secondary)",
+                fontWeight: "bold",
+              }}
+            >
+              تفاصيل المشكلة
+            </label>
+            <textarea
+              className="input-fields"
+              style={{
+                width: "100%",
+                minHeight: "100px",
+                padding: "12px",
+                resize: "vertical",
+                fontFamily: "var(--font-cairo)",
+              }}
+              placeholder="يرجى كتابة تفاصيل ما حدث..."
+              value={bugDetails}
+              onChange={(e) => setBugDetails(e.target.value)}
+            />
+          </div>
+
+          {/* Upload Image Section */}
+          <div style={{ marginBottom: "20px" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "12px",
+                fontSize: "0.85rem",
+                color: "var(--text-secondary)",
+                fontWeight: "bold",
+              }}
+            >
+              إرفاق صورة للمشكلة (اختياري)
+            </label>
+            <div
+              style={{
+                background: "rgba(255, 255, 255, 0.03)",
+                border: "2px dashed var(--border-primary)",
+                borderRadius: "14px",
+                padding: "16px",
+                textAlign: "center",
+                position: "relative",
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "6px",
+                height: "120px",
+              }}
+            >
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleBugImageChange}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  opacity: 0,
+                  cursor: "pointer",
+                  width: "100%",
+                }}
+                disabled={bugLoading || bugUploading}
+              />
+              {bugImage ? (
+                <div style={{ position: "relative", width: "100%", height: "100px" }}>
+                  <img
+                    src={bugImage}
+                    alt="معاينة الصورة"
+                    style={{
+                      width: "100%",
+                      height: "100px",
+                      objectFit: "contain",
+                      borderRadius: "8px",
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setBugImage("");
+                      setBugImageFile(null);
+                    }}
+                    style={{
+                      position: "absolute",
+                      top: "0px",
+                      left: "0px",
+                      background: "rgba(0,0,0,0.7)",
+                      border: "none",
+                      color: "#fff",
+                      borderRadius: "50%",
+                      width: "24px",
+                      height: "24px",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <i className="bx bx-x"></i>
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <i
+                    className="bx bx-camera"
+                    style={{ fontSize: "1.8rem", color: "var(--text-muted)" }}
+                  ></i>
+                  <span
+                    style={{
+                      fontSize: "0.85rem",
+                      fontWeight: "600",
+                      color: "var(--color-fg)",
+                    }}
+                  >
+                    اضغط لاختيار صورة، رفع ملف، أو التقاط صورة جديدة
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </CustomModal>
+
+      {/* Delete Feedback Confirmation Modal */}
+      <CustomModal
+        isOpen={feedbackToDelete !== null}
+        onClose={() => setFeedbackToDelete(null)}
+        title="تأكيد الحذف"
+        titleColor="#ff3b30"
+        message="هل أنت متأكد من حذف هذا الطلب"
+        iconSrc="/images/threeD/trash.webp"
+        borderColor="rgba(255, 59, 48, 0.25)"
+        primaryButton={{
+          label: "تأكيد",
+          onClick: () => {
+            if (feedbackToDelete) {
+              handleDeleteFeedback(feedbackToDelete.id);
+            }
+          },
+          bgColor: "#ff3b30",
+          icon: <i className="bx bx-trash" style={{ fontSize: "1.2rem" }}></i>,
+        }}
+        secondaryButton={{
+          label: "إلغاء",
+          onClick: () => setFeedbackToDelete(null),
+          icon: <i className="bx bx-x" style={{ fontSize: "1.2rem" }}></i>,
+          bgColor: "var(--btn-cancel)",
+        }}
+      >
+        <p
+          style={{
+            fontSize: "0.88rem",
+            color: "var(--text-secondary)",
+            textAlign: "center",
+            lineHeight: "1.6",
+            margin: 0,
+          }}
+        >
+          سيتم حذف هذا الطلب نهائياً من سجلاتك ولا يمكن التراجع عن هذه الخطوة.
+        </p>
+      </CustomModal>
+
+      {/* Retract Proposal Confirmation Modal */}
+      <CustomModal
+        isOpen={proposalToRetract !== null}
+        onClose={() => setProposalToRetract(null)}
+        title="تأكيد الحذف"
+        titleColor="var(--color-fg)"
+        message="هل أنت متأكد من حذف هذا الاقتراح؟"
+        iconSrc="/images/threeD/trash.webp"
+        borderColor="rgba(255, 149, 0, 0.25)"
+        primaryButton={{
+          label: "تأكيد",
+          onClick: () => {
+            const pid = proposalToRetract;
+            if (pid) {
+              setProposalToRetract(null);
+              handleRetractProposal(pid);
+            }
+          },
+          bgColor: "var(--btn-primary)",
+          icon: <i className="bx bx-check" style={{ fontSize: "1.2rem" }}></i>,
+        }}
+        secondaryButton={{
+          label: "إلغاء",
+          onClick: () => setProposalToRetract(null),
+          icon: <i className="bx bx-x" style={{ fontSize: "1.2rem" }}></i>,
+          bgColor: "var(--btn-cancel)",
+        }}
+      >
+        <p
+          style={{
+            fontSize: "0.88rem",
+            color: "var(--text-secondary)",
+            textAlign: "center",
+            lineHeight: "1.6",
+            margin: 0,
+          }}
+        >
+          سيتم سحب اقتراح هذا المكان ولن يعود معروضاً للمراجعة من قِبل المشرفين.
+        </p>
+      </CustomModal>
+
+      {/* Retract Report Confirmation Modal */}
+      <CustomModal
+        isOpen={reportToRetract !== null}
+        onClose={() => setReportToRetract(null)}
+        title="تأكيد التراجع"
+        titleColor="#ff9500"
+        message="هل أنت متأكد من حذف هذا البلاغ؟"
+        iconNode={
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              borderRadius: "50%",
+              backgroundColor: "rgba(255, 149, 0, 0.15)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#ff9500",
+            }}
+          >
+            <i className="bx bx-undo" style={{ fontSize: "2rem" }}></i>
+          </div>
+        }
+        borderColor="rgba(255, 149, 0, 0.25)"
+        primaryButton={{
+          label: "تأكيد",
+          onClick: () => {
+            const rid = reportToRetract;
+            if (rid) {
+              setReportToRetract(null);
+              handleRetractReport(rid);
+            }
+          },
+          bgColor: "#ff9500",
+          icon: <i className="bx bx-trash" style={{ fontSize: "1.2rem" }}></i>,
+        }}
+        secondaryButton={{
+          label: "إلغاء",
+          onClick: () => setReportToRetract(null),
+          icon: <i className="bx bx-x" style={{ fontSize: "1.2rem" }}></i>,
+          bgColor: "var(--btn-cancel)",
+        }}
+      >
+        <p
+          style={{
+            fontSize: "0.88rem",
+            color: "var(--text-secondary)",
+            textAlign: "center",
+            lineHeight: "1.6",
+            margin: 0,
+          }}
+        >
+          سيتم إغلاق وسحب هذا البلاغ ولن تتخذه الإدارة بعين الاعتبار.
+        </p>
+      </CustomModal>
+
+      {/* Edit FAQ Modal */}
+      <CustomModal
+        isOpen={Boolean(faqToEdit)}
+        onClose={handleCloseEditFAQ || (() => { })}
+        closeOnOverlayClick={!editFaqLoading}
+        title="تعديل السؤال الشائع"
+        message="يمكنك تعديل نص السؤال أو الإجابة وحفظ التعديلات مباشرة."
+        iconNode={
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              borderRadius: "50%",
+              backgroundColor: "rgba(59, 130, 246, 0.15)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "var(--color-primary, #3b82f6)",
+            }}
+          >
+            <i className="bx bx-edit" style={{ fontSize: "2rem" }}></i>
+          </div>
+        }
+        borderColor="var(--modelCardBorder, rgba(255, 255, 255, 0.15))"
+        primaryButton={{
+          label: editFaqLoading ? "جاري الحفظ..." : "حفظ التعديلات",
+          onClick: handleUpdateFAQ || (() => Promise.resolve()),
+          disabled:
+            editFaqLoading ||
+            !editFaqQuestion?.trim() ||
+            !editFaqAnswer?.trim(),
+          icon: <i className="bx bx-check" style={{ fontSize: "1.2rem" }}></i>,
+        }}
+        secondaryButton={{
+          label: "إلغاء",
+          onClick: handleCloseEditFAQ || (() => { }),
+          icon: <i className="bx bx-x" style={{ fontSize: "1.2rem" }}></i>,
+          bgColor: "var(--btn-cancel)",
+          disabled: editFaqLoading,
+        }}
+      >
+        <div style={{ textAlign: "right" }}>
+          <div style={{ marginBottom: "14px" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "6px",
+                fontSize: "0.85rem",
+                color: "var(--text-secondary)",
+                fontWeight: "bold",
+              }}
+            >
+              السؤال
+            </label>
+            <input
+              type="text"
+              className="input-fields"
+              placeholder="اكتب نص السؤال..."
+              value={editFaqQuestion || ""}
+              onChange={(e) => setEditFaqQuestion?.(e.target.value)}
+              style={{ width: "100%", fontFamily: "var(--font-cairo)" }}
+              disabled={editFaqLoading}
+            />
+          </div>
+
+          <div style={{ marginBottom: "16px" }}>
+            <label
+              style={{
+                display: "block",
+                marginBottom: "6px",
+                fontSize: "0.85rem",
+                color: "var(--text-secondary)",
+                fontWeight: "bold",
+              }}
+            >
+              الإجابة
+            </label>
+            <textarea
+              className="input-fields"
+              style={{
+                width: "100%",
+                minHeight: "120px",
+                padding: "12px",
+                resize: "vertical",
+                fontFamily: "var(--font-cairo)",
+              }}
+              placeholder="اكتب تفاصيل الإجابة..."
+              value={editFaqAnswer || ""}
+              onChange={(e) => setEditFaqAnswer?.(e.target.value)}
+              disabled={editFaqLoading}
+            />
+          </div>
+        </div>
+      </CustomModal>
+    </>
+  );
+};

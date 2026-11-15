@@ -1,0 +1,254 @@
+/**
+ * ============================================================================
+ * DESIGN SYSTEM — COLOR UTILITIES (Tailwind CSS Standards)
+ * ============================================================================
+ * Atomic utility classes for backgrounds, text colors, and border colors.
+ */
+
+/* ==========================================================================
+   1. Background Color Utilities (.bg-*)
+   ========================================================================== */
+.bg-transparent {
+   background-color: transparent;
+}
+
+.bg-current {
+   background-color: currentColor;
+}
+
+.bg-black {
+   background-color: #000000;
+}
+
+.bg-white {
+   background-color: #ffffff;
+}
+
+/* Theme Semantic Backgrounds */
+.bg-primary {
+   background-color: var(--color-primary);
+}
+
+.bg-secondary {
+   background-color: var(--bg-secondary);
+}
+
+.bg-mode {
+   background-color: var(--color-bg);
+}
+
+.bg-surface {
+   background-color: var(--color-bg);
+}
+
+.bg-surface-alt {
+   background-color: var(--bgThird);
+}
+
+.bg-overlay {
+   background-color: var(--overlay);
+}
+
+.bg-glass {
+   background-color: var(--bg-glass);
+   backdrop-filter: blur(12px);
+   -webkit-backdrop-filter: blur(12px);
+}
+
+.bg-glass-active {
+   background-color: var(--bg-glass-active);
+   backdrop-filter: blur(16px);
+   -webkit-backdrop-filter: blur(16px);
+}
+
+.bg-alert {
+   background: var(--bg-linear-alert);
+}
+
+.bg-subtle {
+   background-color: rgba(255, 255, 255, 0.03);
+}
+
+html.light .bg-subtle {
+   background-color: rgba(0, 0, 0, 0.03);
+}
+
+.bg-tab-active {
+   background-color: var(--tab-active-bg, var(--bg-glass-active));
+}
+
+/* Status Backgrounds */
+.bg-success {
+   background-color: var(--color-success);
+}
+
+.bg-success-subtle {
+   background-color: rgba(16, 185, 129, 0.15);
+}
+
+/* Warning */
+.alert-warning {
+   background-color: var(--alert-warning-bg);
+   border: 1px solid rgba(245, 158, 11, 0.3);
+   color: var(--alert-warning-color);
+}
+
+.bg-danger {
+   background-color: var(--color-danger);
+}
+
+.bg-danger-subtle {
+   background-color: rgba(239, 68, 68, 0.12);
+}
+
+.bg-info {
+   background-color: var(--color-info);
+}
+
+.bg-brand-subtle {
+   background-color: rgba(59, 130, 246, 0.15);
+}
+
+/* ==========================================================================
+  Color of the Buttons 
+   ========================================================================== */
+.color-primary {
+   color: var(--color-primary);
+}
+
+.color-muted {
+   color: var(--color-muted);
+}
+
+.color-error {
+   color: var(--color-error);
+}
+
+
+
+/* ==========================================================================
+   2. Text Color Utilities (.text-*)
+   ========================================================================== */
+.text-inherit {
+   color: inherit;
+}
+
+.text-current {
+   color: currentColor;
+}
+
+.text-transparent {
+   color: transparent;
+}
+
+.text-black {
+   color: #000000;
+}
+
+.text-white {
+   color: #ffffff;
+}
+
+.text-gray {
+   color: #71717a;
+}
+
+/* Theme Semantic Text Colors */
+.text-primary {
+   color: var(--color-fg);
+}
+
+.text-secondary {
+   color: var(--text-secondary);
+}
+
+.text-muted {
+   color: var(--text-muted);
+}
+
+.text-brand {
+   color: var(--color-primary);
+}
+
+.text-accent {
+   color: var(--color-accent);
+}
+
+.text-tab-active {
+   color: var(--tab-active-color, var(--color-fg));
+}
+
+/* Status Text Colors */
+.text-success {
+   color: var(--color-success);
+}
+
+.text-warning {
+   color: var(--colorWarning);
+}
+
+.text-danger {
+   color: var(--color-danger);
+}
+
+.text-info {
+   color: var(--color-info);
+}
+
+/*  Error Text */
+.error {
+   padding: 4px 8px;
+   color: #ff0000;
+   margin-bottom: 10px;
+   font-size: 0.88rem;
+   text-align: center;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 8px;
+   animation: slideIn 0.3s ease;
+}
+
+/* ==========================================================================
+   shadcn compatibility utilities
+   ========================================================================== */
+.bg-background {
+   background-color: var(--background, var(--color-bg, #000000));
+}
+
+.text-foreground {
+   color: var(--foreground, var(--color-fg, #f4f4f5));
+}
+
+.text-muted-foreground {
+   color: var(--muted-foreground, var(--text-muted, #71717a));
+}
+
+.hover\:text-foreground:hover {
+   color: var(--foreground, var(--color-fg, #ffffff));
+}
+
+.border-border {
+   border-color: var(--border, var(--border-glass, rgba(255, 255, 255, 0.1)));
+}
+
+.bg-accent {
+   background-color: var(--accent, rgba(255, 255, 255, 0.08));
+}
+
+.group:hover .group-hover\:bg-accent {
+   background-color: var(--accent, rgba(255, 255, 255, 0.08));
+}
+
+.group:hover .group-hover\:text-accent-foreground {
+   color: var(--accent-foreground, #ffffff);
+}
+
+.bg-primary\/10 {
+   background-color: rgba(39, 39, 255, 0.1);
+}
+
+/*  */
+.color-fg {
+   color: var(--color-fg);
+}

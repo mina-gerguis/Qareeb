@@ -1,0 +1,1052 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import styles from "./admin.module.css";
+import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabase";
+import CustomModal from "@/components/common/Modals";
+
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const { user, profile, loading, logout } = useAuth();
+
+  useEffect(() => {
+    if (!loading && (!user || !profile?.is_admin)) {
+      router.push("/");
+    }
+  }, [user, profile, loading, router]);
+
+  const [pendingIncomingCount, setPendingIncomingCount] = useState(0);
+  const [pendingPointsCount, setPendingPointsCount] = useState(0);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isModalActive, setIsModalActive] = useState(false);
+  const [isMobile, setIsMobile] = useState(true);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [isServicesDropdownOpen, setIsServicesDropdownOpen] = useState(false);
+  const [activeSubTab, setActiveSubTab] = useState<string | null>(null);
+
+  const shouldShowSidebar = isSidebarOpen && !isModalActive;
+
+  // Global Search states
+  const [globalSearchQuery, setGlobalSearchQuery] = useState("");
+  const [globalSearchResults, setGlobalSearchResults] = useState<{
+    places: any[];
+    profiles: any[];
+    pages: any[];
+  }>({ places: [], profiles: [], pages: [] });
+  const [isSearchingGlobal, setIsSearchingGlobal] = useState(false);
+  const [showGlobalResults, setShowGlobalResults] = useState(false);
+
+  // Debounced global search effect
+  useEffect(() => {
+    if (!globalSearchQuery.trim()) {
+      setGlobalSearchResults({ places: [], profiles: [], pages: [] });
+      setShowGlobalResults(false);
+      return;
+    }
+
+    const delayDebounce = setTimeout(async () => {
+      setIsSearchingGlobal(true);
+      setShowGlobalResults(true);
+      try {
+        const term = globalSearchQuery.toLowerCase();
+
+        // 1. Search in local page routes (Quick Navigation Link matches)
+        const allAdminPages = [
+          { label: "لوحة الإحصائيات الرئيسية", href: "/admin", category: "صفحة إدارية", icon: "bx bx-grid-alt" },
+          { label: "إدارة التوثيق والتحديثات (Doc)", href: "/admin/doc", category: "صفحة إدارية", icon: "bx bx-book-content" },
+          { label: "إدارة المدونة والمقالات", href: "/admin/blogs", category: "صفحة إدارية", icon: "bx bx-news" },
+          { label: "إدارة الأماكن والمواقع", href: "/admin/places", category: "صفحة إدارية", icon: "bx bx-map" },
+          { label: "اقتراحات الأماكن والمواقع", href: "/admin/places/suggestions", category: "صفحة إدارية", icon: "bx bx-map-pin" },
+          { label: "إدارة الإعلانات والبنرات", href: "/admin/ads", category: "صفحة إدارية", icon: "bx bx-slideshow" },
+          { label: "إدارة تنبيهات الموقع", href: "/admin/alerts", category: "صفحة إدارية", icon: "bx bx-info-circle" },
+          { label: "إدارة وضع الصيانة وحظر الصفحات", href: "/admin/maintenance", category: "صفحة إدارية", icon: "bx bx-wrench" },
+          { label: "الإشعارات والرسائل الجماعية", href: "/admin/notifications", category: "صفحة إدارية", icon: "bx bx-bell" },
+          { label: "البلاغات والاقتراحات الواردة", href: "/admin/reports", category: "صفحة إدارية", icon: "bx bx-inbox" },
+          { label: "الرصيد والشحن المالي", href: "/admin/points?tab=users", category: "صفحة إدارية", icon: "bx bx-coin-stack" },
+          { label: "طلبات الإيداع والسحب المعلقة", href: "/admin/points?tab=requests", category: "صفحة إدارية", icon: "bx bx-transfer" },
+          { label: "إدارة القسائم والأكواد الترويجية", href: "/admin/vouchers", category: "صفحة إدارية", icon: "bx bxs-coupon" },
+          { label: "إدارة الحسابات والمستخدمين", href: "/admin/users", category: "صفحة إدارية", icon: "bx bx-group" },
+          { label: "الاشتراكات المميزة والذهبية", href: "/admin/subscriptions", category: "صفحة إدارية", icon: "bx bx-crown" },
+          { label: "العروض والخصومات للاشتراكات", href: "/admin/subscriptions?tab=promotions", category: "صفحة إدارية", icon: "bx bx-gift" },
+          { label: "إدارة المدن الشهيرة والمعالم", href: "/admin/cities", category: "خدمة موقع", icon: "bx bx-building-house" },
+          { label: "إدارة المطارات", href: "/admin/airports", category: "خدمة موقع", icon: "bx bx-plane" },
+          { label: "إدارة الموانئ البحرية", href: "/admin/ports", category: "خدمة موقع", icon: "bx bx-anchor" },
+          { label: "إدارة شبكة المنوريل", href: "/admin/monorail", category: "خدمة موقع", icon: "bx bx-navigation" },
+          { label: "إدارة القطار الكهربائي LRT", href: "/admin/lrt", category: "خدمة موقع", icon: "bx bx-train" },
+          { label: "إدارة مترو الأنفاق", href: "/admin/metro", category: "خدمة موقع", icon: "bx bxs-train" },
+          { label: "إدارة سكك حديد مصر", href: "/admin/railways", category: "خدمة موقع", icon: "bx bx-train" },
+          { label: "إدارة مواقف السرفيس", href: "/admin/microbus-stations", category: "خدمة موقع", icon: "bx bx-map-pin" },
+          { label: "إدارة الأتوبيس الترددي BRT", href: "/admin/brt", category: "خدمة موقع", icon: "bx bx-bus" },
+          { label: "إدارة الأتوبيسات وسوبرجيت", href: "/admin/bus-stations", category: "خدمة موقع", icon: "bx bx-bus" },
+          { label: "إدارة الجراجات ومواقف السيارات", href: "/admin/parking", category: "خدمة موقع", icon: "bx bx-car" },
+          { label: "إدارة معلومات الطرق وسرعات الرادار", href: "/admin/roads-info", category: "خدمة موقع", icon: "bx bx-tachometer" },
+          { label: "إدارة دليل الهواتف والأكواد", href: "/admin/directory", category: "خدمة موقع", icon: "bx bx-phone-call" },
+          { label: "إدارة خطوط المواصلات والاتجاهات (ازاي اروح)", href: "/admin/directions", category: "خدمة موقع", icon: "bx bx-compass" }
+        ];
+
+        const matchedPages = allAdminPages.filter(p => p.label.includes(term));
+
+        // 2. Fetch from places table matching term (limit 5)
+        let matchedPlaces: any[] = [];
+        if (supabase) {
+          const { data: placesData } = await supabase
+            .from("places")
+            .select("id, name, description, address")
+            .ilike("name", `%${term}%`)
+            .limit(5);
+          matchedPlaces = placesData || [];
+        }
+
+        // 3. Fetch from profiles table matching name or email (limit 5)
+        let matchedProfiles: any[] = [];
+        if (supabase) {
+          const { data: profilesData } = await supabase
+            .from("profiles")
+            .select("id, full_name, email, username")
+            .or(`full_name.ilike.%${term}%,email.ilike.%${term}%,username.ilike.%${term}%`)
+            .limit(5);
+          matchedProfiles = profilesData || [];
+        }
+
+        setGlobalSearchResults({
+          pages: matchedPages,
+          places: matchedPlaces,
+          profiles: matchedProfiles
+        });
+      } catch (err) {
+        console.error("Global search error:", err);
+      } finally {
+        setIsSearchingGlobal(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(delayDebounce);
+  }, [globalSearchQuery]);
+
+  // Close search dropdown when clicking outside
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest(`.${styles.globalSearchContainer}`)) {
+        setShowGlobalResults(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
+  // Initialize and sync sub tab and dropdown state on path changes
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      setActiveSubTab(params.get("tab"));
+    }
+
+    if (pathname === "/admin/places" || pathname === "/admin/cities" || pathname === "/admin/airports" || pathname === "/admin/ports" || pathname === "/admin/directory" || pathname === "/admin/monorail" || pathname === "/admin/lrt" || pathname === "/admin/metro" || pathname === "/admin/railways" || pathname === "/admin/bus-stations" || pathname === "/admin/microbus-stations" || pathname === "/admin/brt" || pathname === "/admin/parking" || pathname === "/admin/roads-info") {
+      setIsServicesDropdownOpen(true);
+    }
+
+    if (typeof window !== "undefined" && window.innerWidth <= 1024) {
+      setIsSidebarOpen(false);
+    }
+  }, [pathname]);
+
+  // Track window resizing for responsive sidebar
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 1024;
+      setIsMobile(mobile);
+      if (mobile) {
+        setIsSidebarOpen(false); // Close sidebar on mobile load
+      } else {
+        setIsSidebarOpen(true);  // Open sidebar on desktop load
+      }
+    };
+
+    handleResize(); // Initial check
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Lock body scroll when mobile drawer is open or modal is active
+  useEffect(() => {
+    if ((isMobile && shouldShowSidebar) || isModalActive) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobile, shouldShowSidebar, isModalActive]);
+
+  // Automatically detect any active modal/popup across all admin pages to hide the sidebar
+  useEffect(() => {
+    const checkModalPresence = () => {
+      // 1. Check known modal overlay classes, roles, or attributes
+      const overlaySelectors = [
+        '[class*="ModalOverlay"]',
+        '[class*="modalOverlay"]',
+        '[class*="subModalOverlay"]',
+        '[class*="adsModalOverlay"]',
+        '[class*="editorModalOverlay"]',
+        '[class*="cropperOverlay"]',
+        '[data-modal-overlay="true"]',
+        '.customModalOverlay',
+        '[role="dialog"]',
+        '[aria-modal="true"]'
+      ].join(", ");
+
+      const knownOverlay = document.querySelector(overlaySelectors);
+      if (knownOverlay) {
+        document.body.classList.add("admin-modal-open");
+        setIsModalActive(true);
+        return;
+      }
+
+      // 2. Check full-screen fixed overlays (excluding layout's own sidebar and mobile backdrop)
+      const fixedCandidates = document.querySelectorAll<HTMLElement>(
+        'div[style*="fixed"], div[style*="Fixed"], section[style*="fixed"], aside[style*="fixed"]'
+      );
+
+      for (let i = 0; i < fixedCandidates.length; i++) {
+        const el = fixedCandidates[i];
+        // Ignore sidebar and its mobile backdrop
+        if (el.closest(`.${styles.sidebar}`) || el.classList.contains(styles.sidebarBackdrop)) {
+          continue;
+        }
+        // Ignore topbar search dropdown, toasts, and context dropdowns
+        if (
+          el.closest(`.${styles.globalSearchContainer}`) ||
+          el.classList.contains(styles.actionDropdown) ||
+          el.className.includes("toast")
+        ) {
+          continue;
+        }
+
+        const s = el.style;
+        if (s.position !== "fixed") continue;
+
+        const isZero = (v: string) => v === "0" || v === "0px" || v === "0%";
+        const isInsetZero = isZero(s.inset) || s.inset.includes("0px 0px 0px 0px") || s.inset === "0 0 0 0";
+        const isSpanning =
+          (isZero(s.top) || isZero(s.insetBlockStart)) &&
+          (isZero(s.left) || isZero(s.insetInlineStart)) &&
+          (isZero(s.right) || isZero(s.bottom) || s.width === "100%" || s.width === "100vw" || s.height === "100%" || s.height === "100vh");
+
+        if (isInsetZero || isSpanning) {
+          document.body.classList.add("admin-modal-open");
+          setIsModalActive(true);
+          return;
+        }
+
+        // Check if bounding client rect covers at least 80% of viewport width and height
+        const rect = el.getBoundingClientRect();
+        if (
+          rect.width >= window.innerWidth * 0.8 &&
+          rect.height >= window.innerHeight * 0.8 &&
+          rect.top <= 80
+        ) {
+          document.body.classList.add("admin-modal-open");
+          setIsModalActive(true);
+          return;
+        }
+      }
+
+      document.body.classList.remove("admin-modal-open");
+      setIsModalActive(false);
+    };
+
+    checkModalPresence();
+
+    let rafId: number | null = null;
+    const observer = new MutationObserver(() => {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(checkModalPresence);
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["style", "class"]
+    });
+
+    const handleCustomOpen = () => {
+      document.body.classList.add("admin-modal-open");
+      setIsModalActive(true);
+    };
+    const handleCustomClose = () => {
+      requestAnimationFrame(checkModalPresence);
+    };
+
+    window.addEventListener("admin:modal-open", handleCustomOpen);
+    window.addEventListener("admin:modal-close", handleCustomClose);
+
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      observer.disconnect();
+      window.removeEventListener("admin:modal-open", handleCustomOpen);
+      window.removeEventListener("admin:modal-close", handleCustomClose);
+      document.body.classList.remove("admin-modal-open");
+    };
+  }, [styles]);
+
+  // Theme observer: sync with localStorage & HTML class
+  useEffect(() => {
+    const saved = localStorage.getItem("dftry_theme") as "dark" | "light" | null;
+    const initial = saved ?? (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+    setTheme(initial);
+    document.documentElement.classList.toggle("light", initial === "light");
+
+    const handleGlobalThemeChange = (e: any) => {
+      setTheme(e.detail);
+    };
+    window.addEventListener("themechange", handleGlobalThemeChange);
+    return () => window.removeEventListener("themechange", handleGlobalThemeChange);
+  }, []);
+
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    localStorage.setItem("dftry_theme", next);
+    document.documentElement.classList.toggle("light", next === "light");
+    window.dispatchEvent(new CustomEvent("themechange", { detail: next }));
+  };
+
+  const fetchPendingCounts = async () => {
+    if (!supabase || !user || !profile?.is_admin) return;
+    try {
+      const [placeReportsRes, appFeedbackRes, contactMessagesRes, balanceTransactionsRes] = await Promise.all([
+        supabase
+          .from("place_reports")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "pending"),
+        supabase
+          .from("app_feedback")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "pending"),
+        supabase
+          .from("contact_messages")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "pending"),
+        supabase
+          .from("balance_transactions")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "pending"),
+      ]);
+
+      const incomingCount = (placeReportsRes.count || 0) + (appFeedbackRes.count || 0) + (contactMessagesRes.count || 0);
+      const pointsCount = balanceTransactionsRes.count || 0;
+
+      setPendingIncomingCount(incomingCount);
+      setPendingPointsCount(pointsCount);
+    } catch (err) {
+      console.error("Error fetching pending counts:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (user && profile?.is_admin) {
+      fetchPendingCounts();
+      const interval = setInterval(fetchPendingCounts, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [user, profile?.is_admin, pathname]);
+
+  // Helper to extract a friendly admin username
+  const adminName = profile?.full_name || user?.email?.split("@")[0] || "مدير النظام";
+  const avatarUrl = profile?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(adminName)}&backgroundType=gradientLinear`;
+
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = () => {
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      await logout();
+      router.push("/login");
+    } finally {
+      setIsLoggingOut(false);
+      setShowLogoutModal(false);
+    }
+  };
+
+  // Get current page header title
+  let pageTitle = "لوحة التحكم";
+  if (pathname === "/admin") pageTitle = "لوحة الإحصائيات";
+  else if (pathname === "/admin/doc") pageTitle = "إدارة التوثيق والتحديثات";
+  else if (pathname === "/admin/blogs") pageTitle = "إدارة المدونة والمقالات";
+  else if (pathname === "/admin/places") pageTitle = "إدارة الأماكن";
+  else if (pathname === "/admin/places/suggestions") pageTitle = "اقتراحات الأماكن";
+  else if (pathname === "/admin/cities") pageTitle = "إدارة المدن الشهيرة المعالم";
+  else if (pathname === "/admin/ads") pageTitle = "إدارة الإعلانات";
+  else if (pathname === "/admin/airports") pageTitle = "إدارة المطارات";
+  else if (pathname === "/admin/ports") pageTitle = "إدارة الموانئ البحرية";
+  else if (pathname === "/admin/monorail") pageTitle = "إدارة شبكة المنوريل";
+  else if (pathname === "/admin/lrt") pageTitle = "إدارة القطار الكهربائي LRT";
+  else if (pathname === "/admin/metro") pageTitle = "إدارة مترو الأنفاق";
+  else if (pathname === "/admin/railways") pageTitle = "إدارة سكك حديد مصر";
+  else if (pathname === "/admin/bus-stations") pageTitle = "إدارة الأتوبيسات (سوبرجيت)";
+  else if (pathname === "/admin/microbus-stations") pageTitle = "إدارة مواقف السرفيس";
+  else if (pathname === "/admin/brt") pageTitle = "إدارة الأتوبيس الترددي BRT";
+  else if (pathname === "/admin/parking") pageTitle = "إدارة الجراجات ومواقف السيارات";
+  else if (pathname === "/admin/roads-info") pageTitle = "إدارة معلومات الطرق وسرعات الرادار";
+  else if (pathname === "/admin/directions") pageTitle = "إدارة ازاي اروح (خطوط المواصلات)";
+  else if (pathname === "/admin/directory") pageTitle = "دليل الهواتف والأكواد";
+  else if (pathname === "/admin/notifications") pageTitle = "الإشعارات والرسائل";
+  else if (pathname === "/admin/alerts") pageTitle = "تنبيهات الموقع";
+  else if (pathname === "/admin/reports" || pathname === "/admin/incoming-reports") pageTitle = "البلاغات والاقتراحات الواردة";
+  else if (pathname === "/admin/points") {
+    if (activeSubTab === "requests") pageTitle = "طلبات الإيداع والسحب";
+    else pageTitle = "الرصيد والشحن";
+  }
+  else if (pathname === "/admin/vouchers") pageTitle = "إدارة القسائم والأكواد";
+  else if (pathname === "/admin/subscriptions") {
+    if (activeSubTab === "promotions" || activeSubTab === "offers") pageTitle = "العروض والخصومات";
+    else pageTitle = "الاشتراكات المميزة";
+  }
+  else if (pathname === "/admin/users") pageTitle = "إدارة الحسابات والمستخدمين";
+
+  // Compute greeting based on time
+  const currentHour = new Date().getHours();
+  let greetingText = "مساء الخير";
+  let greetingIcon = "bx-moon";
+  if (currentHour >= 5 && currentHour < 12) {
+    greetingText = "صباح الخير";
+    greetingIcon = "bx-sun";
+  } else if (currentHour >= 12 && currentHour < 18) {
+    greetingText = "مساء الخير";
+    greetingIcon = "bx-sun";
+  }
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#09090b" }}>
+        <div style={{ width: "40px", height: "40px", borderRadius: "50%", border: "3px solid rgba(59, 130, 246, 0.2)", borderTopColor: "#3b82f6", animation: "spin 0.8s linear infinite" }} />
+        <style jsx>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
+
+  if (!user || !profile?.is_admin) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "16px", direction: "rtl", background: "#09090b", color: "#f4f4f5" }}>
+        <i className="bx bx-shield-x" style={{ fontSize: "3.5rem", color: "#ef4444" }} />
+        <h1 style={{ fontSize: "1.5rem", fontWeight: 700, margin: 0 }}>منطقة إدارية محمية (403)</h1>
+        <p style={{ color: "#a1a1aa", margin: 0, fontSize: "0.95rem" }}>ليس لديك الصلاحيات الكافية للوصول إلى لوحة التحكم الإدارية.</p>
+        <Link href="/" style={{ marginTop: "12px", padding: "10px 20px", background: "#2563eb", color: "#ffffff", borderRadius: "8px", textDecoration: "none", fontWeight: 600 }}>
+          العودة للصفحة الرئيسية
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`${styles.adminShell} ${theme === "light" ? "light" : ""}`}>
+      {/* ── Mobile Backdrop ── */}
+      {isMobile && shouldShowSidebar && (
+        <div
+          className={styles.sidebarBackdrop}
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* ── Left Sidebar ── */}
+      <aside className={`${styles.sidebar} ${shouldShowSidebar ? styles.sidebarOpen : styles.sidebarClosed} ${isModalActive ? styles.sidebarHiddenByModal : ""}`}>
+        <div className={styles.sidebarInner}>
+          {/* Profile Section */}
+          <div className={styles.sidebarProfile}>
+            <div className={styles.profileAvatarWrapper}>
+              <img src={avatarUrl} alt={adminName} loading="lazy" decoding="async" className={styles.profileAvatar} />
+            </div>
+            <div className={styles.profileInfo}>
+              <h3 className={styles.profileName}>{adminName}</h3>
+              <span className={styles.profileRole}>
+                {profile?.is_admin ? "أدمن" : "مشرف"}
+              </span>
+            </div>
+          </div>
+
+          {/* Navigation Links */}
+          <nav className={styles.sidebarNav}>
+            {/* ── الرئيسية والإحصائيات ── */}
+            <div className={styles.sidebarGroupLabel}>الرئيسية والتحليلات</div>
+            <Link
+              href="/admin"
+              className={`${styles.sidebarNavLink} ${pathname === "/admin" ? styles.sidebarNavLinkActive : ""}`}
+              onClick={() => {
+                if (isMobile) setIsSidebarOpen(false);
+              }}
+            >
+              <div className={styles.linkLeftGroup}>
+                <i className={`bx bx-grid-alt ${styles.linkIcon}`} />
+                <span className={styles.linkLabel}>لوحة الإحصائيات</span>
+              </div>
+            </Link>
+
+            {/* ── المالية والقسائم والاشتراكات ── */}
+            <div className={styles.sidebarGroupLabel}>المالية والقسائم والاشتراكات</div>
+
+            <Link
+              href="/admin/points?tab=users"
+              className={`${styles.sidebarNavLink} ${pathname === "/admin/points" && (activeSubTab === "users" || !activeSubTab) ? styles.sidebarNavLinkActive : ""}`}
+              onClick={() => {
+                setActiveSubTab("users");
+                if (isMobile) setIsSidebarOpen(false);
+              }}
+            >
+              <div className={styles.linkLeftGroup}>
+                <i className={`bx bx-coin-stack ${styles.linkIcon}`} />
+                <span className={styles.linkLabel}>الرصيد والشحن</span>
+              </div>
+            </Link>
+
+            <Link
+              href="/admin/points?tab=requests"
+              className={`${styles.sidebarNavLink} ${pathname === "/admin/points" && activeSubTab === "requests" ? styles.sidebarNavLinkActive : ""}`}
+              onClick={() => {
+                setActiveSubTab("requests");
+                if (isMobile) setIsSidebarOpen(false);
+              }}
+            >
+              <div className={styles.linkLeftGroup}>
+                <i className={`bx bx-transfer ${styles.linkIcon}`} />
+                <span className={styles.linkLabel}>طلبات الإيداع والسحب</span>
+              </div>
+              {pendingPointsCount > 0 && (
+                <span className={styles.sidebarBadge} title={`هناك ${pendingPointsCount} معلقة`}>
+                  {pendingPointsCount}
+                </span>
+              )}
+            </Link>
+
+            <Link
+              href="/admin/vouchers"
+              className={`${styles.sidebarNavLink} ${pathname === "/admin/vouchers" ? styles.sidebarNavLinkActive : ""}`}
+              onClick={() => {
+                setActiveSubTab(null);
+                if (isMobile) setIsSidebarOpen(false);
+              }}
+            >
+              <div className={styles.linkLeftGroup}>
+                <i className={`bx bxs-coupon ${styles.linkIcon}`} />
+                <span className={styles.linkLabel}>إدارة القسائم والأكواد</span>
+              </div>
+            </Link>
+
+            <Link
+              href="/admin/subscriptions"
+              className={`${styles.sidebarNavLink} ${pathname === "/admin/subscriptions" && (!activeSubTab || activeSubTab === "users" || activeSubTab === "plans") ? styles.sidebarNavLinkActive : ""}`}
+              onClick={() => {
+                setActiveSubTab(null);
+                if (isMobile) setIsSidebarOpen(false);
+              }}
+            >
+              <div className={styles.linkLeftGroup}>
+                <i className={`bx bx-crown ${styles.linkIcon}`} />
+                <span className={styles.linkLabel}>الاشتراكات المميزة</span>
+              </div>
+            </Link>
+
+            <Link
+              href="/admin/subscriptions?tab=promotions"
+              className={`${styles.sidebarNavLink} ${pathname === "/admin/subscriptions" && (activeSubTab === "promotions" || activeSubTab === "offers") ? styles.sidebarNavLinkActive : ""}`}
+              onClick={() => {
+                setActiveSubTab("promotions");
+                if (isMobile) setIsSidebarOpen(false);
+              }}
+            >
+              <div className={styles.linkLeftGroup}>
+                <i className={`bx bx-gift ${styles.linkIcon}`} />
+                <span className={styles.linkLabel}>العروض والخصومات</span>
+              </div>
+            </Link>
+
+            {/* ── المستخدمون والدعم ── */}
+            <div className={styles.sidebarGroupLabel}>المستخدمون والدعم</div>
+
+            <Link
+              href="/admin/users"
+              className={`${styles.sidebarNavLink} ${pathname === "/admin/users" ? styles.sidebarNavLinkActive : ""}`}
+              onClick={() => {
+                if (isMobile) setIsSidebarOpen(false);
+              }}
+            >
+              <div className={styles.linkLeftGroup}>
+                <i className={`bx bx-group ${styles.linkIcon}`} />
+                <span className={styles.linkLabel}>إدارة الحسابات والمستخدمين</span>
+              </div>
+            </Link>
+
+            <Link
+              href="/admin/reports"
+              className={`${styles.sidebarNavLink} ${pathname === "/admin/reports" || pathname === "/admin/incoming-reports" ? styles.sidebarNavLinkActive : ""}`}
+              onClick={() => {
+                if (isMobile) setIsSidebarOpen(false);
+              }}
+            >
+              <div className={styles.linkLeftGroup}>
+                <i className={`bx bx-inbox ${styles.linkIcon}`} />
+                <span className={styles.linkLabel}>البلاغات والاقتراحات</span>
+              </div>
+              {pendingIncomingCount > 0 && (
+                <span className={styles.sidebarBadge} style={{ background: "#ef4444", color: "#fff" }} title={`هناك ${pendingIncomingCount} بلاغات واقتراحات معلقة`}>
+                  {pendingIncomingCount}
+                </span>
+              )}
+            </Link>
+
+            <Link
+              href="/admin/notifications"
+              className={`${styles.sidebarNavLink} ${pathname === "/admin/notifications" ? styles.sidebarNavLinkActive : ""}`}
+              onClick={() => {
+                if (isMobile) setIsSidebarOpen(false);
+              }}
+            >
+              <div className={styles.linkLeftGroup}>
+                <i className={`bx bx-bell ${styles.linkIcon}`} />
+                <span className={styles.linkLabel}>الإشعارات والرسائل</span>
+              </div>
+            </Link>
+
+            {/* ── المحتوى والنظام ── */}
+            <div className={styles.sidebarGroupLabel}>المحتوى والنظام</div>
+
+            <Link
+              href="/admin/doc"
+              className={`${styles.sidebarNavLink} ${pathname === "/admin/doc" ? styles.sidebarNavLinkActive : ""}`}
+              onClick={() => {
+                if (isMobile) setIsSidebarOpen(false);
+              }}
+            >
+              <div className={styles.linkLeftGroup}>
+                <i className={`bx bx-book-content ${styles.linkIcon}`} />
+                <span className={styles.linkLabel}>إدارة التوثيق والتحديثات</span>
+              </div>
+            </Link>
+
+            <Link
+              href="/admin/blogs"
+              className={`${styles.sidebarNavLink} ${pathname === "/admin/blogs" ? styles.sidebarNavLinkActive : ""}`}
+              onClick={() => {
+                if (isMobile) setIsSidebarOpen(false);
+              }}
+            >
+              <div className={styles.linkLeftGroup}>
+                <i className={`bx bx-news ${styles.linkIcon}`} />
+                <span className={styles.linkLabel}>إدارة المدونة والمقالات</span>
+              </div>
+            </Link>
+
+            <Link
+              href="/admin/ads"
+              className={`${styles.sidebarNavLink} ${pathname === "/admin/ads" ? styles.sidebarNavLinkActive : ""}`}
+              onClick={() => {
+                if (isMobile) setIsSidebarOpen(false);
+              }}
+            >
+              <div className={styles.linkLeftGroup}>
+                <i className={`bx bx-slideshow ${styles.linkIcon}`} />
+                <span className={styles.linkLabel}>إدارة الإعلانات</span>
+              </div>
+            </Link>
+
+            <Link
+              href="/admin/alerts"
+              className={`${styles.sidebarNavLink} ${pathname === "/admin/alerts" ? styles.sidebarNavLinkActive : ""}`}
+              onClick={() => {
+                if (isMobile) setIsSidebarOpen(false);
+              }}
+            >
+              <div className={styles.linkLeftGroup}>
+                <i className={`bx bx-info-circle ${styles.linkIcon}`} />
+                <span className={styles.linkLabel}>تنبيهات الموقع</span>
+              </div>
+            </Link>
+
+            <Link
+              href="/admin/maintenance"
+              className={`${styles.sidebarNavLink} ${pathname === "/admin/maintenance" ? styles.sidebarNavLinkActive : ""}`}
+              onClick={() => {
+                if (isMobile) setIsSidebarOpen(false);
+              }}
+            >
+              <div className={styles.linkLeftGroup}>
+                <i className={`bx bx-wrench ${styles.linkIcon}`} />
+                <span className={styles.linkLabel}>إدارة وضع الصيانة</span>
+              </div>
+            </Link>
+
+            {/* ── الخدمات والمواقع (قائمة قابلة للطي) ── */}
+            <div className={styles.sidebarGroupLabel}>الخدمات والمواقع</div>
+
+            <Link
+              href="/admin/places"
+              className={`${styles.sidebarNavLink} ${pathname === "/admin/places" ? styles.sidebarNavLinkActive : ""}`}
+              onClick={() => {
+                if (isMobile) setIsSidebarOpen(false);
+              }}
+            >
+              <div className={styles.linkLeftGroup}>
+                <i className={`bx bx-map ${styles.linkIcon}`} />
+                <span className={styles.linkLabel}>إدارة الأماكن</span>
+              </div>
+            </Link>
+
+            <Link
+              href="/admin/places/suggestions"
+              className={`${styles.sidebarNavLink} ${pathname === "/admin/places/suggestions" ? styles.sidebarNavLinkActive : ""}`}
+              onClick={() => {
+                if (isMobile) setIsSidebarOpen(false);
+              }}
+            >
+              <div className={styles.linkLeftGroup}>
+                <i className={`bx bx-map-pin ${styles.linkIcon}`} />
+                <span className={styles.linkLabel}>اقتراحات الأماكن</span>
+              </div>
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => setIsServicesDropdownOpen((prev) => !prev)}
+              className={styles.sidebarNavLink}
+              style={{
+                width: "100%",
+                background: "transparent",
+                cursor: "pointer",
+                textAlign: "right",
+              }}
+              aria-expanded={isServicesDropdownOpen}
+            >
+              <div className={styles.linkLeftGroup}>
+                <i className={`bx bx-directions ${styles.linkIcon}`} />
+                <span className={styles.linkLabel}>شبكات النقل والدليل</span>
+              </div>
+              <i
+                className={`bx ${isServicesDropdownOpen ? "bx-chevron-down" : "bx-chevron-left"}`}
+                style={{ fontSize: "1.1rem", opacity: 0.7 }}
+              />
+            </button>
+
+            {isServicesDropdownOpen && (
+              <div className={styles.submenu}>
+                <Link
+                  href="/admin/directions"
+                  className={`${styles.submenuLink} ${pathname === "/admin/directions" ? styles.submenuLinkActive : ""}`}
+                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+                >
+                  <i className="bx bx-compass" />
+                  <span>إدارة ازاي اروح</span>
+                </Link>
+                <Link
+                  href="/admin/metro"
+                  className={`${styles.submenuLink} ${pathname === "/admin/metro" ? styles.submenuLinkActive : ""}`}
+                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+                >
+                  <i className="bx bxs-train" />
+                  <span>مترو الأنفاق</span>
+                </Link>
+                <Link
+                  href="/admin/lrt"
+                  className={`${styles.submenuLink} ${pathname === "/admin/lrt" ? styles.submenuLinkActive : ""}`}
+                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+                >
+                  <i className="bx bx-train" />
+                  <span>القطار الكهربائي LRT</span>
+                </Link>
+                <Link
+                  href="/admin/monorail"
+                  className={`${styles.submenuLink} ${pathname === "/admin/monorail" ? styles.submenuLinkActive : ""}`}
+                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+                >
+                  <i className="bx bx-navigation" />
+                  <span>المنوريل</span>
+                </Link>
+                <Link
+                  href="/admin/railways"
+                  className={`${styles.submenuLink} ${pathname === "/admin/railways" ? styles.submenuLinkActive : ""}`}
+                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+                >
+                  <i className="bx bx-train" />
+                  <span>سكك حديد مصر</span>
+                </Link>
+                <Link
+                  href="/admin/brt"
+                  className={`${styles.submenuLink} ${pathname === "/admin/brt" ? styles.submenuLinkActive : ""}`}
+                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+                >
+                  <i className="bx bx-bus" />
+                  <span>الأتوبيس الترددي (BRT)</span>
+                </Link>
+                <Link
+                  href="/admin/bus-stations"
+                  className={`${styles.submenuLink} ${pathname === "/admin/bus-stations" ? styles.submenuLinkActive : ""}`}
+                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+                >
+                  <i className="bx bx-bus" />
+                  <span>الأتوبيسات (سوبرجيت)</span>
+                </Link>
+                <Link
+                  href="/admin/microbus-stations"
+                  className={`${styles.submenuLink} ${pathname === "/admin/microbus-stations" ? styles.submenuLinkActive : ""}`}
+                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+                >
+                  <i className="bx bx-map-pin" />
+                  <span>المواقف (سرفيس)</span>
+                </Link>
+                <Link
+                  href="/admin/parking"
+                  className={`${styles.submenuLink} ${pathname === "/admin/parking" ? styles.submenuLinkActive : ""}`}
+                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+                >
+                  <i className="bx bx-car" />
+                  <span>الجراجات ومواقف السيارات</span>
+                </Link>
+                <Link
+                  href="/admin/roads-info"
+                  className={`${styles.submenuLink} ${pathname === "/admin/roads-info" ? styles.submenuLinkActive : ""}`}
+                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+                >
+                  <i className="bx bx-tachometer" />
+                  <span>معلومات الطرق والرادار</span>
+                </Link>
+                <Link
+                  href="/admin/cities"
+                  className={`${styles.submenuLink} ${pathname === "/admin/cities" ? styles.submenuLinkActive : ""}`}
+                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+                >
+                  <i className="bx bx-building-house" />
+                  <span>المدن الشهيرة والمعالم</span>
+                </Link>
+                <Link
+                  href="/admin/airports"
+                  className={`${styles.submenuLink} ${pathname === "/admin/airports" ? styles.submenuLinkActive : ""}`}
+                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+                >
+                  <i className="bx bxs-plane-alt" />
+                  <span>المطارات</span>
+                </Link>
+                <Link
+                  href="/admin/ports"
+                  className={`${styles.submenuLink} ${pathname === "/admin/ports" ? styles.submenuLinkActive : ""}`}
+                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+                >
+                  <i className="bx bx-anchor" />
+                  <span>الموانئ</span>
+                </Link>
+                <Link
+                  href="/admin/directory"
+                  className={`${styles.submenuLink} ${pathname === "/admin/directory" ? styles.submenuLinkActive : ""}`}
+                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+                >
+                  <i className="bx bx-phone-call" />
+                  <span>دليل الهواتف والأكواد</span>
+                </Link>
+              </div>
+            )}
+          </nav>
+
+          {/* Sidebar Footer Operations */}
+          <div className={styles.sidebarFooter}>
+            {/* Theme Toggle Button */}
+            <button style={{ fontFamily: "var(--font-heading)" }} className={styles.sidebarFooterBtn} onClick={toggleTheme} title="تغيير المظهر">
+              <i className={`bx ${theme === "dark" ? "bx-sun" : "bx-moon"} ${styles.footerBtnIcon}`} />
+              <span>{theme === "dark" ? "الوضع الفاتح" : "الوضع الداكن"}</span>
+            </button>
+
+            {/* Back to Home site */}
+            <Link style={{ fontFamily: "var(--font-heading)" }} href="/" className={styles.sidebarFooterBtn} title="زيارة الموقع">
+              <i className="bx bx-home-alt-2" />
+              <span>العودة للموقع</span>
+            </Link>
+
+            {/* Logout Button */}
+            <button style={{ fontFamily: "var(--font-heading)" }} className={`${styles.sidebarFooterBtn} ${styles.logoutBtn}`} onClick={handleLogout} title="تسجيل الخروج">
+              <i className="bx bx-log-out" />
+              <span>تسجيل الخروج</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* ── Main Content Area ── */}
+      <div className={`${styles.contentWrapper} ${shouldShowSidebar ? styles.contentWithSidebar : styles.contentFullWidth}`}>
+        {/* Topbar Header */}
+        <header className={styles.topbar}>
+          <div className={styles.topbarLeft}>
+            {/* Sidebar Toggle Trigger */}
+            <button
+              className={styles.sidebarToggle}
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              aria-label="Toggle Sidebar"
+            >
+              <i className={`bx ${shouldShowSidebar ? "bx-menu-alt-right" : "bx-menu"}`} />
+            </button>
+
+            {/* Welcome Greeting / Page Title */}
+            <div className={styles.topbarGreeting} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0, overflow: 'hidden' }}>
+              <h1 className={styles.greetingTitle} style={{ margin: 0 }}>{greetingText}، {adminName}</h1>
+            </div>
+          </div>
+
+          <div className={styles.topbarRight}>
+            {/* Global Search Box */}
+            <div className={styles.globalSearchContainer}>
+              <div className={styles.globalSearchInputWrapper}>
+                {isSearchingGlobal
+                  ? <i className="bx bx-loader-alt" style={{ fontSize: "1.1rem", animation: "spin 1s linear infinite" }} />
+                  : <i className="bx bx-search" style={{ fontSize: "1.1rem" }} />
+                }
+                <input
+                  className={styles.globalSearchInput}
+                  type="text"
+                  placeholder="ابحث  ..."
+                  value={globalSearchQuery}
+                  onChange={e => setGlobalSearchQuery(e.target.value)}
+                  onFocus={() => { if (globalSearchQuery.trim()) setShowGlobalResults(true); }}
+                />
+                {globalSearchQuery && (
+                  <button
+                    onClick={() => { setGlobalSearchQuery(""); setShowGlobalResults(false); }}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "var(--color-fgSecondary)", display: "flex", alignItems: "center" }}
+                  >
+                    <i className="bx bx-x" style={{ fontSize: "1.1rem" }} />
+                  </button>
+                )}
+              </div>
+
+              {showGlobalResults && (
+                <div className={styles.globalSearchDropdown}>
+                  {/* Pages */}
+                  {globalSearchResults.pages.length > 0 && (
+                    <div className={styles.globalSearchSection}>
+                      <div className={styles.globalSearchSectionTitle}>
+                        <i className="bx bx-link" /> صفحات إدارية
+                      </div>
+                      {globalSearchResults.pages.map((page, i) => (
+                        <button
+                          key={i}
+                          className={styles.globalSearchItem}
+                          onClick={() => { router.push(page.href); setShowGlobalResults(false); setGlobalSearchQuery(""); }}
+                        >
+                          <i className={`${page.icon} ${styles.globalSearchItemIcon}`} />
+                          <div className={styles.globalSearchItemContent}>
+                            <span className={styles.globalSearchItemLabel}>{page.label}</span>
+                            <span className={styles.globalSearchItemMeta}>{page.category}</span>
+                          </div>
+                          <i className="bx bx-chevron-left" style={{ opacity: 0.4 }} />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Places */}
+                  {globalSearchResults.places.length > 0 && (
+                    <div className={styles.globalSearchSection}>
+                      <div className={styles.globalSearchSectionTitle}>
+                        <i className="bx bx-map" /> أماكن ومواقع
+                      </div>
+                      {globalSearchResults.places.map((place, i) => (
+                        <button
+                          key={i}
+                          className={styles.globalSearchItem}
+                          onClick={() => { router.push("/admin/places"); setShowGlobalResults(false); setGlobalSearchQuery(""); }}
+                        >
+                          <i className={`bx bx-map-pin ${styles.globalSearchItemIcon}`} style={{ color: "#10b981" }} />
+                          <div className={styles.globalSearchItemContent}>
+                            <span className={styles.globalSearchItemLabel}>{place.name}</span>
+                            <span className={styles.globalSearchItemMeta}>{place.address || "مكان مسجل"}</span>
+                          </div>
+                          <i className="bx bx-chevron-left" style={{ opacity: 0.4 }} />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Profiles */}
+                  {globalSearchResults.profiles.length > 0 && (
+                    <div className={styles.globalSearchSection}>
+                      <div className={styles.globalSearchSectionTitle}>
+                        <i className="bx bx-user" /> مستخدمون ومشتركون
+                      </div>
+                      {globalSearchResults.profiles.map((p, i) => (
+                        <button
+                          key={i}
+                          className={styles.globalSearchItem}
+                          onClick={() => { router.push("/admin"); setShowGlobalResults(false); setGlobalSearchQuery(""); }}
+                        >
+                          <i className={`bx bx-user-circle ${styles.globalSearchItemIcon}`} style={{ color: "#818cf8" }} />
+                          <div className={styles.globalSearchItemContent}>
+                            <span className={styles.globalSearchItemLabel}>{p.full_name || p.username || "مستخدم"}</span>
+                            <span className={styles.globalSearchItemMeta}>{p.email}</span>
+                          </div>
+                          <i className="bx bx-chevron-left" style={{ opacity: 0.4 }} />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* No Results */}
+                  {!isSearchingGlobal &&
+                    globalSearchResults.pages.length === 0 &&
+                    globalSearchResults.places.length === 0 &&
+                    globalSearchResults.profiles.length === 0 && (
+                      <div className={styles.globalSearchNoResults}>
+                        <i className="bx bx-search-alt" style={{ fontSize: "2rem", opacity: 0.3 }} />
+                        <span>لا توجد نتائج لـ &quot;{globalSearchQuery}&quot;</span>
+                      </div>
+                    )}
+                </div>
+              )}
+            </div>
+            {/* Invite Button */}
+
+          </div>
+        </header>
+
+        {/* Dynamic Children Content */}
+        <main className={styles.mainBody}>
+          {children}
+        </main>
+      </div>
+
+      {/* Admin Logout Confirmation Modal */}
+      <CustomModal
+        isOpen={showLogoutModal}
+        onClose={() => !isLoggingOut && setShowLogoutModal(false)}
+        title="تسجيل الخروج"
+        message="هل أنت متأكد من رغبتك في تسجيل الخروج من لوحة الإدارة؟"
+        iconSrc="/images/threeD/alert.webp"
+        borderColor="var(--modelCardBorder)"
+        primaryButton={{
+          label: isLoggingOut ? "جاري الخروج..." : "تأكيد",
+          onClick: confirmLogout,
+          bgColor: "var(--mainBtn)",
+          disabled: isLoggingOut,
+          icon: <i className="bx bx-log-out" style={{ fontSize: "1.2rem" }} />
+        }}
+        secondaryButton={{
+          label: "إلغاء",
+          onClick: () => setShowLogoutModal(false),
+          bgColor: "var(--btn-cancel)",
+          disabled: isLoggingOut,
+          icon: <i className="bx bx-x" style={{ fontSize: "1.2rem" }} />
+        }}
+      />
+    </div>
+  );
+}
+
