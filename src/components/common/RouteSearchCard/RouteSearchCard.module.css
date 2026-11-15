@@ -213,13 +213,13 @@
   align-items: center;
   justify-content: center;
   pointer-events: auto;
-  width: 30px;
-  height: 30px;
+  width: 38px;
+  height: 38px;
 }
 
 .swapBtn {
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
   border-radius: var(--radius-full);
   background: var(--color-bg);
   color: var(--color-muted);
@@ -242,8 +242,8 @@
 }
 
 .swapIconSvg {
-  width: 14px;
-  height: 14px;
+  width: 18px;
+  height: 18px;
   display: block;
 }
 
@@ -294,6 +294,12 @@
   gap: 8px;
   flex-wrap: wrap;
   margin-top: 10px;
+}
+
+@media screen and (max-width: 400px) {
+  .presetChipsWrapper {
+    justify-content: center;
+  }
 }
 
 .presetLabel {

@@ -92,7 +92,13 @@ html.light .bg-subtle {
    border: 1px solid rgba(245, 158, 11, 0.3);
    color: var(--alert-warning-color);
 }
-
+/* Error & Danger */
+.alert-error,
+.alert-danger{
+   background-color: var(--alert-danger-bg);
+   border: 1px solid rgba(239, 68, 68, 0.3);
+   color: var(--alert-danger-color);
+}
 .bg-danger {
    background-color: var(--color-danger);
 }

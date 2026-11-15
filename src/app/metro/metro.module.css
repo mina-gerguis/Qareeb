@@ -374,6 +374,7 @@
 }
 
 .metricTile {
+  text-align: center;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: var(--radius-card, 12px);
@@ -386,17 +387,6 @@
 :global(html.light) .metricTile {
   background: rgba(255, 255, 255, 0.8);
   border-color: rgba(0, 0, 0, 0.06);
-}
-
-.metricTileIcon {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.15rem;
-  flex-shrink: 0;
 }
 
 .metricTileLabel {
@@ -586,7 +576,7 @@
 
 .branchTabActive {
   background: var(--color-fg) !important;
-  color: var(--bgMode, #18181b) !important;
+  color: var(--color-bg) !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 

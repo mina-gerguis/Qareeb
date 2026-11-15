@@ -1,13 +1,14 @@
 import React, { useRef, useEffect } from "react";
 import gsap from "gsap";
+import Image from "next/image";
 import VoiceInputButton from "@/components/VoiceInputButton";
 import { MetroRouteCalculatorProps } from "../types";
 import { LINE_COLORS, LINE_NAMES } from "../constants";
 import { normalizeArabic } from "../utils";
 import styles from "../metro.module.css";
 import searchStyles from "@/components/common/RouteSearchCard/RouteSearchCard.module.css";
-import ProjectBanner from "@/components/common/ProjectBanner";
-import { IconChevronLeft, IconCurrentLocationFilled, IconInnerShadowTopRightFilled, IconLoader2, IconMapPinFilled, IconXFilled } from "@tabler/icons-react";
+import { IconChevronLeft, IconCurrentLocationFilled, IconInnerShadowTopRightFilled, IconLoader2, IconMapPinFilled, IconMessageReportFilled, IconXFilled } from "@tabler/icons-react";
+import { ASSETS } from "@/constants/assets";
 
 const POPULAR_METRO_PRESETS = [
   "الشهداء",
@@ -161,9 +162,9 @@ export default function MetroRouteCalculator({
                 className={searchStyles.inputStartBtn}
               >
                 {locatingNearest ? (
-                 <IconLoader2 stroke={2} size={16} className="color-primary" />
+                  <IconLoader2 stroke={2} size={16} className="color-primary" />
                 ) : (
-                 <IconInnerShadowTopRightFilled size={16} className="color-primary"/>
+                  <IconInnerShadowTopRightFilled size={16} className="color-primary" />
                 )}
               </button>
             </div>
@@ -229,9 +230,9 @@ export default function MetroRouteCalculator({
                       >
                         <span>محطة {s.name}</span>
                         {matchedLandmark && (
-                          <span className="flex content-center justify-center gap-1 mt-1">
-                            <IconCurrentLocationFilled size={16} className="color-error" /> لو عايز تروح
-                            <span className="color-error">{matchedLandmark}</span>
+                          <span className="inline-block gap-1 mt-1">
+                            <IconCurrentLocationFilled size={16} className="color-error" />
+                            <span className="color-error">   <strong className="color-fg">لو عايز تروح</strong>  {matchedLandmark} </span>
                           </span>
                         )}
                       </div>
@@ -367,9 +368,9 @@ export default function MetroRouteCalculator({
                       >
                         <span>محطة {s.name}</span>
                         {matchedLandmark && (
-                          <span className="flex gap-1 mt-1">
-                            <IconCurrentLocationFilled size={16} className="color-error" /> لو عايز تروح
-                            <span className="color-error">{matchedLandmark}</span>
+                          <span className="inline-block gap-1 mt-1">
+                            <IconCurrentLocationFilled size={16} className="color-error" />
+                            <span className="color-error">   <strong className="color-fg">لو عايز تروح</strong>  {matchedLandmark} </span>
                           </span>
                         )}
                       </div>
@@ -508,7 +509,7 @@ export default function MetroRouteCalculator({
               {/* Informative Guidance Banner */}
               {!isTripActive && (
                 <div className={styles.routeInstructionsBanner}>
-                  <i className="bx bxs-info-circle" style={{ color: "var(--color-secondary, #3b82f6)", fontSize: "1.2rem", flexShrink: 0 }} />
+                  <i className="bx bxs-info-circle" style={{ color: "var(--color-secondary)", fontSize: "1.2rem", flexShrink: 0 }} />
                   <span>{result.description}</span>
                 </div>
               )}
@@ -554,7 +555,7 @@ export default function MetroRouteCalculator({
                       style={{
                         fontSize: "0.78rem",
                         fontWeight: "700",
-                        color: "var(--color-secondary, #3b82f6)",
+                        color: "var(--color-secondary)",
                         background: "rgba(59, 130, 246, 0.12)",
                         padding: "4px 10px",
                         borderRadius: "8px",
@@ -589,7 +590,7 @@ export default function MetroRouteCalculator({
                     <strong style={{ color: "var(--color-fg)", fontSize: "1.1rem" }}>
                       {result.detailedPath[currentStepIndex]?.station}
                     </strong>
-                    <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginRight: "8px" }}>
+                    <span className="inline-block text-muted mr-1 fs-xs">
                       ({currentStepIndex + 1} من {result.detailedPath.length})
                     </span>
                   </div>
@@ -601,25 +602,25 @@ export default function MetroRouteCalculator({
                     const remainingTime = Math.max(0, (uniqueRemainingStations.length - 1) * 2);
                     return (
                       <div style={{ fontSize: "0.85rem", fontWeight: "600", color: "var(--text-secondary)" }}>
-                        الوقت المتبقي التقديري:{" "}
-                        <strong style={{ color: "var(--color-secondary, #3b82f6)" }}>{remainingTime} دقيقة</strong>
+                        الوقت اللي متوقع توصل فيه:{" "}
+                        <strong className="color-primary">{remainingTime} دقيقة</strong>
                       </div>
                     );
                   })()}
 
                   {result.detailedPath[currentStepIndex]?.isTransferPoint && (
                     <div
+                    className="alert-warning"
                       style={{
-                        background: "rgba(245, 158, 11, 0.1)",
-                        border: "1px solid rgba(245, 158, 11, 0.3)",
                         borderRadius: "10px",
                         padding: "12px",
                         fontSize: "0.85rem",
                         lineHeight: "1.6",
                       }}
                     >
-                      <div style={{ fontWeight: "800", color: "#f59e0b", marginBottom: "4px" }}>
-                        ⚠️ محطة تبديل خطوط المترو!
+                      <div className="flex gap-1 items-center">
+                        <Image src={ASSETS.transit.metro} alt="metro" width={20} height={20} />
+                         محطة تبديل خطوط المترو!
                       </div>
                       انزل هنا من القطار وتوجه نحو رصيف{" "}
                       <strong
@@ -637,7 +638,7 @@ export default function MetroRouteCalculator({
                   {currentStepIndex < result.detailedPath.length - 1 ? (
                     <button
                       type="button"
-                      className="btn btn-primary-gradient w-full"
+                      className="btn btn-blue w-full"
                       onClick={onStepNext}
                     >
                       <span>وصلت لمحطة {result.detailedPath[currentStepIndex + 1]?.station} ←</span>
@@ -647,7 +648,7 @@ export default function MetroRouteCalculator({
                       className="pt-5 text-center"
                     >
                       <h4 className="font-sub text-primary fs-6 fw-bold">حمدلله على السلامة!</h4>
-                      <p className="text-secondary mb-4 fs-sm">
+                      <p className="color-primary mb-4 fs-sm">
                         لقد وصلت إلى محطة {result.detailedPath[currentStepIndex]?.station}.
                       </p>
                       <button
@@ -759,7 +760,7 @@ export default function MetroRouteCalculator({
                               opacity: isPassed ? 0.5 : 1,
                             }}
                           >
-                            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                            <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
                               <span
                                 style={{
                                   fontSize: "0.88rem",
@@ -775,26 +776,16 @@ export default function MetroRouteCalculator({
                               >
                                 {node.station}
                               </span>
-                              {isFirst && (
-                                <span style={{ fontSize: "0.7rem", color: "#10b981", background: "rgba(16, 185, 129, 0.12)", padding: "1px 6px", borderRadius: "4px", fontWeight: "700" }}>
-                                  ركبت من
-                                </span>
-                              )}
-                              {isLast && (
-                                <span style={{ fontSize: "0.7rem", color: "#ef4444", background: "rgba(239, 68, 68, 0.12)", padding: "1px 6px", borderRadius: "4px", fontWeight: "700" }}>
-                                  الواجهة النهائية
-                                </span>
-                              )}
                             </div>
 
                             <span
                               style={{
-                                fontSize: "0.68rem",
+                                fontSize: "0.58rem",
                                 color: "#ffffff",
                                 background: activeColor,
-                                padding: "2px 6px",
+                                padding: "2px 4px",
                                 borderRadius: "6px",
-                                fontWeight: "700",
+                                fontWeight: "600",
                               }}
                             >
                               {LINE_NAMES[node.line]?.split(" ")[0] + " " + LINE_NAMES[node.line]?.split(" ")[1]}
@@ -848,32 +839,15 @@ export default function MetroRouteCalculator({
                 </div>
               </div>
 
-              {/* Route Report Problem Banner */}
-              <div style={{ marginTop: "16px" }}>
-                <ProjectBanner
-                  variant="error"
-                  label="هل لاحظت بيانات غير دقيقة في هذا المسار؟"
-                  icon={
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      style={{ width: "16px", height: "16px" }}
-                    >
-                      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-                      <line x1="12" y1="9" x2="12" y2="13" />
-                      <line x1="12" y1="17" x2="12.01" y2="17" />
-                    </svg>
-                  }
-                  callToAction={{
-                    label: "الإبلاغ عن خطأ في المسار",
-                    onClick: () => onOpenReportModal(null, true),
-                  }}
-                />
-              </div>
+              {/* Route Report Problem Button */}
+              <button
+                type="button"
+                className="btn btn-report w-full mt-4"
+                onClick={() => onOpenReportModal(null, true)}
+              >
+                <IconMessageReportFilled size={18} />
+                <span>الإبلاغ عن خطأ في المسار</span>
+              </button>
             </>
           )}
         </div>

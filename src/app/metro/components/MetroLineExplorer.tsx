@@ -3,6 +3,7 @@ import { LineId, MetroLineExplorerProps } from "../types";
 import { LINE_COLORS, LINE_NAMES } from "../constants";
 import ProjectBanner from "@/components/common/ProjectBanner";
 import styles from "../metro.module.css";
+import { IconCurrentLocationFilled, IconMessageReportFilled } from "@tabler/icons-react";
 
 export default function MetroLineExplorer({
   panelRef,
@@ -56,14 +57,14 @@ export default function MetroLineExplorer({
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px" }}>
         <div className={styles.metricTile} style={{ flexDirection: "column", alignItems: "flex-start", gap: "2px" }}>
           <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", fontWeight: "600" }}>محطة البداية</span>
-          <span style={{ fontSize: "0.92rem", fontWeight: "800", color: color, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "100%" }}>
+          <span style={{ fontSize: "0.92rem", fontWeight: "800", color: color, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {currentExplorerStations[0]?.name || selectedLineObj.from}
           </span>
         </div>
 
         <div className={styles.metricTile} style={{ flexDirection: "column", alignItems: "flex-start", gap: "2px" }}>
           <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", fontWeight: "600" }}>محطة النهاية</span>
-          <span style={{ fontSize: "0.92rem", fontWeight: "800", color: color, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "100%" }}>
+          <span style={{ fontSize: "0.92rem", fontWeight: "800", color: color, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {currentExplorerStations[currentExplorerStations.length - 1]?.name || selectedLineObj.to}
           </span>
         </div>
@@ -299,6 +300,7 @@ export default function MetroLineExplorer({
                         {landmarks.length > 0 ? (
                           landmarks.map((landmark: string, lIdx: number) => (
                             <span
+                              className="flex items-center gap-1"
                               key={lIdx}
                               style={{
                                 fontSize: "0.74rem",
@@ -309,7 +311,7 @@ export default function MetroLineExplorer({
                                 border: "1px solid var(--border-glass, rgba(255, 255, 255, 0.08))",
                               }}
                             >
-                              📍 {landmark}
+                              <IconCurrentLocationFilled size={16} className="color-error" /> {landmark}
                             </span>
                           ))
                         ) : (
@@ -318,31 +320,14 @@ export default function MetroLineExplorer({
                           </span>
                         )}
                       </div>
-                      <div
-                        style={{ marginTop: "12px" }}
-                        onClick={(e) => e.stopPropagation()}
+                      <button
+                        type="button"
+                        className="btn btn-report min-h-min p-2 w-full mt-3 fs-sm"
+                        onClick={() => onOpenReportModal(station)}
                       >
-                        <ProjectBanner
-                          variant="error"
-                          label={`هل لاحظت بيانات غير دقيقة في محطة ${station}؟`}
-                          icon={
-                            <svg
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              style={{ width: "16px", height: "16px" }}
-                            >
-                              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-                              <line x1="12" y1="9" x2="12" y2="13" />
-                              <line x1="12" y1="17" x2="12.01" y2="17" />
-                            </svg>
-                          }
-                          onClick={() => onOpenReportModal(station)}
-                        />
-                      </div>
+                        <IconMessageReportFilled size={16} />
+                        <span>الإبلاغ عن خطأ في محطة {station}</span>
+                      </button>
                     </div>
                   )}
 
