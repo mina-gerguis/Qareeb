@@ -101,6 +101,13 @@ html.light .bg-subtle {
    color: var(--alert-danger-color);
 }
 
+/* Success */
+.alert-success {
+   background-color: var(--alert-success-bg);
+   border: 1px solid rgba(16, 185, 129, 0.3);
+   color: var(--alert-success-color);
+}
+
 .bg-danger {
    background-color: var(--color-danger);
 }

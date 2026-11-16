@@ -50,6 +50,17 @@ export const LINE_NAMES: Record<LineId, string> = {
   line3_branch_b: "الخط الثالث - فرع جامعة القاهرة",
 };
 
+export const LINE_SHORT_NAMES: Record<LineId, string> = {
+  line1: "الخط الأول",
+  line2: "الخط الثاني",
+  line3: "الخط الثالث",
+  line4: "الخط الرابع",
+  line5: "الخط الخامس",
+  line6: "الخط السادس",
+  line3_branch_a: "الخط الثالث (روض الفرج)",
+  line3_branch_b: "الخط الثالث (جامعة القاهرة)",
+};
+
 export const LINE_COLORS: Record<LineId, string> = {
   line1: "#ef4444", // Red
   line2: "#3b82f6", // Blue

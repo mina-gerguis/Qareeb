@@ -2,10 +2,10 @@
 
 import React from "react";
 import { FaSearch } from "react-icons/fa";
-import styles from "./save-location.module.css";
+import styles from "./searchBox.module.css";
 import ClearSearch from "./clearSearch";
 
-interface SearchBoxProps {
+export interface SearchBoxProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   totalLocations?: number;
@@ -56,7 +56,6 @@ export function SearchBoxBase({
   );
 }
 
-
 export default function SearchBox({
   searchQuery,
   setSearchQuery,
@@ -97,3 +96,4 @@ export default function SearchBox({
     </div>
   );
 }
+

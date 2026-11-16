@@ -160,3 +160,7 @@ html.light .text-gradient-title {
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+/* ==========================================================================
+   11. Style Text Font  
+   ========================================================================== */
+   .italic-font { font-style: italic;}

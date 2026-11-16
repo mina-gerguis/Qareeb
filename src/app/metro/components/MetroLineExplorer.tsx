@@ -1,6 +1,6 @@
 import React from "react";
 import { LineId, MetroLineExplorerProps } from "../types";
-import { LINE_COLORS, LINE_NAMES } from "../constants";
+import { LINE_COLORS, LINE_NAMES, LINE_SHORT_NAMES } from "../constants";
 import ProjectBanner from "@/components/common/ProjectBanner";
 import styles from "../metro.module.css";
 import { IconCurrentLocationFilled, IconMessageReportFilled } from "@tabler/icons-react";
@@ -205,21 +205,7 @@ export default function MetroLineExplorer({
                             transition: "all 0.2s ease",
                           }}
                         />
-                        {isUnderConstruction && (
-                          <span
-                            style={{
-                              fontSize: "0.68rem",
-                              background: "rgba(239, 68, 68, 0.12)",
-                              color: "#ef4444",
-                              border: "1px solid rgba(239, 68, 68, 0.25)",
-                              padding: "1px 6px",
-                              borderRadius: "4px",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            تحت الإنشاء 🚧
-                          </span>
-                        )}
+                       
                         {isFirst && (
                           <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginRight: "6px" }}>
                             (بداية الخط)
@@ -255,12 +241,7 @@ export default function MetroLineExplorer({
                                 }}
                                 title={`انقر للانتقال إلى ${LINE_NAMES[l]}`}
                               >
-                                تبادل مع{" "}
-                                {l === "line1"
-                                  ? "الخط الأول"
-                                  : l === "line2"
-                                    ? "الخط الثاني"
-                                    : "الخط الثالث"}
+                                تبادل مع {LINE_SHORT_NAMES[l] || l}
                               </button>
                             ))}
                         </div>

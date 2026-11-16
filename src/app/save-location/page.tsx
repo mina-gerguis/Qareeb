@@ -7,7 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import PageHero from "@/components/common/PageHero";
 import { ASSETS } from "@/constants/assets";
 import Footer from "@/components/Footer/Footer";
-import SaveLocationModal from "@/components/saveLocation/SaveLocationModal";
+import SaveLocationModal from "@/app/save-location/components/SaveLocationModal";
 import {
   SavedLocation,
   LOCATION_CATEGORIES,
@@ -48,7 +48,7 @@ import {
 } from "react-icons/fa";
 import { CalendarFold, CircleCheck, Copy, Image, MapPlus, Share2, Signpost } from "lucide-react";
 import { color } from "framer-motion";
-import SearchBox from "./searchBox";
+import SearchBox from "../../components/searchBox";
 
 type SortOption = "newest" | "oldest" | "name";
 type ViewMode = "grid" | "list";
@@ -364,7 +364,7 @@ export default function SaveLocationPage() {
                 totalLocations={locations.length}
                 filteredLocationsCount={filteredAndSortedLocations.length}
               />
-              
+
 
               {/* Category Filter Pills */}
               <div className={styles.tagsRow} role="tablist">
@@ -468,7 +468,7 @@ export default function SaveLocationPage() {
 
                         {loc.notes && (
                           <div className={styles.notesBox}>
-                           <span>{loc.notes}</span>
+                            <span>{loc.notes}</span>
                           </div>
                         )}
                       </div>
@@ -607,7 +607,7 @@ export default function SaveLocationPage() {
                 {isDeleting ? "جاري الحذف..." : "نعم، حذف المكان"}
               </button>
               <button
-               className="btn btn-cancel w-full"
+                className="btn btn-cancel w-full"
                 onClick={() => setDeleteCandidate(null)}
                 disabled={isDeleting}
               >

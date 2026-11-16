@@ -16,7 +16,7 @@ import MediaLightbox from "@/app/places/components/MediaLightbox";
 import ReportProblemModal from "@/components/ReportProblemModal";
 import PlaceNoteModal from "@/components/PlaceNoteModal";
 import RequireAuthModal from "@/components/common/RequireAuthModal";
-import SaveLocationModal from "@/components/saveLocation/SaveLocationModal";
+import SaveLocationModal from "@/app/save-location/components/SaveLocationModal";
 import { handleSharePlace } from "@/app/places/utils";
 import styles from "./map.module.css";
 
@@ -152,13 +152,13 @@ function MapPageContent() {
 
     if (!document.fullscreenElement && !isFullscreen) {
       if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(() => {});
+        document.documentElement.requestFullscreen().catch(() => { });
       }
       setIsFullscreen(true);
       document.documentElement.setAttribute("data-map-fullscreen", "true");
     } else {
       if (document.fullscreenElement && document.exitFullscreen) {
-        document.exitFullscreen().catch(() => {});
+        document.exitFullscreen().catch(() => { });
       }
       setIsFullscreen(false);
       document.documentElement.removeAttribute("data-map-fullscreen");

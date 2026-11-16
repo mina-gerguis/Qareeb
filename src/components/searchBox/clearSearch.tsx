@@ -2,9 +2,9 @@
 
 import React from "react";
 import { FaTimes } from "react-icons/fa";
-import styles from "./save-location.module.css";
+import styles from "./searchBox.module.css";
 
-interface ClearSearchProps {
+export interface ClearSearchProps {
   onClear: () => void;
 }
 
@@ -21,3 +21,4 @@ export default function ClearSearch({ onClear }: ClearSearchProps) {
     </button>
   );
 }
+

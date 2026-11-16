@@ -1,0 +1,138 @@
+import { MetroStation, MetroPrice, MetroStationFormData, VisibleColumns, MetroLineOption } from "./types";
+
+export const DEFAULT_METRO_STATIONS: MetroStation[] = [
+  // Line 1
+  { name: "حلوان", line_type: "line1", station_order: 1 },
+  { name: "عين حلوان", line_type: "line1", station_order: 2 },
+  { name: "جامعة حلوان", line_type: "line1", station_order: 3 },
+  { name: "وادي حوف", line_type: "line1", station_order: 4 },
+  { name: "حدائق حلوان", line_type: "line1", station_order: 5 },
+  { name: "المعصرة", line_type: "line1", station_order: 6 },
+  { name: "طرة الأسمنت", line_type: "line1", station_order: 7 },
+  { name: "كوتسيكا", line_type: "line1", station_order: 8 },
+  { name: "طرة البلد", line_type: "line1", station_order: 9 },
+  { name: "ثكنات المعادي", line_type: "line1", station_order: 10 },
+  { name: "المعادي", line_type: "line1", station_order: 11 },
+  { name: "حدائق المعادي", line_type: "line1", station_order: 12 },
+  { name: "دار السلام", line_type: "line1", station_order: 13 },
+  { name: "الزهراء", line_type: "line1", station_order: 14 },
+  { name: "مار جرجس", line_type: "line1", station_order: 15 },
+  { name: "الملك الصالح", line_type: "line1", station_order: 16 },
+  { name: "السيدة زينب", line_type: "line1", station_order: 17 },
+  { name: "سعد زغلول", line_type: "line1", station_order: 18 },
+  { name: "أنور السادات", line_type: "line1", station_order: 19 },
+  { name: "جمال عبد الناصر", line_type: "line1", station_order: 20 },
+  { name: "أحمد عرابي", line_type: "line1", station_order: 21 },
+  { name: "الشهداء", line_type: "line1", station_order: 22 },
+  { name: "غمرة", line_type: "line1", station_order: 23 },
+  { name: "الدمرداش", line_type: "line1", station_order: 24 },
+  { name: "منشية الصدر", line_type: "line1", station_order: 25 },
+  { name: "كوبري القبة", line_type: "line1", station_order: 26 },
+  { name: "حمامات القبة", line_type: "line1", station_order: 27 },
+  { name: "سراي القبة", line_type: "line1", station_order: 28 },
+  { name: "حدائق الزيتون", line_type: "line1", station_order: 29 },
+  { name: "حلمية الزيتون", line_type: "line1", station_order: 30 },
+  { name: "المطرية", line_type: "line1", station_order: 31 },
+  { name: "عين شمس", line_type: "line1", station_order: 32 },
+  { name: "عزبة النخل", line_type: "line1", station_order: 33 },
+  { name: "المرج", line_type: "line1", station_order: 34 },
+  { name: "المرج الجديدة", line_type: "line1", station_order: 35 },
+
+  // Line 2
+  { name: "شبرا الخيمة", line_type: "line2", station_order: 1 },
+  { name: "كلية الزراعة", line_type: "line2", station_order: 2 },
+  { name: "المظلات", line_type: "line2", station_order: 3 },
+  { name: "الخلفاوي", line_type: "line2", station_order: 4 },
+  { name: "سانت تريزا", line_type: "line2", station_order: 5 },
+  { name: "روض الفرج", line_type: "line2", station_order: 6 },
+  { name: "مسرة", line_type: "line2", station_order: 7 },
+  { name: "الشهداء", line_type: "line2", station_order: 8 },
+  { name: "العتبة", line_type: "line2", station_order: 9 },
+  { name: "محمد نجيب", line_type: "line2", station_order: 10 },
+  { name: "أنور السادات", line_type: "line2", station_order: 11 },
+  { name: "الأوبرا", line_type: "line2", station_order: 12 },
+  { name: "الدقي", line_type: "line2", station_order: 13 },
+  { name: "البحوث", line_type: "line2", station_order: 14 },
+  { name: "جامعة القاهرة", line_type: "line2", station_order: 15 },
+  { name: "فيصل", line_type: "line2", station_order: 16 },
+  { name: "الجيزة", line_type: "line2", station_order: 17 },
+  { name: "أم المصريين", line_type: "line2", station_order: 18 },
+  { name: "ساقية مكي", line_type: "line2", station_order: 19 },
+  { name: "المنيب", line_type: "line2", station_order: 20 },
+
+  // Line 3 Trunk
+  { name: "عدلي منصور", line_type: "line3", station_order: 1 },
+  { name: "الهايكستب", line_type: "line3", station_order: 2 },
+  { name: "عمر بن الخطاب", line_type: "line3", station_order: 3 },
+  { name: "قباء", line_type: "line3", station_order: 4 },
+  { name: "هشام بركات", line_type: "line3", station_order: 5 },
+  { name: "النزهة", line_type: "line3", station_order: 6 },
+  { name: "نادي الشمس", line_type: "line3", station_order: 7 },
+  { name: "ألف مسكن", line_type: "line3", station_order: 8 },
+  { name: "ميدان هليوبوليس", line_type: "line3", station_order: 9 },
+  { name: "هارون", line_type: "line3", station_order: 10 },
+  { name: "الأهرام", line_type: "line3", station_order: 11 },
+  { name: "كلية البنات", line_type: "line3", station_order: 12 },
+  { name: "استاد القاهرة", line_type: "line3", station_order: 13 },
+  { name: "المعرض", line_type: "line3", station_order: 14 },
+  { name: "العباسية", line_type: "line3", station_order: 15 },
+  { name: "عبده باشا", line_type: "line3", station_order: 16 },
+  { name: "الجيش", line_type: "line3", station_order: 17 },
+  { name: "باب الشعرية", line_type: "line3", station_order: 18 },
+  { name: "العتبة", line_type: "line3", station_order: 19 },
+  { name: "جمال عبد الناصر", line_type: "line3", station_order: 20 },
+  { name: "ماسبيرو", line_type: "line3", station_order: 21 },
+  { name: "صفاء حجازي", line_type: "line3", station_order: 22 },
+  { name: "الكيت كات", line_type: "line3", station_order: 23 },
+
+  // Line 3 Branch A
+  { name: "السودان", line_type: "line3_branch_a", station_order: 1 },
+  { name: "إمبابة", line_type: "line3_branch_a", station_order: 2 },
+  { name: "البوهي", line_type: "line3_branch_a", station_order: 3 },
+  { name: "القومية العربية", line_type: "line3_branch_a", station_order: 4 },
+  { name: "الطريق الدائري", line_type: "line3_branch_a", station_order: 5 },
+  { name: "محور روض الفرج", line_type: "line3_branch_a", station_order: 6 },
+
+  // Line 3 Branch B
+  { name: "التوفيقية", line_type: "line3_branch_b", station_order: 1 },
+  { name: "وادي النيل", line_type: "line3_branch_b", station_order: 2 },
+  { name: "جامعة الدول العربية", line_type: "line3_branch_b", station_order: 3 },
+  { name: "بولاق الدكرور", line_type: "line3_branch_b", station_order: 4 },
+  { name: "جامعة القاهرة", line_type: "line3_branch_b", station_order: 5 },
+];
+
+export const DEFAULT_METRO_PRICES: MetroPrice[] = [
+  { tier_name: "من 1 إلى 9 محطات", max_stations: 9, price: 10 },
+  { tier_name: "من 10 إلى 16 محطة", max_stations: 16, price: 12 },
+  { tier_name: "من 17 إلى 23 محطة", max_stations: 23, price: 15 },
+  { tier_name: "أكثر من 23 محطة", max_stations: 50, price: 20 },
+];
+
+export const METRO_LINES: MetroLineOption[] = [
+  { id: "all", label: "جميع الخطوط", color: "#818cf8" },
+  { id: "line1", label: "الخط الأول (الأحمر)", color: "#ef4444" },
+  { id: "line2", label: "الخط الثاني (الأزرق)", color: "#3b82f6" },
+  { id: "line3", label: "الخط الثالث (الرئيسي)", color: "#10b981" },
+  { id: "line3_branch_a", label: "الثالث (روض الفرج)", color: "#10b981" },
+  { id: "line3_branch_b", label: "الثالث (جامعة القاهرة)", color: "#10b981" },
+  { id: "line4", label: "الخط الرابع", color: "#f59e0b" },
+  { id: "line5", label: "الخط الخامس", color: "#8b5cf6" },
+  { id: "line6", label: "الخط السادس", color: "#ec4899" },
+];
+
+export const INITIAL_STATION_FORM: MetroStationFormData = {
+  name: "",
+  line_type: "line1",
+  station_order: 1,
+  landmarks: "",
+  status: "يعمل",
+};
+
+export const INITIAL_VISIBLE_COLUMNS: VisibleColumns = {
+  order: true,
+  name: true,
+  line: true,
+  landmarks: true,
+  status: true,
+};
+
