@@ -24,7 +24,7 @@ export function AdminMetroDeleteModal({
       borderColor="rgba(255, 59, 48, 0.25)"
       message="هل أنت متأكد من حذف هذه المحطة؟"
       primaryButton={{
-        label: isDeleting ? "جاري الحذف..." : "نعم، احذف",
+        label: isDeleting ? "جاري ..." : "نعم، احذف",
         onClick: onConfirm,
         bgColor: "#ff3b30",
         disabled: isDeleting,
