@@ -86,8 +86,9 @@ export function AdminDirectoryHeader({
           type="button"
           onClick={() => onTabChange("phones")}
           className={clsx(
+            "font-sub",
             directoryStyles.mainNavBtn,
-            activeTab === "phones" ? "btn btn-blue" : directoryStyles.mainNavBtnInactive
+            activeTab === "phones" ? "btn-primary" : directoryStyles.mainNavBtnInactive
           )}
         >
           <IconPhoneCall size={18} />
@@ -113,8 +114,9 @@ export function AdminDirectoryHeader({
           type="button"
           onClick={() => onTabChange("codes")}
           className={clsx(
+            "font-sub",
             directoryStyles.mainNavBtn,
-            activeTab === "codes" ? "btn btn-blue" : directoryStyles.mainNavBtnInactive
+            activeTab === "codes" ? "btn-primary" : directoryStyles.mainNavBtnInactive
           )}
         >
           <IconDeviceMobile size={18} />

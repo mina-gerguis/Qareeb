@@ -4,11 +4,13 @@ import {
   DirectoryTab,
   VisibleColumnsPhones,
   VisibleColumnsCodes,
+  ColumnsMenuPosition,
 } from "../types";
 import directoryStyles from "../admin-directory.module.css";
 
 interface AdminDirectoryColumnsDropdownProps {
   isOpen: boolean;
+  position: ColumnsMenuPosition | null;
   activeTab: DirectoryTab;
   visiblePhoneColumns: VisibleColumnsPhones;
   onTogglePhoneColumn: (key: keyof VisibleColumnsPhones) => void;
@@ -18,13 +20,14 @@ interface AdminDirectoryColumnsDropdownProps {
 
 export function AdminDirectoryColumnsDropdown({
   isOpen,
+  position,
   activeTab,
   visiblePhoneColumns,
   onTogglePhoneColumn,
   visibleCodeColumns,
   onToggleCodeColumn,
 }: AdminDirectoryColumnsDropdownProps) {
-  if (!isOpen) return null;
+  if (!isOpen || !position) return null;
 
   const phoneColumnsList: { key: keyof VisibleColumnsPhones; label: string }[] = [
     { key: "select", label: "تحديد السجل" },
@@ -48,10 +51,8 @@ export function AdminDirectoryColumnsDropdown({
     <div
       className={directoryStyles.columnsDropdownMenu}
       style={{
-        position: "absolute",
-        top: "45px",
-        left: "0",
-        zIndex: 50,
+        top: `${position.top}px`,
+        left: `${position.left}px`,
       }}
       role="menu"
       dir="rtl"

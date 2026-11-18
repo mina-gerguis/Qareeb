@@ -65,27 +65,19 @@ export function AdminPhonesFilterBar({
               directoryStyles.linePill,
               selectedSpecialtyTab === "all" && directoryStyles.linePillActive
             )}
-            style={{
-              borderColor: selectedSpecialtyTab === "all" ? "var(--color-primary)" : undefined,
-              background:
-                selectedSpecialtyTab === "all"
-                  ? "rgba(59, 130, 246, 0.15)"
-                  : undefined,
-              color: selectedSpecialtyTab === "all" ? "#3b82f6" : undefined,
-            }}
           >
             <IconGridDots size={16} />
             <span>جميع التخصصات</span>
             <span
               style={{
                 fontSize: "0.72rem",
-                padding: "1px 6px",
+                padding: "2px 7px",
                 borderRadius: "10px",
                 background:
                   selectedSpecialtyTab === "all"
-                    ? "#3b82f6"
+                    ? "rgba(0, 0, 0, 0.2)"
                     : "rgba(255, 255, 255, 0.08)",
-                color: selectedSpecialtyTab === "all" ? "#fff" : "var(--text-muted)",
+                color: selectedSpecialtyTab === "all" ? "inherit" : "var(--text-muted)",
                 fontWeight: "700",
               }}
             >
@@ -108,25 +100,18 @@ export function AdminPhonesFilterBar({
                   directoryStyles.linePill,
                   isSelected && directoryStyles.linePillActive
                 )}
-                style={{
-                  borderColor: isSelected ? "var(--color-primary)" : undefined,
-                  background: isSelected
-                    ? "rgba(59, 130, 246, 0.15)"
-                    : undefined,
-                  color: isSelected ? "#3b82f6" : undefined,
-                }}
               >
                 <i className={formatBoxIcon(icon)} style={{ fontSize: "1rem" }} />
                 <span>{spec}</span>
                 <span
                   style={{
                     fontSize: "0.72rem",
-                    padding: "1px 6px",
+                    padding: "2px 7px",
                     borderRadius: "10px",
                     background: isSelected
-                      ? "#3b82f6"
+                      ? "rgba(0, 0, 0, 0.2)"
                       : "rgba(255, 255, 255, 0.08)",
-                    color: isSelected ? "#fff" : "var(--text-muted)",
+                    color: isSelected ? "inherit" : "var(--text-muted)",
                     fontWeight: "700",
                   }}
                 >
@@ -145,29 +130,21 @@ export function AdminPhonesFilterBar({
                 directoryStyles.linePill,
                 selectedSpecialtyTab === "__other__" && directoryStyles.linePillActive
               )}
-              style={{
-                borderColor: selectedSpecialtyTab === "__other__" ? "#f59e0b" : undefined,
-                background:
-                  selectedSpecialtyTab === "__other__"
-                    ? "rgba(245, 158, 11, 0.15)"
-                    : undefined,
-                color: selectedSpecialtyTab === "__other__" ? "#f59e0b" : undefined,
-              }}
             >
               <IconPackage size={16} />
               <span>أخرى بدون تخصص</span>
               <span
                 style={{
                   fontSize: "0.72rem",
-                  padding: "1px 6px",
+                  padding: "2px 7px",
                   borderRadius: "10px",
                   background:
                     selectedSpecialtyTab === "__other__"
-                      ? "#f59e0b"
+                      ? "rgba(0, 0, 0, 0.2)"
                       : "rgba(255, 255, 255, 0.08)",
                   color:
                     selectedSpecialtyTab === "__other__"
-                      ? "#fff"
+                      ? "inherit"
                       : "var(--text-muted)",
                   fontWeight: "700",
                 }}

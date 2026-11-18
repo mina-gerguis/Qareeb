@@ -24,7 +24,6 @@ import {
   AdminDirectoryActionDropdown,
   AdminDirectoryColumnsDropdown,
 } from "./components";
-import { PhoneEntry, TelecomCodeEntry } from "./types";
 
 interface AdminDirectoryPageProps {
   isSubComponent?: boolean;
@@ -102,10 +101,14 @@ export default function AdminDirectoryPage({
     setVisibleCodeColumns,
     isColumnsMenuOpen,
     setIsColumnsMenuOpen,
+    columnsMenuPos,
+    handleToggleColumnsMenu,
 
     // Floating & Modals
     actionMenu,
     setActionMenu,
+    handleTogglePhoneActionMenu,
+    handleToggleCodeActionMenu,
     detailsModal,
     setDetailsModal,
     deleteModal,
@@ -113,46 +116,19 @@ export default function AdminDirectoryPage({
     confirmDelete,
   } = useAdminDirectory(isSubComponent);
 
-  // Close menus on outside click
+  // Close menus on outside click or scroll
   useEffect(() => {
-    const handleGlobalClick = () => {
+    const handleClose = () => {
       setActionMenu(null);
       setIsColumnsMenuOpen(false);
     };
-    window.addEventListener("click", handleGlobalClick);
-    return () => window.removeEventListener("click", handleGlobalClick);
+    window.addEventListener("click", handleClose);
+    window.addEventListener("scroll", handleClose, { passive: true });
+    return () => {
+      window.removeEventListener("click", handleClose);
+      window.removeEventListener("scroll", handleClose);
+    };
   }, [setActionMenu, setIsColumnsMenuOpen]);
-
-  // Action Menu Trigger Handlers
-  const handleTogglePhoneActionMenu = (
-    phone: PhoneEntry,
-    e: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    e.stopPropagation();
-    if (actionMenu?.type === "phone" && actionMenu.item.id === phone.id) {
-      setActionMenu(null);
-      return;
-    }
-    const rect = e.currentTarget.getBoundingClientRect();
-    const top = rect.bottom + window.scrollY + 6;
-    const left = Math.max(10, rect.left + window.scrollX - 140);
-    setActionMenu({ type: "phone", item: phone, top, left });
-  };
-
-  const handleToggleCodeActionMenu = (
-    code: TelecomCodeEntry,
-    e: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    e.stopPropagation();
-    if (actionMenu?.type === "code" && actionMenu.item.id === code.id) {
-      setActionMenu(null);
-      return;
-    }
-    const rect = e.currentTarget.getBoundingClientRect();
-    const top = rect.bottom + window.scrollY + 6;
-    const left = Math.max(10, rect.left + window.scrollX - 140);
-    setActionMenu({ type: "code", item: code, top, left });
-  };
 
   // Bulk Delete triggers
   const handleBulkDelete = () => {
@@ -249,10 +225,7 @@ export default function AdminDirectoryPage({
           pageSize={pageSize}
           onPageSizeChange={setPageSize}
           columnsMenuOpen={isColumnsMenuOpen}
-          onToggleColumnsMenu={(e) => {
-            e.stopPropagation();
-            setIsColumnsMenuOpen((prev) => !prev);
-          }}
+          onToggleColumnsMenu={handleToggleColumnsMenu}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
           selectedCount={
@@ -268,6 +241,7 @@ export default function AdminDirectoryPage({
         {/* Floating Column Visibility Menu */}
         <AdminDirectoryColumnsDropdown
           isOpen={isColumnsMenuOpen}
+          position={columnsMenuPos}
           activeTab={activeTab}
           visiblePhoneColumns={visiblePhoneColumns}
           onTogglePhoneColumn={(key) =>
@@ -292,7 +266,7 @@ export default function AdminDirectoryPage({
             onViewPhone={(phone) => setDetailsModal({ type: "phone", item: phone })}
             onToggleActionMenu={handleTogglePhoneActionMenu}
             activeActionPhoneId={
-              actionMenu?.type === "phone" ? actionMenu.item.id : undefined
+              actionMenu?.type === "phone" ? actionMenu.key : undefined
             }
           />
         ) : (
@@ -316,7 +290,7 @@ export default function AdminDirectoryPage({
           onViewCode={(code) => setDetailsModal({ type: "code", item: code })}
           onToggleActionMenu={handleToggleCodeActionMenu}
           activeActionCodeId={
-            actionMenu?.type === "code" ? actionMenu.item.id : undefined
+            actionMenu?.type === "code" ? actionMenu.key : undefined
           }
         />
       ) : (

@@ -73,9 +73,14 @@ export interface VisibleColumnsCodes {
   actions: boolean;
 }
 
+export interface ColumnsMenuPosition {
+  top: number;
+  left: number;
+}
+
 export type ActionMenuState =
-  | { type: "phone"; item: PhoneEntry; top: number; left: number }
-  | { type: "code"; item: TelecomCodeEntry; top: number; left: number }
+  | { type: "phone"; item: PhoneEntry; key: string; top: number; left: number }
+  | { type: "code"; item: TelecomCodeEntry; key: string; top: number; left: number }
   | null;
 
 export type DetailsModalState =

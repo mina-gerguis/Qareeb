@@ -1,4 +1,5 @@
 import React from "react";
+import clsx from "clsx";
 import { ActionMenuState, PhoneEntry, TelecomCodeEntry } from "../types";
 import directoryStyles from "../admin-directory.module.css";
 import {
@@ -32,14 +33,12 @@ export function AdminDirectoryActionDropdown({
 }: AdminDirectoryActionDropdownProps) {
   if (!actionMenuState) return null;
 
-  const { type, top, left } = actionMenuState;
-
   return (
     <div
       className={directoryStyles.actionDropdownMenu}
       style={{
-        top: `${top}px`,
-        left: `${left}px`,
+        top: `${actionMenuState.top}px`,
+        left: `${actionMenuState.left}px`,
       }}
       role="menu"
       dir="rtl"
@@ -47,7 +46,7 @@ export function AdminDirectoryActionDropdown({
       onTouchStart={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
     >
-      {type === "phone" ? (
+      {actionMenuState.type === "phone" ? (
         <>
           <button
             type="button"
@@ -76,7 +75,7 @@ export function AdminDirectoryActionDropdown({
             }}
           >
             <IconWritingSignFilled size={18} />
-            <span>تعديل الجهة</span>
+            <span>تعديل</span>
           </button>
 
           <a
@@ -87,21 +86,18 @@ export function AdminDirectoryActionDropdown({
             onClick={() => onClose()}
           >
             <IconPhoneCall size={18} />
-            <span>اتصال ({actionMenuState.item.phone_number})</span>
+            <span>اتصال مباشر</span>
           </a>
 
-          <div
-            style={{
-              height: "1px",
-              background: "var(--border-glass)",
-              margin: "4px 0",
-            }}
-          />
+          <div className={directoryStyles.actionDropdownSeparator} role="separator" />
 
           <button
             type="button"
             role="menuitem"
-            className={directoryStyles.actionDropdownItemDanger}
+            className={clsx(
+              directoryStyles.actionDropdownItem,
+              directoryStyles.actionDropdownItemDestructive
+            )}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -110,7 +106,7 @@ export function AdminDirectoryActionDropdown({
             }}
           >
             <IconTrashFilled size={18} />
-            <span>حذف الرقم</span>
+            <span>حذف</span>
           </button>
         </>
       ) : (
@@ -142,7 +138,7 @@ export function AdminDirectoryActionDropdown({
             }}
           >
             <IconWritingSignFilled size={18} />
-            <span>تعديل الكود</span>
+            <span>تعديل</span>
           </button>
 
           <button
@@ -152,7 +148,9 @@ export function AdminDirectoryActionDropdown({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              const raw = actionMenuState.item.code.split(" | ")[0] || actionMenuState.item.code;
+              const raw =
+                actionMenuState.item.code.split(" | ")[0] ||
+                actionMenuState.item.code;
               navigator.clipboard.writeText(raw);
               onClose();
             }}
@@ -161,18 +159,15 @@ export function AdminDirectoryActionDropdown({
             <span>نسخ الكود</span>
           </button>
 
-          <div
-            style={{
-              height: "1px",
-              background: "var(--border-glass)",
-              margin: "4px 0",
-            }}
-          />
+          <div className={directoryStyles.actionDropdownSeparator} role="separator" />
 
           <button
             type="button"
             role="menuitem"
-            className={directoryStyles.actionDropdownItemDanger}
+            className={clsx(
+              directoryStyles.actionDropdownItem,
+              directoryStyles.actionDropdownItemDestructive
+            )}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -181,7 +176,7 @@ export function AdminDirectoryActionDropdown({
             }}
           >
             <IconTrashFilled size={18} />
-            <span>حذف الكود</span>
+            <span>حذف</span>
           </button>
         </>
       )}

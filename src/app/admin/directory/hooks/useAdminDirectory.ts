@@ -17,6 +17,7 @@ import {
   ActionMenuState,
   DetailsModalState,
   DeleteModalState,
+  ColumnsMenuPosition,
 } from "../types";
 import {
   INITIAL_PHONE_FORM,
@@ -76,6 +77,7 @@ export function useAdminDirectory(isSubComponent = false) {
   const [visibleCodeColumns, setVisibleCodeColumns] =
     useState<VisibleColumnsCodes>(INITIAL_VISIBLE_CODE_COLUMNS);
   const [isColumnsMenuOpen, setIsColumnsMenuOpen] = useState(false);
+  const [columnsMenuPos, setColumnsMenuPos] = useState<ColumnsMenuPosition | null>(null);
 
   // Modals & Floating Menus
   const [actionMenu, setActionMenu] = useState<ActionMenuState>(null);
@@ -260,6 +262,101 @@ export function useAdminDirectory(isSubComponent = false) {
     const start = (currentPage - 1) * pageSize;
     return filteredCodes.slice(start, start + pageSize);
   }, [filteredCodes, currentPage, pageSize]);
+
+  // ----------------------------------------------------
+  // Dropdowns Positioning Handlers (Fixed & Accurate)
+  // ----------------------------------------------------
+  const handleToggleColumnsMenu = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      if (isColumnsMenuOpen) {
+        setIsColumnsMenuOpen(false);
+        return;
+      }
+      const rect = e.currentTarget.getBoundingClientRect();
+      const dropdownWidth = 185;
+      let left = rect.left;
+      if (left + dropdownWidth > window.innerWidth - 10) {
+        left = window.innerWidth - dropdownWidth - 10;
+      }
+      if (left < 10) left = 10;
+
+      setColumnsMenuPos({
+        top: rect.bottom + 6,
+        left,
+      });
+      setIsColumnsMenuOpen(true);
+    },
+    [isColumnsMenuOpen]
+  );
+
+  const handleTogglePhoneActionMenu = useCallback(
+    (phone: PhoneEntry, e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      if (actionMenu?.key === phone.id) {
+        setActionMenu(null);
+        return;
+      }
+      const rect = e.currentTarget.getBoundingClientRect();
+      const dropdownWidth = 150;
+      const dropdownHeight = 160;
+
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const openUp = spaceBelow < dropdownHeight && rect.top > dropdownHeight;
+      const top = openUp ? rect.top - dropdownHeight - 4 : rect.bottom + 4;
+
+      let left = rect.left;
+      if (left + dropdownWidth > window.innerWidth - 10) {
+        left = window.innerWidth - dropdownWidth - 10;
+      }
+      if (left < 10) {
+        left = 10;
+      }
+
+      setActionMenu({
+        type: "phone",
+        item: phone,
+        key: phone.id,
+        top,
+        left,
+      });
+    },
+    [actionMenu]
+  );
+
+  const handleToggleCodeActionMenu = useCallback(
+    (code: TelecomCodeEntry, e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+      if (actionMenu?.key === code.id) {
+        setActionMenu(null);
+        return;
+      }
+      const rect = e.currentTarget.getBoundingClientRect();
+      const dropdownWidth = 150;
+      const dropdownHeight = 160;
+
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const openUp = spaceBelow < dropdownHeight && rect.top > dropdownHeight;
+      const top = openUp ? rect.top - dropdownHeight - 4 : rect.bottom + 4;
+
+      let left = rect.left;
+      if (left + dropdownWidth > window.innerWidth - 10) {
+        left = window.innerWidth - dropdownWidth - 10;
+      }
+      if (left < 10) {
+        left = 10;
+      }
+
+      setActionMenu({
+        type: "code",
+        item: code,
+        key: code.id,
+        top,
+        left,
+      });
+    },
+    [actionMenu]
+  );
 
   // ----------------------------------------------------
   // Selection Handlers (Bulk)
@@ -662,10 +759,14 @@ export function useAdminDirectory(isSubComponent = false) {
     setVisibleCodeColumns,
     isColumnsMenuOpen,
     setIsColumnsMenuOpen,
+    columnsMenuPos,
+    handleToggleColumnsMenu,
 
     // Floating & Modals
     actionMenu,
     setActionMenu,
+    handleTogglePhoneActionMenu,
+    handleToggleCodeActionMenu,
     detailsModal,
     setDetailsModal,
     deleteModal,

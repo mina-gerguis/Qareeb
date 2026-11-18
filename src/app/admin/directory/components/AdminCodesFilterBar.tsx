@@ -58,27 +58,19 @@ export function AdminCodesFilterBar({
               directoryStyles.linePill,
               selectedCompanyTab === "all" && directoryStyles.linePillActive
             )}
-            style={{
-              borderColor: selectedCompanyTab === "all" ? "var(--color-primary)" : undefined,
-              background:
-                selectedCompanyTab === "all"
-                  ? "rgba(59, 130, 246, 0.15)"
-                  : undefined,
-              color: selectedCompanyTab === "all" ? "#3b82f6" : undefined,
-            }}
           >
             <IconGridDots size={16} />
             <span>جميع الشركات</span>
             <span
               style={{
                 fontSize: "0.72rem",
-                padding: "1px 6px",
+                padding: "2px 7px",
                 borderRadius: "10px",
                 background:
                   selectedCompanyTab === "all"
-                    ? "#3b82f6"
+                    ? "rgba(0, 0, 0, 0.2)"
                     : "rgba(255, 255, 255, 0.08)",
-                color: selectedCompanyTab === "all" ? "#fff" : "var(--text-muted)",
+                color: selectedCompanyTab === "all" ? "inherit" : "var(--text-muted)",
                 fontWeight: "700",
               }}
             >
@@ -101,11 +93,13 @@ export function AdminCodesFilterBar({
                   directoryStyles.linePill,
                   isSelected && directoryStyles.linePillActive
                 )}
-                style={{
-                  borderColor: isSelected ? meta.activeBorder : undefined,
-                  background: isSelected ? meta.activeBg : undefined,
-                  color: isSelected ? meta.color : undefined,
-                }}
+                style={
+                  !isSelected
+                    ? {
+                        borderColor: meta.activeBorder,
+                      }
+                    : {}
+                }
               >
                 <img
                   src={meta.logo}
@@ -121,12 +115,12 @@ export function AdminCodesFilterBar({
                 <span
                   style={{
                     fontSize: "0.72rem",
-                    padding: "1px 6px",
+                    padding: "2px 7px",
                     borderRadius: "10px",
                     background: isSelected
-                      ? meta.badgeBg
+                      ? "rgba(0, 0, 0, 0.2)"
                       : "rgba(255, 255, 255, 0.08)",
-                    color: isSelected ? meta.color : "var(--text-muted)",
+                    color: isSelected ? "inherit" : meta.color,
                     fontWeight: "700",
                   }}
                 >
