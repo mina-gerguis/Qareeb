@@ -1,44 +1,35 @@
 import React from "react";
-import styles from "../directions.module.css";
+import styles from "../admin-directions.module.css";
 import { TRANSIT_VEHICLE_CONFIG } from "../constants";
+import SearchBox from "@/components/searchBox";
 
 interface AdminDirectionsFiltersProps {
   searchQuery: string;
   onSearchChange: (val: string) => void;
   filterType: string;
   onFilterTypeChange: (val: string) => void;
+  totalLocations?: number;
+  filteredLocationsCount?: number;
 }
 
 export function AdminDirectionsFilters({
   searchQuery,
   onSearchChange,
   filterType,
-  onFilterTypeChange
+  onFilterTypeChange,
+  totalLocations = 0,
+  filteredLocationsCount = 0,
 }: AdminDirectionsFiltersProps) {
   return (
-    <div style={{ background: "var(--bg-secondary)", border: "1px solid var(--border-glass)", borderRadius: "var(--radius-card)", padding: "20px", marginBottom: "8px", display: "flex", flexDirection: "column", gap: "16px" }}>
-      {/* Search Input bar */}
+    <div className={styles.filterCard} style={{ marginBottom: "16px" }}>
       <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
-        <div style={{ position: "relative", flex: 1, minWidth: "260px" }}>
-          <i
-            className="bx bx-search"
-            style={{
-              position: "absolute",
-              right: "16px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              color: "var(--text-muted)",
-              fontSize: "1.2rem",
-              pointerEvents: "none"
-            }}
-          />
-          <input
-            type="text"
-            className="input-fields"
-            style={{ width: "100%", paddingRight: "44px" }}
+        <div style={{ flex: 1, minWidth: "260px" }}>
+          <SearchBox
+            searchQuery={searchQuery}
+            setSearchQuery={onSearchChange}
+            totalLocations={totalLocations}
+            filteredLocationsCount={filteredLocationsCount}
             placeholder="ابحث باسم نقطة البداية، الوجهة، أو الكلمات البديلة..."
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
           />
         </div>
 

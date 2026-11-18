@@ -12,6 +12,31 @@ export function isUUID(str: unknown): boolean {
 }
 
 /**
+ * Stable key for selection and action menu
+ */
+export function getStationKey(station: AdminBrtStation): string {
+  return station.id || station.name.trim();
+}
+
+/**
+ * Color badge based on Cairo ring road sector
+ */
+export function getSectorColor(sector?: string): string {
+  switch (sector) {
+    case "شرق القاهرة":
+      return "#3b82f6";
+    case "جنوب القاهرة":
+      return "#ef4444";
+    case "غرب القاهرة":
+      return "#10b981";
+    case "شمال القاهرة":
+      return "#f59e0b";
+    default:
+      return "#6366f1";
+  }
+}
+
+/**
  * Retrieves cached local BRT stations from localStorage with fallback to default stations
  */
 export function getLocalBrtStations(): AdminBrtStation[] {

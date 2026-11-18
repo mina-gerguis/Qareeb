@@ -1,5 +1,8 @@
 import React from "react";
+import styles from "../admin-directions.module.css";
 import { GroupedRoute } from "../types";
+import { Trash2 } from "lucide-react";
+import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 
 interface AdminDirectionsToolbarProps {
   totalCount: number;
@@ -22,7 +25,7 @@ export function AdminDirectionsToolbar({
   onClearSelection,
   onBulkDelete,
   onExpandAll,
-  onCollapseAll
+  onCollapseAll,
 }: AdminDirectionsToolbarProps) {
   const isAllSelected =
     visibleRoutes.length > 0 &&
@@ -32,138 +35,117 @@ export function AdminDirectionsToolbar({
     });
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        flexWrap: "wrap",
-        gap: "12px",
-        padding: "0 4px",
-        marginBottom: "16px"
-      }}
-    >
-      {/* Left Group: Select All Checkbox & Count info */}
-      <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-        {visibleRoutes.length > 0 && (
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              cursor: "pointer",
-              fontSize: "0.88rem",
-              fontWeight: "700",
-              color: "var(--color-fg)",
-              userSelect: "none"
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={isAllSelected}
-              onChange={() => onToggleSelectAll(visibleRoutes)}
-              style={{
-                width: "16px",
-                height: "16px",
-                cursor: "pointer",
-                accentColor: "var(--color-primary)",
-              }}
-            />
-            <span style={{ fontFamily: "var(--font-sub)" }}>تحديد الكل</span>
-          </label>
-        )}
-
-        <span style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-secondary)", fontFamily: "var(--font-sub)" }}>
-          إجمالي المسارات المطابقة ({totalCount})
-        </span>
-
-        {selectedCount > 0 && (
-          <span
-            className="tab"
-          >
-            تم تحديد ({selectedCount}) مسار
-          </span>
-        )}
-      </div>
-
-      {/* Right Group: Bulk Actions & Accordion Controls */}
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-        {/* Bulk Delete Button when items are selected */}
-        {selectedCount > 0 && (
-          <>
+    <>
+      {selectedCount > 0 && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            background: "rgba(239, 68, 68, 0.08)",
+            border: "1px solid rgba(239, 68, 68, 0.2)",
+            borderRadius: "10px",
+            padding: "8px 16px",
+            marginBottom: "12px",
+            fontSize: "0.88rem",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <span style={{ fontWeight: 700, color: "var(--color-fg)" }}>
+              تم تحديد ({selectedCount}) مسار
+            </span>
             <button
               type="button"
-              className="btn btn-danger"
-              onClick={onBulkDelete}
-              style={{
-                padding: "6px 14px",
-                fontSize: "0.82rem",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px"
-              }}
-            >
-              <i className="bx bx-trash" style={{ fontSize: "1rem" }} />
-              <span>حذف المحدد ({selectedCount})</span>
-            </button>
-
-            <button
-              type="button"
-              className="btn btn-secondary"
               onClick={onClearSelection}
-              style={{
-                padding: "6px 12px",
-                fontSize: "0.8rem",
-              }}
+              className="btn btn-secondary btn-sm"
+              style={{ padding: "4px 8px", fontSize: "0.8rem" }}
             >
               إلغاء التحديد
             </button>
-          </>
-        )}
+          </div>
 
-        {totalCount > 0 && (
-          <>
-            <button
-              type="button"
-              className="btn"
-              onClick={onExpandAll}
+          <button
+            type="button"
+            onClick={onBulkDelete}
+            className="btn btn-error btn-sm"
+            style={{ display: "flex", alignItems: "center", gap: "6px" }}
+          >
+            <Trash2 className="h-4 w-4" />
+            <span>حذف المحدد ({selectedCount})</span>
+          </button>
+        </div>
+      )}
+
+      <div
+        className={styles.table05ControlsBar}
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "12px",
+          marginBottom: "16px",
+        }}
+      >
+        {/* Left: Select all & count */}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+          {visibleRoutes.length > 0 && (
+            <label
               style={{
-                padding: "6px 12px",
-                fontSize: "0.78rem",
-                background: "rgba(255, 255, 255, 0.04)",
-                border: "1px solid var(--border-glass)",
-                color: "var(--color-fg)",
-                borderRadius: "8px",
-                display: "inline-flex",
+                display: "flex",
                 alignItems: "center",
-                gap: "4px"
+                gap: "8px",
+                cursor: "pointer",
+                fontSize: "0.88rem",
+                fontWeight: "700",
+                color: "var(--color-fg)",
+                userSelect: "none",
               }}
             >
-              <i className="bx bx-expand-vertical" />
-              <span>فتح الكل</span>
-            </button>
-            <button
-              type="button"
-              className="btn"
-              onClick={onCollapseAll}
-              style={{
-                padding: "6px 12px",
-                fontSize: "0.78rem",
-                background: "rgba(255, 255, 255, 0.04)",
-                border: "1px solid var(--border-glass)",
-                color: "var(--color-fg)",
-                borderRadius: "8px",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "4px"
-              }}
-            >
-              <i className="bx bx-collapse-vertical" />
-              <span>إغلاق الكل</span>
-            </button>
-          </>
-        )}
+              <input
+                type="checkbox"
+                checked={isAllSelected}
+                onChange={() => onToggleSelectAll(visibleRoutes)}
+                style={{
+                  width: "16px",
+                  height: "16px",
+                  cursor: "pointer",
+                }}
+              />
+              <span>تحديد الكل</span>
+            </label>
+          )}
+
+          <span style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-secondary)" }}>
+            إجمالي المسارات المطابقة ({totalCount})
+          </span>
+        </div>
+
+        {/* Right: Expand/Collapse All */}
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={onExpandAll}
+            title="توسيع كافة بطاقات المسارات"
+            style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}
+          >
+            <IconChevronDown size={16} />
+            <span>توسيع الكل</span>
+          </button>
+
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={onCollapseAll}
+            title="طي كافة بطاقات المسارات"
+            style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}
+          >
+            <IconChevronUp size={16} />
+            <span>طي الكل</span>
+          </button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../directions.module.css";
+import styles from "../admin-directions.module.css";
 import { FormLeg, FormOption, TransitVehicleType } from "../types";
 import { TRANSIT_VEHICLE_CONFIG } from "../constants";
 import { formatMinutesToArabic, parseMinutesFromArabic, getTransitOptionIconPath } from "../utils";

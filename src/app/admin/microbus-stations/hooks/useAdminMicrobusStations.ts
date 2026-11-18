@@ -4,12 +4,24 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
-import { AdminMicrobusStation, AdminMicrobusRoute, MicrobusStationFormData } from "../types";
-import { createEmptyRoute } from "../constants";
+import {
+  AdminMicrobusStation,
+  AdminMicrobusRoute,
+  MicrobusStationFormData,
+  VisibleColumns,
+  ActionMenuState,
+  ColumnsMenuPosition
+} from "../types";
+import {
+  INITIAL_FORM_DATA,
+  INITIAL_VISIBLE_COLUMNS,
+  createEmptyRoute
+} from "../constants";
 import {
   isUUID,
   getLocalMicrobusStations,
   saveLocalMicrobusStations,
+  getStationKey,
   normalizeRoutes,
   validateRoutes,
   filterMicrobusStations
@@ -18,25 +30,36 @@ import {
   ParsedExcelMicrobusStation,
   exportMicrobusStationsToExcel
 } from "../utils/excelParser";
-
-const INITIAL_FORM_DATA: MicrobusStationFormData = {
-  name: "",
-  location: "",
-  governorate: "",
-  map_url: ""
-};
+import microStyles from "../admin-microbus-stations.module.css";
 
 export function useAdminMicrobusStations() {
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [dbConnected, setDbConnected] = useState(true);
   const [microbusStations, setMicrobusStations] = useState<AdminMicrobusStation[]>([]);
 
-  // Search
+  // Search & Filter
   const [searchQuery, setSearchQuery] = useState("");
+  const [governorateFilter, setGovernorateFilter] = useState("all");
+
+  // View Mode & Pagination
+  const [viewMode, setViewMode] = useState<"table" | "cards">("table");
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  // Column Visibility
+  const [visibleColumns, setVisibleColumns] = useState<VisibleColumns>(INITIAL_VISIBLE_COLUMNS);
+  const [columnsMenuOpen, setColumnsMenuOpen] = useState(false);
+  const [columnsMenuPos, setColumnsMenuPos] = useState<ColumnsMenuPosition>({ top: 0, left: 0 });
+
+  // Floating 3-dots Action Menu
+  const [actionMenuState, setActionMenuState] = useState<ActionMenuState | null>(null);
+
+  // View Details Modal
+  const [viewingStation, setViewingStation] = useState<AdminMicrobusStation | null>(null);
 
   // Selection & Bulk Actions
   const [selectedStationKeys, setSelectedStationKeys] = useState<Record<string, boolean>>({});
@@ -59,6 +82,40 @@ export function useAdminMicrobusStations() {
   const [itemToDelete, setItemToDelete] = useState<AdminMicrobusStation | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Click outside listener for action and column menus
+  useEffect(() => {
+    if (!actionMenuState && !columnsMenuOpen) return;
+
+    const handlePointerDown = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        target.closest(`.${microStyles.actionDropdownMenu}`) ||
+        target.closest(`.${microStyles.columnsDropdownMenu}`) ||
+        target.closest(`.${microStyles.moreMenuBtn}`) ||
+        target.closest(`.${microStyles.columnsToggleBtn}`)
+      ) {
+        return;
+      }
+      setActionMenuState(null);
+      setColumnsMenuOpen(false);
+    };
+
+    const handleWindowResize = () => {
+      setActionMenuState(null);
+      setColumnsMenuOpen(false);
+    };
+
+    window.addEventListener("resize", handleWindowResize);
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
+    };
+  }, [actionMenuState, columnsMenuOpen]);
+
   const loadMicrobusStations = useCallback(async () => {
     setLoading(true);
     if (!supabase) {
@@ -69,13 +126,21 @@ export function useAdminMicrobusStations() {
     }
 
     try {
-      const { data, error: fetchErr } = await supabase.from("microbus_stations").select("*");
+      const { data, error: fetchErr } = await supabase
+        .from("microbus_stations")
+        .select("*")
+        .order("name", { ascending: true });
+
       if (fetchErr) {
         console.warn("Failed to fetch from microbus_stations, using fallback.", fetchErr);
         setMicrobusStations(getLocalMicrobusStations());
         setDbConnected(false);
+      } else if (!data || data.length === 0) {
+        const locals = getLocalMicrobusStations();
+        setMicrobusStations(locals);
+        setDbConnected(true);
       } else {
-        setMicrobusStations(data || []);
+        setMicrobusStations(data);
         setDbConnected(true);
       }
     } catch (err) {
@@ -87,9 +152,26 @@ export function useAdminMicrobusStations() {
     }
   }, []);
 
-  const checkAdmin = useCallback(async () => {
-    if (!supabase || !user) return;
+  const checkAdminStatus = useCallback(async () => {
     try {
+      if (!user) {
+        router.push("/login");
+        return;
+      }
+
+      // Check profile directly if already loaded
+      if (profile?.is_admin || user.email === "admin@cairomap.com" || user.user_metadata?.role === "admin") {
+        setIsAdmin(true);
+        loadMicrobusStations();
+        return;
+      }
+
+      if (!supabase) {
+        setIsAdmin(true);
+        loadMicrobusStations();
+        return;
+      }
+
       const { data, error: profileErr } = await supabase
         .from("profiles")
         .select("is_admin")
@@ -97,7 +179,6 @@ export function useAdminMicrobusStations() {
         .single();
 
       if (profileErr || !data?.is_admin) {
-        setIsAdmin(false);
         router.push("/");
       } else {
         setIsAdmin(true);
@@ -105,19 +186,144 @@ export function useAdminMicrobusStations() {
       }
     } catch (err) {
       console.error("Error verifying admin status:", err);
-      router.push("/");
+      if (profile?.is_admin || user?.email === "admin@cairomap.com") {
+        setIsAdmin(true);
+        loadMicrobusStations();
+      } else {
+        router.push("/");
+      }
     }
-  }, [user, router, loadMicrobusStations]);
+  }, [user, profile, router, loadMicrobusStations]);
 
   useEffect(() => {
     if (!authLoading) {
-      if (!user) {
-        router.push("/login");
-      } else {
-        checkAdmin();
-      }
+      checkAdminStatus();
     }
-  }, [user, authLoading, checkAdmin, router]);
+  }, [authLoading, checkAdminStatus]);
+
+  // Filtered List
+  const filteredStations = useMemo(() => {
+    return filterMicrobusStations(microbusStations, searchQuery, governorateFilter);
+  }, [microbusStations, searchQuery, governorateFilter]);
+
+  // Paginated List
+  const paginatedStations = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return filteredStations.slice(startIndex, startIndex + pageSize);
+  }, [filteredStations, currentPage, pageSize]);
+
+  // Available governorates list from current stations
+  const availableGovernorates = useMemo(() => {
+    const set = new Set<string>();
+    microbusStations.forEach((s) => {
+      if (s.governorate) set.add(s.governorate.trim());
+    });
+    return Array.from(set);
+  }, [microbusStations]);
+
+  // Selection Handlers
+  const selectedCount = useMemo(() => {
+    return Object.values(selectedStationKeys).filter(Boolean).length;
+  }, [selectedStationKeys]);
+
+  const toggleSelectStation = (stationKey: string) => {
+    setSelectedStationKeys((prev) => ({
+      ...prev,
+      [stationKey]: !prev[stationKey]
+    }));
+  };
+
+  const toggleSelectAll = (stationsToToggle: AdminMicrobusStation[]) => {
+    const allSelected =
+      stationsToToggle.length > 0 &&
+      stationsToToggle.every((s) => selectedStationKeys[getStationKey(s)]);
+
+    if (allSelected) {
+      setSelectedStationKeys((prev) => {
+        const next = { ...prev };
+        stationsToToggle.forEach((s) => {
+          delete next[getStationKey(s)];
+        });
+        return next;
+      });
+    } else {
+      setSelectedStationKeys((prev) => {
+        const next = { ...prev };
+        stationsToToggle.forEach((s) => {
+          next[getStationKey(s)] = true;
+        });
+        return next;
+      });
+    }
+  };
+
+  const clearSelection = () => {
+    setSelectedStationKeys({});
+  };
+
+  // Toggle Columns Menu
+  const handleToggleColumnsMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    if (columnsMenuOpen) {
+      setColumnsMenuOpen(false);
+      return;
+    }
+    const rect = e.currentTarget.getBoundingClientRect();
+    const dropdownWidth = 190;
+    const dropdownHeight = 240;
+
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const openUp = spaceBelow < dropdownHeight && rect.top > dropdownHeight;
+    const top = openUp ? rect.top - dropdownHeight - 4 : rect.bottom + 4;
+
+    let left = rect.left;
+    if (left + dropdownWidth > window.innerWidth - 10) {
+      left = window.innerWidth - dropdownWidth - 10;
+    }
+    if (left < 10) left = 10;
+
+    setColumnsMenuPos({ top, left });
+    setColumnsMenuOpen(true);
+    setActionMenuState(null);
+  };
+
+  const handleToggleColumn = (key: keyof VisibleColumns) => {
+    setVisibleColumns((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  // Toggle 3-dots action menu
+  const handleToggleActionMenu = (
+    station: AdminMicrobusStation,
+    stationKey: string,
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    e.stopPropagation();
+    if (actionMenuState?.stationKey === stationKey) {
+      setActionMenuState(null);
+      return;
+    }
+    const rect = e.currentTarget.getBoundingClientRect();
+    const dropdownWidth = 150;
+    const dropdownHeight = 135;
+
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const openUp = spaceBelow < dropdownHeight && rect.top > dropdownHeight;
+    const top = openUp ? rect.top - dropdownHeight - 4 : rect.bottom + 4;
+
+    let left = rect.left;
+    if (left + dropdownWidth > window.innerWidth - 10) {
+      left = window.innerWidth - dropdownWidth - 10;
+    }
+    if (left < 10) left = 10;
+
+    setActionMenuState({
+      station,
+      stationKey,
+      top,
+      left
+    });
+    setColumnsMenuOpen(false);
+  };
 
   // Modal actions
   const handleOpenAdd = () => {
@@ -136,7 +342,7 @@ export function useAdminMicrobusStations() {
     setFormData({
       name: item.name || "",
       location: item.location || "",
-      governorate: item.governorate || "",
+      governorate: item.governorate || "القاهرة",
       map_url: item.map_url || ""
     });
     setVisualRoutes(normalizeRoutes(item.routes));
@@ -145,11 +351,12 @@ export function useAdminMicrobusStations() {
 
   const handleCloseModal = () => {
     setShowModal(false);
+    setEditingItem(null);
+    setError("");
   };
 
-  // Form field changes
   const handleFormFieldChange = (field: keyof MicrobusStationFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleRouteFieldChange = (
@@ -157,243 +364,323 @@ export function useAdminMicrobusStations() {
     field: keyof AdminMicrobusRoute,
     value: string
   ) => {
-    setVisualRoutes(prev => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
+    setVisualRoutes((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], [field]: value };
+      return next;
     });
   };
 
   const handleAddRoute = () => {
-    setVisualRoutes(prev => [...prev, createEmptyRoute()]);
+    setVisualRoutes((prev) => [...prev, createEmptyRoute()]);
   };
 
   const handleRemoveRoute = (index: number) => {
-    setVisualRoutes(prev => prev.filter((_, i) => i !== index));
+    setVisualRoutes((prev) => {
+      const next = prev.filter((_, i) => i !== index);
+      return next.length > 0 ? next : [createEmptyRoute()];
+    });
   };
 
-  // Form Submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
 
-    // Validate visual routes
-    const routeValidationError = validateRoutes(visualRoutes);
-    if (routeValidationError) {
-      setError(routeValidationError);
+    if (!formData.name.trim() || !formData.location.trim()) {
+      setError("يرجى ملء جميع الحقول المطلوبة (اسم الموقف وموقعه بالتفصيل).");
+      return;
+    }
+
+    const routeError = validateRoutes(visualRoutes);
+    if (routeError) {
+      setError(routeError);
       return;
     }
 
     setIsSubmitting(true);
 
-    const payload = {
+    const stationPayload = {
       name: formData.name.trim(),
-      governorate: formData.governorate.trim(),
       location: formData.location.trim(),
+      governorate: formData.governorate.trim() || "القاهرة",
       map_url: formData.map_url.trim(),
       routes: visualRoutes
     };
 
     if (dbConnected && supabase) {
       try {
-        const isEditingDbRecord = Boolean(editingItem?.id && isUUID(editingItem.id));
+        let dbErr;
+        const isEditingDbRecord = editingItem && editingItem.id && isUUID(editingItem.id);
 
-        if (isEditingDbRecord && editingItem?.id) {
-          const { error: dbErr } = await supabase
+        if (isEditingDbRecord) {
+          const { error: updErr } = await supabase
             .from("microbus_stations")
-            .update(payload)
+            .update(stationPayload)
             .eq("id", editingItem.id);
-          if (dbErr) throw dbErr;
-          setSuccess("تم تعديل الموقف بنجاح في قاعدة البيانات.");
+          dbErr = updErr;
         } else {
-          const { error: dbErr } = await supabase
+          const { error: insErr } = await supabase
             .from("microbus_stations")
-            .insert(payload);
-          if (dbErr) throw dbErr;
-          setSuccess("تم إضافة الموقف بنجاح إلى قاعدة البيانات.");
+            .insert([stationPayload]);
+          dbErr = insErr;
         }
 
-        // Reload fresh data from database
-        const { data } = await supabase.from("microbus_stations").select("*");
-        setMicrobusStations(data || []);
+        if (dbErr) throw dbErr;
+
+        setSuccess(
+          editingItem
+            ? "تم تعديل موقف السرفيس بنجاح في قاعدة البيانات."
+            : "تم إضافة موقف السرفيس بنجاح إلى قاعدة البيانات."
+        );
+        await loadMicrobusStations();
         setShowModal(false);
       } catch (err: any) {
-        console.error("Database save error:", err);
-        setError("فشلت العملية في قاعدة البيانات: " + (err.message || "حدث خطأ غير متوقع"));
+        console.error("Save Microbus Station DB Error:", err);
+        setError("فشلت العملية في قاعدة البيانات: " + (err.message || String(err)));
       } finally {
         setIsSubmitting(false);
       }
     } else {
-      // LocalStorage Fallback
-      let currentLocal = getLocalMicrobusStations();
+      // LocalStorage mode
+      let updated: AdminMicrobusStation[];
       if (editingItem) {
-        currentLocal = currentLocal.map((item) => {
-          if (editingItem.id && item.id === editingItem.id) {
-            return { ...item, ...payload };
-          }
-          if (!editingItem.id && item.name === editingItem.name) {
-            return { ...item, ...payload };
-          }
-          return item;
-        });
-        setSuccess("تم تعديل السجل بنجاح محلياً (LocalStorage).");
+        const editKey = getStationKey(editingItem);
+        updated = microbusStations.map((s) =>
+          getStationKey(s) === editKey ? { ...stationPayload, id: s.id } : s
+        );
       } else {
         const newRecord: AdminMicrobusStation = {
-          id: Math.random().toString(36).substring(2, 11),
-          ...payload,
+          id: Math.random().toString(36).substring(2, 9),
+          ...stationPayload,
           created_at: new Date().toISOString()
         };
-        currentLocal = [newRecord, ...currentLocal];
-        setSuccess("تم إضافة السجل بنجاح محلياً (LocalStorage).");
+        updated = [newRecord, ...microbusStations];
       }
-      saveLocalMicrobusStations(currentLocal);
-      setMicrobusStations(currentLocal);
-      setShowModal(false);
+
+      saveLocalMicrobusStations(updated);
+      setMicrobusStations(updated);
+      setSuccess(
+        editingItem ? "تم تعديل الموقف بنجاح محلياً." : "تم إضافة الموقف بنجاح محلياً."
+      );
       setIsSubmitting(false);
+      setShowModal(false);
     }
   };
 
-  // Delete Action
-  const handleDeleteClick = (item: AdminMicrobusStation) => {
-    setItemToDelete(item);
+  // Delete Handlers
+  const handleDeleteClick = (station: AdminMicrobusStation) => {
+    setItemToDelete(station);
   };
 
   const handleCancelDelete = () => {
-    if (!isDeleting) {
-      setItemToDelete(null);
-    }
+    setItemToDelete(null);
   };
 
   const handleConfirmDelete = async () => {
     if (!itemToDelete) return;
-    const item = itemToDelete;
     setIsDeleting(true);
     setError("");
     setSuccess("");
 
-    if (dbConnected && supabase) {
+    if (dbConnected && supabase && itemToDelete.id && isUUID(itemToDelete.id)) {
       try {
-        const { error: dbErr } = await supabase
+        const { error: delErr } = await supabase
           .from("microbus_stations")
           .delete()
-          .eq("id", item.id);
-        if (dbErr) throw dbErr;
-        setSuccess("تم حذف السجل بنجاح من قاعدة البيانات.");
+          .eq("id", itemToDelete.id);
 
-        const { data } = await supabase.from("microbus_stations").select("*");
-        setMicrobusStations(data || []);
+        if (delErr) throw delErr;
+
+        setSuccess("تم حذف موقف السرفيس بنجاح من قاعدة البيانات.");
+        await loadMicrobusStations();
       } catch (err: any) {
-        console.error("Database delete error:", err);
-        setError("فشل الحذف في قاعدة البيانات: " + (err.message || "حدث خطأ غير متوقع"));
+        console.error("Delete DB error:", err);
+        setError("فشل حذف الموقف من قاعدة البيانات: " + (err.message || String(err)));
       } finally {
         setIsDeleting(false);
         setItemToDelete(null);
       }
     } else {
-      let currentLocal = getLocalMicrobusStations();
-      currentLocal = currentLocal.filter((localItem) => {
-        if (item.id && localItem.id !== item.id) return true;
-        if (!item.id && localItem.name !== item.name) return true;
-        return false;
-      });
-      saveLocalMicrobusStations(currentLocal);
-      setMicrobusStations(currentLocal);
-      setSuccess("تم حذف السجل بنجاح محلياً (LocalStorage).");
+      const deleteKey = getStationKey(itemToDelete);
+      const updated = microbusStations.filter((s) => getStationKey(s) !== deleteKey);
+      saveLocalMicrobusStations(updated);
+      setMicrobusStations(updated);
+      setSuccess("تم حذف الموقف بنجاح محلياً.");
       setIsDeleting(false);
       setItemToDelete(null);
     }
   };
 
-  // Excel Modal Actions
-  const handleOpenExcelModal = () => {
-    setError("");
-    setSuccess("");
-    setShowExcelModal(true);
+  // Bulk Delete Handlers
+  const handleOpenBulkDelete = () => {
+    if (selectedCount === 0) return;
+    setShowBulkDeleteModal(true);
   };
 
-  const handleCloseExcelModal = () => {
-    setShowExcelModal(false);
-  };
-
-  // Export to Excel Action
-  const handleExportExcel = () => {
-    try {
-      exportMicrobusStationsToExcel(microbusStations);
-      setSuccess("تم تصدير ملف الإكسل بنجاح.");
-    } catch (err: any) {
-      console.error("Export error:", err);
-      setError("فشل تصدير ملف الإكسل: " + (err?.message || String(err)));
+  const handleCancelBulkDelete = () => {
+    if (!isBulkDeleting) {
+      setShowBulkDeleteModal(false);
     }
   };
 
-  // Import from Excel Action
+  const handleConfirmBulkDelete = async () => {
+    if (selectedCount === 0) return;
+    setIsBulkDeleting(true);
+    setError("");
+    setSuccess("");
+
+    const selectedKeysSet = new Set(
+      Object.keys(selectedStationKeys).filter((k) => !!selectedStationKeys[k])
+    );
+
+    if (dbConnected && supabase) {
+      try {
+        const idsToDelete: string[] = [];
+        const namesToDelete: string[] = [];
+
+        microbusStations.forEach((st) => {
+          const key = getStationKey(st);
+          if (selectedKeysSet.has(key)) {
+            if (st.id && isUUID(st.id)) {
+              idsToDelete.push(st.id);
+            } else {
+              namesToDelete.push(st.name);
+            }
+          }
+        });
+
+        if (idsToDelete.length > 0) {
+          const { error: delErr } = await supabase
+            .from("microbus_stations")
+            .delete()
+            .in("id", idsToDelete);
+          if (delErr) throw delErr;
+        }
+
+        if (namesToDelete.length > 0) {
+          const { error: delErr } = await supabase
+            .from("microbus_stations")
+            .delete()
+            .in("name", namesToDelete);
+          if (delErr) throw delErr;
+        }
+
+        await loadMicrobusStations();
+        setSuccess(`تم حذف (${selectedCount}) موقف بنجاح من قاعدة البيانات.`);
+        clearSelection();
+      } catch (err: any) {
+        console.error("Bulk delete error:", err);
+        setError("فشل الحذف الجماعي: " + (err?.message || String(err)));
+      } finally {
+        setIsBulkDeleting(false);
+        setShowBulkDeleteModal(false);
+      }
+    } else {
+      let currentLocal = getLocalMicrobusStations();
+      currentLocal = currentLocal.filter((localItem) => {
+        const key = getStationKey(localItem);
+        return !selectedKeysSet.has(key);
+      });
+      saveLocalMicrobusStations(currentLocal);
+      setMicrobusStations(currentLocal);
+      setSuccess(`تم حذف (${selectedCount}) موقف بنجاح محلياً (LocalStorage).`);
+      clearSelection();
+      setIsBulkDeleting(false);
+      setShowBulkDeleteModal(false);
+    }
+  };
+
+  // Excel Handlers
+  const handleOpenExcelModal = () => setShowExcelModal(true);
+  const handleCloseExcelModal = () => setShowExcelModal(false);
+
+  const handleExportExcel = () => {
+    try {
+      const dataToExport = filteredStations.length > 0 ? filteredStations : microbusStations;
+      exportMicrobusStationsToExcel(dataToExport);
+      setSuccess("تم تصدير ملف الإكسل بنجاح!");
+    } catch (err: any) {
+      console.error("Failed to export Excel:", err);
+      setError("حدث خطأ أثناء تصدير ملف الإكسل.");
+    }
+  };
+
   const handleImportExcel = async (
     parsedStations: ParsedExcelMicrobusStation[],
     replaceExisting: boolean
   ) => {
-    if (parsedStations.length === 0) return;
+    setError("");
+    setSuccess("");
 
     if (dbConnected && supabase) {
-      const { data: currentDbStations, error: fetchErr } = await supabase
-        .from("microbus_stations")
-        .select("*");
-
-      if (fetchErr) {
-        throw new Error("فشل التحقق من السجلات السابقة في قاعدة البيانات: " + fetchErr.message);
-      }
-
-      const existingMap = new Map<string, AdminMicrobusStation>();
-      (currentDbStations || []).forEach((st: AdminMicrobusStation) => {
-        if (st.name) {
-          existingMap.set(st.name.trim().toLowerCase(), st);
-        }
-      });
-
-      for (const st of parsedStations) {
-        const key = st.name.trim().toLowerCase();
-        const existing = existingMap.get(key);
-
-        const payload = {
-          name: st.name.trim(),
-          location: st.location.trim(),
-          governorate: st.governorate.trim(),
-          map_url: st.map_url.trim(),
-          routes: st.routes
-        };
-
-        if (existing && existing.id) {
-          if (replaceExisting) {
-            const { error: updateErr } = await supabase
-              .from("microbus_stations")
-              .update(payload)
-              .eq("id", existing.id);
-            if (updateErr) throw updateErr;
-          } else {
-            // Append routes
-            const existingRoutes = Array.isArray(existing.routes) ? existing.routes : [];
-            const mergedRoutes = [...existingRoutes, ...st.routes];
-            const { error: updateErr } = await supabase
-              .from("microbus_stations")
-              .update({ routes: mergedRoutes })
-              .eq("id", existing.id);
-            if (updateErr) throw updateErr;
+      try {
+        const { data: existingStations } = await supabase.from("microbus_stations").select("*");
+        const existingMap = new Map<string, any>();
+        (existingStations || []).forEach((st: any) => {
+          if (st.name) {
+            existingMap.set(st.name.trim().toLowerCase(), st);
           }
-        } else {
-          // Insert new
-          const { error: insertErr } = await supabase
-            .from("microbus_stations")
-            .insert(payload);
-          if (insertErr) throw insertErr;
-        }
-      }
+        });
 
-      // Refresh list
-      const { data: refreshed } = await supabase.from("microbus_stations").select("*");
-      setMicrobusStations(refreshed || []);
-      setSuccess(`تم استيراد وحفظ (${parsedStations.length}) موقف بنجاح في قاعدة البيانات.`);
+        const toInsert: any[] = [];
+        const toUpdate: any[] = [];
+
+        for (const st of parsedStations) {
+          const key = st.name.trim().toLowerCase();
+          const existing = existingMap.get(key);
+
+          if (existing) {
+            let mergedRoutes = st.routes;
+            if (!replaceExisting && Array.isArray(existing.routes)) {
+              mergedRoutes = [...existing.routes, ...st.routes];
+            }
+
+            toUpdate.push({
+              id: existing.id,
+              name: st.name.trim(),
+              location: st.location.trim(),
+              governorate: st.governorate.trim(),
+              map_url: st.map_url.trim(),
+              routes: mergedRoutes
+            });
+          } else {
+            toInsert.push({
+              name: st.name.trim(),
+              location: st.location.trim(),
+              governorate: st.governorate.trim(),
+              map_url: st.map_url.trim(),
+              routes: st.routes
+            });
+          }
+        }
+
+        if (toInsert.length > 0) {
+          const { error: insErr } = await supabase.from("microbus_stations").insert(toInsert);
+          if (insErr) throw insErr;
+        }
+
+        for (const updItem of toUpdate) {
+          const { error: updErr } = await supabase
+            .from("microbus_stations")
+            .update({
+              name: updItem.name,
+              location: updItem.location,
+              governorate: updItem.governorate,
+              map_url: updItem.map_url,
+              routes: updItem.routes
+            })
+            .eq("id", updItem.id);
+          if (updErr) throw updErr;
+        }
+
+        await loadMicrobusStations();
+        setSuccess(`تم استيراد وحفظ (${parsedStations.length}) موقف بنجاح في قاعدة البيانات.`);
+      } catch (err: any) {
+        console.error("Failed to save imported excel stations into DB:", err);
+        throw err;
+      }
     } else {
-      // LocalStorage Fallback
       let currentLocal = getLocalMicrobusStations();
       const localMap = new Map<string, AdminMicrobusStation>();
       currentLocal.forEach((st) => {
@@ -437,144 +724,6 @@ export function useAdminMicrobusStations() {
     }
   };
 
-  // Selection Actions
-  const toggleSelectStation = (stationKey: string) => {
-    setSelectedStationKeys((prev) => {
-      const updated = { ...prev };
-      if (updated[stationKey]) {
-        delete updated[stationKey];
-      } else {
-        updated[stationKey] = true;
-      }
-      return updated;
-    });
-  };
-
-  const toggleSelectAll = (stations: AdminMicrobusStation[]) => {
-    const allSelected =
-      stations.length > 0 &&
-      stations.every((s) => {
-        const key = s.id || s.name.trim();
-        return !!selectedStationKeys[key];
-      });
-
-    if (allSelected) {
-      // Deselect all visible
-      setSelectedStationKeys((prev) => {
-        const updated = { ...prev };
-        stations.forEach((s) => {
-          const key = s.id || s.name.trim();
-          delete updated[key];
-        });
-        return updated;
-      });
-    } else {
-      // Select all visible
-      setSelectedStationKeys((prev) => {
-        const updated = { ...prev };
-        stations.forEach((s) => {
-          const key = s.id || s.name.trim();
-          updated[key] = true;
-        });
-        return updated;
-      });
-    }
-  };
-
-  const clearSelection = () => {
-    setSelectedStationKeys({});
-  };
-
-  const selectedCount = Object.keys(selectedStationKeys).filter(
-    (k) => !!selectedStationKeys[k]
-  ).length;
-
-  // Bulk Delete Actions
-  const handleOpenBulkDelete = () => {
-    if (selectedCount === 0) return;
-    setShowBulkDeleteModal(true);
-  };
-
-  const handleCancelBulkDelete = () => {
-    if (!isBulkDeleting) {
-      setShowBulkDeleteModal(false);
-    }
-  };
-
-  const handleConfirmBulkDelete = async () => {
-    if (selectedCount === 0) return;
-    setIsBulkDeleting(true);
-    setError("");
-    setSuccess("");
-
-    const selectedKeysSet = new Set(
-      Object.keys(selectedStationKeys).filter((k) => !!selectedStationKeys[k])
-    );
-
-    if (dbConnected && supabase) {
-      try {
-        const idsToDelete: string[] = [];
-        const namesToDelete: string[] = [];
-
-        microbusStations.forEach((st) => {
-          const key = st.id || st.name.trim();
-          if (selectedKeysSet.has(key)) {
-            if (st.id && isUUID(st.id)) {
-              idsToDelete.push(st.id);
-            } else {
-              namesToDelete.push(st.name);
-            }
-          }
-        });
-
-        if (idsToDelete.length > 0) {
-          const { error: delErr } = await supabase
-            .from("microbus_stations")
-            .delete()
-            .in("id", idsToDelete);
-          if (delErr) throw delErr;
-        }
-
-        if (namesToDelete.length > 0) {
-          const { error: delErr } = await supabase
-            .from("microbus_stations")
-            .delete()
-            .in("name", namesToDelete);
-          if (delErr) throw delErr;
-        }
-
-        const { data: refreshed } = await supabase.from("microbus_stations").select("*");
-        setMicrobusStations(refreshed || []);
-        setSuccess(`تم حذف (${selectedCount}) موقف بنجاح من قاعدة البيانات.`);
-        clearSelection();
-      } catch (err: any) {
-        console.error("Bulk delete error:", err);
-        setError("فشل الحذف الجماعي: " + (err?.message || String(err)));
-      } finally {
-        setIsBulkDeleting(false);
-        setShowBulkDeleteModal(false);
-      }
-    } else {
-      // LocalStorage Fallback
-      let currentLocal = getLocalMicrobusStations();
-      currentLocal = currentLocal.filter((localItem) => {
-        const key = localItem.id || localItem.name.trim();
-        return !selectedKeysSet.has(key);
-      });
-      saveLocalMicrobusStations(currentLocal);
-      setMicrobusStations(currentLocal);
-      setSuccess(`تم حذف (${selectedCount}) موقف بنجاح محلياً (LocalStorage).`);
-      clearSelection();
-      setIsBulkDeleting(false);
-      setShowBulkDeleteModal(false);
-    }
-  };
-
-  // Filtered List
-  const filteredStations = useMemo(() => {
-    return filterMicrobusStations(microbusStations, searchQuery);
-  }, [microbusStations, searchQuery]);
-
   return {
     // Auth & Status
     authLoading,
@@ -582,13 +731,43 @@ export function useAdminMicrobusStations() {
     isAdmin,
     dbConnected,
     error,
+    setError,
     success,
+    setSuccess,
 
-    // Search
+    // Search & Filter
     searchQuery,
     setSearchQuery,
+    governorateFilter,
+    setGovernorateFilter,
+    availableGovernorates,
+    totalStationsCount: microbusStations.length,
     filteredStations,
-    totalStationsCount: filteredStations.length,
+    paginatedStations,
+
+    // View Mode & Pagination
+    viewMode,
+    setViewMode,
+    pageSize,
+    setPageSize,
+    currentPage,
+    setCurrentPage,
+
+    // Columns Visibility
+    visibleColumns,
+    columnsMenuOpen,
+    columnsMenuPos,
+    handleToggleColumnsMenu,
+    handleToggleColumn,
+
+    // Floating 3-dots Action Menu
+    actionMenuState,
+    setActionMenuState,
+    handleToggleActionMenu,
+
+    // Viewing Details
+    viewingStation,
+    setViewingStation,
 
     // Selection & Bulk Delete
     selectedStationKeys,

@@ -2540,7 +2540,7 @@
   gap: 10px;
   padding: 8px 12px;
   border-radius: 8px;
-  color: #94a3b8;
+  color: var(--color-fg);
   text-decoration: none;
   font-size: 0.82rem;
   font-weight: 600;
@@ -2548,29 +2548,13 @@
 }
 
 .submenuLink:hover {
-  color: #f1f5f9;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-secondary);
 }
 
-:global(.light) .submenuLink {
-  color: #5c4c44;
-}
-
-:global(.light) .submenuLink:hover {
-  color: #3e322d;
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.submenuLinkActive {
+.submenuLinkActive,
+.submenuLinkActive:hover {
   color: #fff !important;
-  background: rgba(99, 102, 241, 0.15);
-  border-right: 3px solid #6366f1;
-}
-
-:global(.light) .submenuLinkActive {
-  color: #2563eb !important;
-  background: rgba(37, 99, 235, 0.08);
-  border-right-color: #2563eb;
+  background: var(--color-primary) !important;
 }
 
 /* ── Table Light Mode Overrides for High Contrast ── */

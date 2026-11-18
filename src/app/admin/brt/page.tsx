@@ -1,49 +1,77 @@
 "use client";
 
 import React, { Suspense } from "react";
-import styles from "../admin.module.css";
 import { useAdminBrtStations } from "./hooks/useAdminBrtStations";
 import {
-  AdminBrtStationsHeader,
-  AdminBrtStationsSqlBanner,
-  AdminBrtStationsNotifications,
-  AdminBrtStationsSearch,
-  AdminBrtStationsToolbar,
-  AdminBrtStationsTable,
-  AdminBrtStationsModal,
-  AdminBrtStationsExcelModal,
-  AdminBrtStationsDeleteModal,
-  AdminBrtStationsLoading
+  AdminBrtLoading,
+  AdminBrtNotifications,
+  AdminBrtHeader,
+  AdminBrtFilterBar,
+  AdminBrtControlsBar,
+  AdminBrtTable,
+  AdminBrtCards,
+  AdminBrtPagination,
+  AdminBrtStationModal,
+  AdminBrtDetailsModal,
+  AdminBrtDeleteModal,
+  AdminBrtActionDropdown,
+  AdminBrtColumnsDropdown,
 } from "./components";
+import { AdminBrtStation } from "./types";
+import brtStyles from "./admin-brt.module.css";
 
-export default function AdminBrtStationsPage() {
+export default function AdminBrtPage() {
   return (
-    <Suspense
-      fallback={
-        <div style={{ padding: "2rem", color: "var(--color-fgSecondary)" }}>
-          جاري التحميل...
-        </div>
-      }
-    >
-      <AdminBrtStationsContent />
+    <Suspense fallback={<AdminBrtLoading />}>
+      <AdminBrtContent />
     </Suspense>
   );
 }
 
-function AdminBrtStationsContent() {
+function AdminBrtContent() {
   const {
+    // Auth & Status
     authLoading,
     loading,
     isAdmin,
     dbConnected,
     error,
     success,
+
+    // Search & Filter
     searchQuery,
     setSearchQuery,
     sectorFilter,
     setSectorFilter,
-    filteredStations,
     totalStationsCount,
+    filteredStations,
+    paginatedStations,
+
+    // View Mode & Pagination
+    viewMode,
+    setViewMode,
+    pageSize,
+    setPageSize,
+    currentPage,
+    setCurrentPage,
+
+    // Columns Visibility
+    visibleColumns,
+    columnsMenuOpen,
+    columnsMenuPos,
+    handleToggleColumnsMenu,
+    handleToggleColumn,
+
+    // Floating 3-dots action menu
+    actionMenuState,
+    setActionMenuState,
+    handleToggleActionMenu,
+
+    // Viewing Details
+    viewingStation,
+    setViewingStation,
+
+    // Selection & Bulk
     selectedStationKeys,
     selectedCount,
     toggleSelectStation,
@@ -54,11 +82,15 @@ function AdminBrtStationsContent() {
     handleOpenBulkDelete,
     handleCancelBulkDelete,
     handleConfirmBulkDelete,
+
+    // Excel
     showExcelModal,
     handleOpenExcelModal,
     handleCloseExcelModal,
     handleExportExcel,
     handleImportExcel,
+
+    // Form Modal
     showModal,
     editingItem,
     formData,
@@ -71,15 +103,17 @@ function AdminBrtStationsContent() {
     handleAddRoute,
     handleRemoveRoute,
     handleSubmit,
+
+    // Single Delete
     itemToDelete,
     isDeleting,
     handleDeleteClick,
     handleConfirmDelete,
-    handleCancelDelete
+    handleCancelDelete,
   } = useAdminBrtStations();
 
   if (authLoading || loading) {
-    return <AdminBrtStationsLoading />;
+    return <AdminBrtLoading />;
   }
 
   if (!isAdmin) {
@@ -87,52 +121,78 @@ function AdminBrtStationsContent() {
   }
 
   return (
-    <div className={styles.adminShell} style={{ direction: "rtl", textAlign: "right" }}>
-      {/* Upper Title Banner & Add/Export/Import Actions */}
-      <AdminBrtStationsHeader
+    <div className={brtStyles.brtContainer} dir="rtl">
+      {/* Notifications */}
+      <AdminBrtNotifications
+        error={error}
+        success={success}
+        dbConnected={dbConnected}
+      />
+
+      {/* Header Bar */}
+      <AdminBrtHeader
         onAddClick={handleOpenAdd}
         onOpenExcelModal={handleOpenExcelModal}
         onExportExcel={handleExportExcel}
       />
 
-      {/* SQL Warning Card if DB is using LocalStorage fallback */}
-      {!dbConnected && <AdminBrtStationsSqlBanner />}
-
-      {/* Notification Banner */}
-      <AdminBrtStationsNotifications error={error} success={success} />
-
-      {/* Search Input bar & Sector Filter */}
-      <AdminBrtStationsSearch
+      {/* Filter Bar with Search and Sector Pills */}
+      <AdminBrtFilterBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        sectorFilter={sectorFilter}
-        onSectorFilterChange={setSectorFilter}
-        totalCount={totalStationsCount}
+        totalStations={totalStationsCount}
+        filteredCount={filteredStations.length}
+        selectedSector={sectorFilter}
+        onSectorChange={setSectorFilter}
       />
 
-      {/* Selection & Bulk Actions Toolbar */}
-      <AdminBrtStationsToolbar
-        totalCount={totalStationsCount}
-        visibleStations={filteredStations}
+      {/* Controls Bar: Page size, Columns, View mode & Bulk selection ribbon */}
+      <AdminBrtControlsBar
+        pageSize={pageSize}
+        onPageSizeChange={setPageSize}
+        columnsMenuOpen={columnsMenuOpen}
+        onToggleColumnsMenu={handleToggleColumnsMenu}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
         selectedCount={selectedCount}
-        selectedStationKeys={selectedStationKeys}
-        onToggleSelectAll={toggleSelectAll}
         onClearSelection={clearSelection}
         onBulkDelete={handleOpenBulkDelete}
       />
 
-      {/* Data Table */}
-      <AdminBrtStationsTable
-        stations={filteredStations}
-        selectedStationKeys={selectedStationKeys}
-        onToggleSelect={toggleSelectStation}
-        onToggleSelectAll={toggleSelectAll}
-        onEdit={handleOpenEdit}
-        onDelete={handleDeleteClick}
+      {/* Table or Cards View */}
+      {viewMode === "table" ? (
+        <AdminBrtTable
+          stations={paginatedStations}
+          selectedStationKeys={selectedStationKeys}
+          visibleColumns={visibleColumns}
+          actionMenuState={actionMenuState}
+          onToggleSelectRow={toggleSelectStation}
+          onToggleSelectAll={toggleSelectAll}
+          onViewStation={(st) => setViewingStation(st)}
+          onToggleActionMenu={handleToggleActionMenu}
+        />
+      ) : (
+        <AdminBrtCards
+          stations={paginatedStations}
+          selectedStationKeys={selectedStationKeys}
+          visibleColumns={visibleColumns}
+          onToggleSelectRow={toggleSelectStation}
+          onViewStation={(st) => setViewingStation(st)}
+          onEditStation={handleOpenEdit}
+          onDeleteStation={handleDeleteClick}
+        />
+      )}
+
+      {/* Pagination */}
+      <AdminBrtPagination
+        currentPage={currentPage}
+        pageSize={pageSize}
+        totalItems={filteredStations.length}
+        onPageChange={setCurrentPage}
       />
 
-      {/* Forms Modal */}
-      <AdminBrtStationsModal
+      {/* Station Modal (Add / Edit) */}
+      <AdminBrtStationModal
         isOpen={showModal}
         editingItem={editingItem}
         formData={formData}
@@ -145,15 +205,18 @@ function AdminBrtStationsContent() {
         onSubmit={handleSubmit}
       />
 
-      {/* Excel Import Modal */}
-      <AdminBrtStationsExcelModal
-        isOpen={showExcelModal}
-        onClose={handleCloseExcelModal}
-        onImportSuccess={handleImportExcel}
+      {/* Details Modal */}
+      <AdminBrtDetailsModal
+        station={viewingStation}
+        onClose={() => setViewingStation(null)}
+        onEdit={(st) => {
+          setViewingStation(null);
+          handleOpenEdit(st);
+        }}
       />
 
-      {/* Single Delete Confirmation Modal */}
-      <AdminBrtStationsDeleteModal
+      {/* Delete Confirmation Modal (Single) */}
+      <AdminBrtDeleteModal
         itemToDelete={itemToDelete}
         isDeleting={isDeleting}
         onConfirm={handleConfirmDelete}
@@ -161,12 +224,29 @@ function AdminBrtStationsContent() {
       />
 
       {/* Bulk Delete Confirmation Modal */}
-      <AdminBrtStationsDeleteModal
+      <AdminBrtDeleteModal
         itemToDelete={null}
         bulkDeleteCount={showBulkDeleteModal ? selectedCount : 0}
         isDeleting={isBulkDeleting}
         onConfirm={handleConfirmBulkDelete}
         onCancel={handleCancelBulkDelete}
+      />
+
+      {/* Floating 3-dots Action Menu */}
+      <AdminBrtActionDropdown
+        actionMenuState={actionMenuState}
+        onClose={() => setActionMenuState(null)}
+        onViewStation={(st: AdminBrtStation) => setViewingStation(st)}
+        onEditStation={(st: AdminBrtStation) => handleOpenEdit(st)}
+        onDeleteStation={(st: AdminBrtStation) => handleDeleteClick(st)}
+      />
+
+      {/* Floating Columns Dropdown */}
+      <AdminBrtColumnsDropdown
+        isOpen={columnsMenuOpen}
+        position={columnsMenuPos}
+        visibleColumns={visibleColumns}
+        onToggleColumn={handleToggleColumn}
       />
     </div>
   );

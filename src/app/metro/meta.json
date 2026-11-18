@@ -1,7 +1,7 @@
 {
   "metro_egypt": {
-    "version": "1.0.0",
-    "last_updated": "2026-11-15",
+    "version": "1.2.0",
+    "last_updated": "2026-11-16",
     "main": {
       "name_en": "metro",
       "name_ar": "مترو القاهرة - خريطة الخطوط، أسعار التذاكر وحاسبة المحطات",

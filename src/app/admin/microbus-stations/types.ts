@@ -26,3 +26,24 @@ export interface MicrobusStationFormData {
   governorate: string;
   map_url: string;
 }
+
+export interface VisibleColumns {
+  name: boolean;
+  governorate: boolean;
+  location: boolean;
+  routesCount: boolean;
+  destinations: boolean;
+  mapUrl: boolean;
+}
+
+export interface ActionMenuState {
+  station: AdminMicrobusStation;
+  stationKey: string;
+  top: number;
+  left: number;
+}
+
+export interface ColumnsMenuPosition {
+  top: number;
+  left: number;
+}

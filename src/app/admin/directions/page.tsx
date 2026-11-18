@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import styles from "./directions.module.css";
+import styles from "./admin-directions.module.css";
 import { useAdminDirections } from "./hooks/useAdminDirections";
 import CustomModal from "@/components/common/Modals";
 import {
@@ -118,11 +118,8 @@ export default function AdminDirectionsPage(props: any) {
         onOpenCheatsheet={() => setShowCheatsheetModal(true)}
       />
 
-      {/* SQL Setup Banner (if DB or legs column missing) */}
-      {dbMissing && <AdminDirectionsSqlBanner />}
-
-      {/* Notifications (Error / Success) */}
-      <AdminDirectionsNotifications error={error} success={success} />
+      {/* Notifications (Error / Success / DB Status) */}
+      <AdminDirectionsNotifications error={error} success={success} dbMissing={dbMissing} />
 
       {/* Add / Edit Form Modal */}
       {showAddForm && (
@@ -150,6 +147,8 @@ export default function AdminDirectionsPage(props: any) {
         onSearchChange={setSearchQuery}
         filterType={filterType}
         onFilterTypeChange={setFilterType}
+        totalLocations={groupedRoutesCount}
+        filteredLocationsCount={filteredGroupedRoutes.length}
       />
 
       {/* Origin Locations Dynamic Tabs */}

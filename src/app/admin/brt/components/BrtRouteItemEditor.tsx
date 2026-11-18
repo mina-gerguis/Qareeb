@@ -4,6 +4,7 @@ import React from "react";
 import clsx from "clsx";
 import { AdminBrtRoute } from "../types";
 import { BRT_VEHICLE_OPTIONS } from "../constants";
+import { IconTrashFilled } from "@tabler/icons-react";
 
 interface BrtRouteItemEditorProps {
   route: AdminBrtRoute;
@@ -39,18 +40,16 @@ export function BrtRouteItemEditor({
           marginBottom: "12px"
         }}
       >
-        <span style={{ fontSize: "0.88rem", fontWeight: "bold", color: "#e0e7ff" }}>
+        <span className="font-sub" style={{ fontSize: "0.88rem", fontWeight: "bold", color: "var(--color-fg)" }}>
           مسار رقم {index + 1}
         </span>
         {totalRoutes > 1 && (
           <button
             type="button"
             onClick={onRemove}
-            className="btn btn-danger"
-            style={{ padding: "4px 10px", fontSize: "0.75rem", borderRadius: "6px", cursor: "pointer" }}
+            className="color-error min-h-min p-0 border-none cursor-pointer"
           >
-            <i className="bx bx-trash" style={{ marginLeft: "4px" }} />
-            حذف المسار
+            <IconTrashFilled size={18}/>
           </button>
         )}
       </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../directions.module.css";
+import styles from "../admin-directions.module.css";
 import { RouteLeg } from "../types";
 import { getTransitOptionIconPath } from "../utils";
 

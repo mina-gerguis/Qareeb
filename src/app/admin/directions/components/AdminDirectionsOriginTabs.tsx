@@ -1,4 +1,6 @@
 import React from "react";
+import clsx from "clsx";
+import styles from "../admin-directions.module.css";
 import { OriginTabItem } from "../types";
 
 interface AdminDirectionsOriginTabsProps {
@@ -12,75 +14,54 @@ export function AdminDirectionsOriginTabs({
   selectedOrigin,
   onSelectOrigin,
   totalRoutesCount,
-  uniqueOrigins
+  uniqueOrigins,
 }: AdminDirectionsOriginTabsProps) {
   return (
-    <div
-      style={{
-        background: "var(--bg-secondary)",
-        border: "1px solid var(--border-glass)",
-        borderRadius: "16px",
-        padding: "16px 20px",
-        marginBottom: "24px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "10px"
-      }}
-    >
-      <span style={{ fontSize: "0.85rem", fontWeight: "700", color: "var(--text-secondary)" }}>
-        تصفية حسب منطقة الانطلاق:
+    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+      <span className={styles.lineFilterLabel}>
+        <i className="bx bx-filter-alt" style={{ fontSize: "0.95rem" }} />
+        تصفية حسب نقطة الانطلاق:
       </span>
-      <div
-        className="tabs"
-        style={{
-          gap: "8px",
-          overflowX: "auto",
-          paddingBottom: "6px",
-          scrollbarWidth: "none"
-        }}
-      >
+      <div className={styles.lineFilterScroll}>
         <button
           type="button"
           onClick={() => onSelectOrigin("all")}
-          className="btn"
-          style={{
-            padding: "6px 14px",
-            borderRadius: "8px",
-            fontSize: "0.82rem",
-            fontWeight: selectedOrigin === "all" ? "700" : "400",
-            cursor: "pointer",
-            transition: "all 0.2s ease",
-            background: selectedOrigin === "all" ? "var(--color-fg)" : "transparent",
-            border: "none",
-            color: selectedOrigin === "all" ? "var(--bgMode)" : "var(--color-fg)",
-            whiteSpace: "nowrap"
-          }}
+          className={clsx(styles.linePill, selectedOrigin === "all" && styles.linePillActive)}
         >
+          <span
+            style={{
+              width: "8px",
+              height: "8px",
+              borderRadius: "50%",
+              background: "#6366f1",
+              display: "inline-block",
+            }}
+          />
           جميع المناطق ({totalRoutesCount})
         </button>
 
-        {uniqueOrigins.map((orig, i) => (
-          <button
-            key={i}
-            type="button"
-            onClick={() => onSelectOrigin(orig.name)}
-            className="btn"
-            style={{
-              padding: "6px 14px",
-              borderRadius: "8px",
-              fontSize: "0.82rem",
-              fontWeight: selectedOrigin === orig.name ? "700" : "400",
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-              background: selectedOrigin === orig.name ? "var(--color-fg)" : "transparent",
-              border: "none",
-              color: selectedOrigin === orig.name ? "var(--bgMode)" : "var(--color-fg)",
-              whiteSpace: "nowrap"
-            }}
-          >
-            {orig.name} ({orig.count})
-          </button>
-        ))}
+        {uniqueOrigins.map((orig, i) => {
+          const isActive = selectedOrigin === orig.name;
+          return (
+            <button
+              key={i}
+              type="button"
+              onClick={() => onSelectOrigin(orig.name)}
+              className={clsx(styles.linePill, isActive && styles.linePillActive)}
+            >
+              <span
+                style={{
+                  width: "8px",
+                  height: "8px",
+                  borderRadius: "50%",
+                  background: "#3b82f6",
+                  display: "inline-block",
+                }}
+              />
+              {orig.name} ({orig.count})
+            </button>
+          );
+        })}
       </div>
     </div>
   );

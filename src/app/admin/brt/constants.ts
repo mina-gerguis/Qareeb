@@ -1,4 +1,4 @@
-import { AdminBrtStation, AdminBrtRoute } from "./types";
+import { AdminBrtStation, AdminBrtRoute, VisibleColumns } from "./types";
 import { DEFAULT_BRT_STATIONS } from "@/app/brt/constants";
 
 export const BRT_SECTORS: ("شرق القاهرة" | "جنوب القاهرة" | "غرب القاهرة" | "شمال القاهرة")[] = [
@@ -6,6 +6,14 @@ export const BRT_SECTORS: ("شرق القاهرة" | "جنوب القاهرة" |
   "جنوب القاهرة",
   "غرب القاهرة",
   "شمال القاهرة"
+];
+
+export const BRT_SECTOR_FILTERS: { id: string; label: string; color: string }[] = [
+  { id: "all", label: "جميع القطاعات", color: "#6366f1" },
+  { id: "شرق القاهرة", label: "شرق القاهرة", color: "#3b82f6" },
+  { id: "جنوب القاهرة", label: "جنوب القاهرة", color: "#ef4444" },
+  { id: "غرب القاهرة", label: "غرب القاهرة", color: "#10b981" },
+  { id: "شمال القاهرة", label: "شمال القاهرة", color: "#f59e0b" }
 ];
 
 export const BRT_STATUS_OPTIONS = [
@@ -28,6 +36,16 @@ export const BRT_VEHICLE_OPTIONS = [
   { label: "أتوبيس ترددي مفصلي مكيف", value: "أتوبيس ترددي مفصلي مكيف" },
   { label: "حافلة BRT كهربائية", value: "حافلة BRT كهربائية" }
 ];
+
+export const INITIAL_VISIBLE_COLUMNS: VisibleColumns = {
+  name: true,
+  sector: true,
+  location: true,
+  status: true,
+  type: false,
+  routesCount: true,
+  landmarks: true
+};
 
 export const createEmptyBrtRoute = (): AdminBrtRoute => ({
   destination: "",

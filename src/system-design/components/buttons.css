@@ -311,6 +311,18 @@ html.light .btn-report:hover {
   cursor: not-allowed;
 }
 
+/* WHATSAPP BUTTON */
+.btn-whats {
+  background: #00801e;
+  color: #fff;
+  border: none;
+}
+
+.btn-whats:hover {
+  background: #008f21;
+  color: #fff;
+}
+
 /* ==========================================================================
    3. Subscription Tier Buttons
    ========================================================================== */

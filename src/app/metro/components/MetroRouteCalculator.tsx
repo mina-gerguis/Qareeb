@@ -7,36 +7,19 @@ import { LINE_COLORS, LINE_NAMES } from "../constants";
 import { normalizeArabic } from "../utils";
 import styles from "../metro.module.css";
 import searchStyles from "@/components/common/RouteSearchCard/RouteSearchCard.module.css";
-import { IconChevronLeft, IconCurrentLocationFilled, IconInnerShadowTopRightFilled, IconLoader2, IconMapPinFilled, IconMessageReportFilled, IconXFilled } from "@tabler/icons-react";
+import { IconBrandWhatsapp, IconChevronLeft, IconCurrentLocationFilled, IconInnerShadowTopRightFilled, IconLoader2, IconMapPinFilled, IconMessageReportFilled, IconRoad, IconShare, IconXFilled } from "@tabler/icons-react";
 import { ASSETS } from "@/constants/assets";
 
 const POPULAR_METRO_PRESETS = [
   "الشهداء",
-  "السادات",
+  "أنور السادات",
   "العتبة",
   "جامعة القاهرة",
   "كلية البنات",
   "حلوان",
   "شبرا الخيمة",
+  "العباسية",
 ];
-
-const DefaultOriginIcon = () => (
-  <svg
-    className={searchStyles.inputIconSvg}
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="3.2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="12" cy="12" r="7" />
-  </svg>
-);
-
-
 
 export default function MetroRouteCalculator({
   panelRef,
@@ -520,10 +503,10 @@ export default function MetroRouteCalculator({
                   <button
                     type="button"
                     onClick={onStartTrip}
-                    className="btn btn-primary flex-auto"
+                    className="btn btn-blue flex-auto"
                   >
-                    <i className="fa-solid fa-play"></i>
-                    <span>بدء تتبع الرحلة</span>
+                    <IconRoad stroke={2} size={18}/>  
+                    <span>بدء  الرحلة</span>
                   </button>
 
                   <button
@@ -531,17 +514,17 @@ export default function MetroRouteCalculator({
                     className="btn btn-secondary flex-auto"
                     onClick={onShareRoute}
                   >
-                    <i className={copiedRoute ? "fa-solid fa-check" : "fa-solid fa-share-nodes"}></i>
-                    <span>{copiedRoute ? "تم النسخ بنجاح ✔" : "مشاركة المسار"}</span>
+                   <IconShare stroke={2} size={18}/>
+                    <span>مشاركة المسار</span>
                   </button>
 
                   <a
                     href={whatsappShareUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn btn-success flex-auto"
+                    className="btn btn-whats flex-auto"
                   >
-                    <i className="bx bxl-whatsapp" style={{ fontSize: "1.2rem" }} />
+                   <IconBrandWhatsapp stroke={2} size={18}/>
                     <span>مشاركة عبر واتساب</span>
                   </a>
                 </div>
@@ -815,17 +798,7 @@ export default function MetroRouteCalculator({
                             </div>
                             <div style={{ flexGrow: 1 }}>
                               {isTransfer && (
-                                <div
-                                  style={{
-                                    background: "rgba(245, 158, 11, 0.08)",
-                                    border: "1px solid rgba(245, 158, 11, 0.25)",
-                                    borderRadius: "8px",
-                                    padding: "6px 10px",
-                                    margin: "4px 0",
-                                    fontSize: "0.78rem",
-                                    color: "#f59e0b",
-                                    fontWeight: "700",
-                                  }}
+                                <div className="alert-warning my-1 rounded-sm fs-xs fw-700 px-2 py-1"
                                 >
                                   محطة تبديل: التحويل إلى {LINE_NAMES[node.targetLine!]}
                                 </div>
@@ -842,7 +815,7 @@ export default function MetroRouteCalculator({
               {/* Route Report Problem Button */}
               <button
                 type="button"
-                className="btn btn-report w-full mt-4"
+                className="btn btn-error min-h-min w-full mt-4"
                 onClick={() => onOpenReportModal(null, true)}
               >
                 <IconMessageReportFilled size={18} />

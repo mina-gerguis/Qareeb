@@ -4,19 +4,27 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
-import { AdminBrtStation, AdminBrtRoute, BrtStationFormData, ParsedExcelBrtStation } from "../types";
-import { createEmptyBrtRoute } from "../constants";
+import {
+  AdminBrtStation,
+  AdminBrtRoute,
+  BrtStationFormData,
+  ParsedExcelBrtStation,
+  VisibleColumns,
+  ActionMenuState,
+  ColumnsMenuPosition,
+} from "../types";
+import { createEmptyBrtRoute, INITIAL_VISIBLE_COLUMNS } from "../constants";
 import {
   isUUID,
   getLocalBrtStations,
   saveLocalBrtStations,
   normalizeBrtRoutes,
   validateBrtRoutes,
-  filterBrtStations
+  filterBrtStations,
+  getStationKey,
 } from "../utils";
-import {
-  exportBrtStationsToExcel
-} from "../utils/excelParser";
+import { exportBrtStationsToExcel } from "../utils/excelParser";
+import brtStyles from "../admin-brt.module.css";
 
 const INITIAL_FORM_DATA: BrtStationFormData = {
   name: "",
@@ -26,12 +34,12 @@ const INITIAL_FORM_DATA: BrtStationFormData = {
   map_url: "",
   type: "محطة سطحية قياسية",
   status: "تشغيل تجريبي",
-  landmarksText: ""
+  landmarksText: "",
 };
 
 export function useAdminBrtStations() {
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -42,10 +50,28 @@ export function useAdminBrtStations() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sectorFilter, setSectorFilter] = useState("all");
 
+  // View Mode (cards / table)
+  const [viewMode, setViewMode] = useState<"table" | "cards">("table");
+
+  // Pagination
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  // Column Visibility
+  const [visibleColumns, setVisibleColumns] = useState<VisibleColumns>(INITIAL_VISIBLE_COLUMNS);
+  const [columnsMenuOpen, setColumnsMenuOpen] = useState(false);
+  const [columnsMenuPos, setColumnsMenuPos] = useState<ColumnsMenuPosition | null>(null);
+
   // Selection & Bulk Actions
   const [selectedStationKeys, setSelectedStationKeys] = useState<Record<string, boolean>>({});
   const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+
+  // Floating Action Menu
+  const [actionMenuState, setActionMenuState] = useState<ActionMenuState | null>(null);
+
+  // Details Modal
+  const [viewingStation, setViewingStation] = useState<AdminBrtStation | null>(null);
 
   // Excel Modal State
   const [showExcelModal, setShowExcelModal] = useState(false);
@@ -62,6 +88,52 @@ export function useAdminBrtStations() {
   // Delete Confirmation States
   const [itemToDelete, setItemToDelete] = useState<AdminBrtStation | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Responsive default view mode
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setViewMode(window.innerWidth < 768 ? "cards" : "table");
+    }
+  }, []);
+
+  // Reset pagination on search or filter change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, sectorFilter]);
+
+  // Click outside listener for action and column menus
+  useEffect(() => {
+    if (!actionMenuState && !columnsMenuOpen) return;
+
+    const handlePointerDown = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        target.closest(`.${brtStyles.actionDropdownMenu}`) ||
+        target.closest(`.${brtStyles.columnsDropdownMenu}`) ||
+        target.closest(`.${brtStyles.moreMenuBtn}`) ||
+        target.closest(`.${brtStyles.columnsToggleBtn}`)
+      ) {
+        return;
+      }
+      setActionMenuState(null);
+      setColumnsMenuOpen(false);
+    };
+
+    const handleWindowResize = () => {
+      setActionMenuState(null);
+      setColumnsMenuOpen(false);
+    };
+
+    window.addEventListener("resize", handleWindowResize);
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
+    };
+  }, [actionMenuState, columnsMenuOpen]);
 
   const loadBrtStations = useCallback(async () => {
     setLoading(true);
@@ -83,7 +155,6 @@ export function useAdminBrtStations() {
         setBrtStations(getLocalBrtStations());
         setDbConnected(false);
       } else if (!data || data.length === 0) {
-        // Empty DB, fall back to initial default stations
         const locals = getLocalBrtStations();
         setBrtStations(locals);
         setDbConnected(true);
@@ -100,9 +171,25 @@ export function useAdminBrtStations() {
     }
   }, []);
 
-  const checkAdmin = useCallback(async () => {
-    if (!supabase || !user) return;
+  const checkAdminStatus = useCallback(async () => {
     try {
+      if (!user) {
+        router.push("/login");
+        return;
+      }
+
+      if (profile?.is_admin || user.email === "admin@cairomap.com" || user.user_metadata?.role === "admin") {
+        setIsAdmin(true);
+        loadBrtStations();
+        return;
+      }
+
+      if (!supabase) {
+        setIsAdmin(true);
+        loadBrtStations();
+        return;
+      }
+
       const { data, error: profileErr } = await supabase
         .from("profiles")
         .select("is_admin")
@@ -110,29 +197,270 @@ export function useAdminBrtStations() {
         .single();
 
       if (profileErr || !data?.is_admin) {
-        setIsAdmin(false);
         router.push("/");
       } else {
         setIsAdmin(true);
         loadBrtStations();
       }
     } catch (err) {
-      console.error("Error verifying admin status:", err);
-      router.push("/");
+      console.error(err);
+      if (profile?.is_admin || user?.email === "admin@cairomap.com") {
+        setIsAdmin(true);
+        loadBrtStations();
+      } else {
+        router.push("/");
+      }
     }
-  }, [user, router, loadBrtStations]);
+  }, [user, profile, router, loadBrtStations]);
 
   useEffect(() => {
     if (!authLoading) {
-      if (!user) {
-        router.push("/login");
+      checkAdminStatus();
+    }
+  }, [authLoading, checkAdminStatus]);
+
+  // Filtered stations list
+  const filteredStations = useMemo(() => {
+    return filterBrtStations(brtStations, searchQuery, sectorFilter);
+  }, [brtStations, searchQuery, sectorFilter]);
+
+  // Paginated stations
+  const paginatedStations = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return filteredStations.slice(startIndex, startIndex + pageSize);
+  }, [filteredStations, currentPage, pageSize]);
+
+  const totalStationsCount = brtStations.length;
+
+  // Selection handlers
+  const selectedCount = useMemo(() => {
+    return Object.values(selectedStationKeys).filter(Boolean).length;
+  }, [selectedStationKeys]);
+
+  const toggleSelectStation = (stationKey: string) => {
+    setSelectedStationKeys((prev) => ({
+      ...prev,
+      [stationKey]: !prev[stationKey],
+    }));
+  };
+
+  const toggleSelectAll = (stationsToToggle: AdminBrtStation[]) => {
+    const allSelected =
+      stationsToToggle.length > 0 &&
+      stationsToToggle.every((s) => selectedStationKeys[getStationKey(s)]);
+
+    if (allSelected) {
+      setSelectedStationKeys((prev) => {
+        const next = { ...prev };
+        stationsToToggle.forEach((s) => {
+          delete next[getStationKey(s)];
+        });
+        return next;
+      });
+    } else {
+      setSelectedStationKeys((prev) => {
+        const next = { ...prev };
+        stationsToToggle.forEach((s) => {
+          next[getStationKey(s)] = true;
+        });
+        return next;
+      });
+    }
+  };
+
+  const clearSelection = () => {
+    setSelectedStationKeys({});
+  };
+
+  // Toggle Columns Menu
+  const handleToggleColumnsMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    if (columnsMenuOpen) {
+      setColumnsMenuOpen(false);
+      return;
+    }
+    const rect = e.currentTarget.getBoundingClientRect();
+    const dropdownWidth = 190;
+    const dropdownHeight = 240;
+
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const openUp = spaceBelow < dropdownHeight && rect.top > dropdownHeight;
+    const top = openUp ? rect.top - dropdownHeight - 4 : rect.bottom + 4;
+
+    let left = rect.left;
+    if (left + dropdownWidth > window.innerWidth - 10) {
+      left = window.innerWidth - dropdownWidth - 10;
+    }
+    if (left < 10) left = 10;
+
+    setColumnsMenuPos({ top, left });
+    setColumnsMenuOpen(true);
+    setActionMenuState(null);
+  };
+
+  const handleToggleColumn = (key: keyof VisibleColumns) => {
+    setVisibleColumns((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  // Toggle 3-dots action menu
+  const handleToggleActionMenu = (
+    station: AdminBrtStation,
+    stationKey: string,
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    e.stopPropagation();
+    if (actionMenuState?.stationKey === stationKey) {
+      setActionMenuState(null);
+      return;
+    }
+    const rect = e.currentTarget.getBoundingClientRect();
+    const dropdownWidth = 150;
+    const dropdownHeight = 135;
+
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const openUp = spaceBelow < dropdownHeight && rect.top > dropdownHeight;
+    const top = openUp ? rect.top - dropdownHeight - 4 : rect.bottom + 4;
+
+    let left = rect.left;
+    if (left + dropdownWidth > window.innerWidth - 10) {
+      left = window.innerWidth - dropdownWidth - 10;
+    }
+    if (left < 10) left = 10;
+
+    setActionMenuState({
+      station,
+      stationKey,
+      top,
+      left,
+    });
+    setColumnsMenuOpen(false);
+  };
+
+  // Bulk Deletion Handlers
+  const handleOpenBulkDelete = () => {
+    if (selectedCount === 0) return;
+    setShowBulkDeleteModal(true);
+  };
+
+  const handleCancelBulkDelete = () => {
+    setShowBulkDeleteModal(false);
+  };
+
+  const handleConfirmBulkDelete = async () => {
+    setIsBulkDeleting(true);
+    setError("");
+    setSuccess("");
+
+    const keysToDelete = Object.keys(selectedStationKeys).filter(
+      (k) => selectedStationKeys[k]
+    );
+
+    const dbIdsToDelete: string[] = [];
+    const localKeysToDelete: string[] = [];
+
+    keysToDelete.forEach((key) => {
+      if (isUUID(key)) {
+        dbIdsToDelete.push(key);
       } else {
-        checkAdmin();
+        localKeysToDelete.push(key);
+      }
+    });
+
+    if (dbConnected && supabase && dbIdsToDelete.length > 0) {
+      try {
+        const { error: dbErr } = await supabase
+          .from("brt_stations")
+          .delete()
+          .in("id", dbIdsToDelete);
+
+        if (dbErr) throw dbErr;
+      } catch (err: unknown) {
+        const errorObj = err as Error;
+        console.error("Bulk delete DB error:", errorObj);
+        setError("تعذر حذف بعض المحطات من قاعدة البيانات: " + errorObj.message);
+        setIsBulkDeleting(false);
+        setShowBulkDeleteModal(false);
+        return;
       }
     }
-  }, [user, authLoading, checkAdmin, router]);
 
-  // Modal actions
+    // Update local state and storage
+    const updated = brtStations.filter((s) => {
+      const key = getStationKey(s);
+      return !selectedStationKeys[key];
+    });
+
+    saveLocalBrtStations(updated);
+    setBrtStations(updated);
+    clearSelection();
+    setShowBulkDeleteModal(false);
+    setIsBulkDeleting(false);
+    setSuccess(`تم حذف ${keysToDelete.length} محطة بنجاح.`);
+  };
+
+  // Excel Handlers
+  const handleOpenExcelModal = () => setShowExcelModal(true);
+  const handleCloseExcelModal = () => setShowExcelModal(false);
+
+  const handleExportExcel = () => {
+    if (brtStations.length === 0) {
+      setError("لا توجد محطات للتصدير.");
+      return;
+    }
+    exportBrtStationsToExcel(brtStations);
+    setSuccess("تم تصدير محطات الأتوبيس الترددي بنجاح إلى ملف Excel.");
+  };
+
+  const handleImportExcel = async (parsedStations: ParsedExcelBrtStation[]) => {
+    if (!parsedStations || parsedStations.length === 0) return;
+    setError("");
+    setSuccess("");
+
+    const formattedToInsert = parsedStations.map((p) => ({
+      name: p.name,
+      location: p.location,
+      governorate: p.governorate,
+      sector: p.sector,
+      map_url: p.map_url,
+      type: p.type,
+      status: p.status,
+      landmarks: p.landmarks,
+      routes: p.routes,
+    }));
+
+    if (dbConnected && supabase) {
+      try {
+        const { data, error: insertErr } = await supabase
+          .from("brt_stations")
+          .insert(formattedToInsert)
+          .select();
+
+        if (insertErr) throw insertErr;
+
+        setSuccess(`تم استيراد وحفظ ${formattedToInsert.length} محطة بنجاح في قاعدة البيانات.`);
+        await loadBrtStations();
+      } catch (err: unknown) {
+        const errorObj = err as Error;
+        console.error("Excel import DB error:", errorObj);
+        setError("فشل الحفظ في قاعدة البيانات: " + errorObj.message);
+
+        // Fallback local merge
+        const updated = [...brtStations, ...formattedToInsert];
+        saveLocalBrtStations(updated);
+        setBrtStations(updated);
+        setSuccess(`تم استيراد ${formattedToInsert.length} محطة وحفظها محلياً مؤقتاً.`);
+      }
+    } else {
+      const updated = [...brtStations, ...formattedToInsert];
+      saveLocalBrtStations(updated);
+      setBrtStations(updated);
+      setSuccess(`تم استيراد وحفظ ${formattedToInsert.length} محطة محلياً.`);
+    }
+
+    setShowExcelModal(false);
+  };
+
+  // Form Modal Handlers
   const handleOpenAdd = () => {
     setError("");
     setSuccess("");
@@ -142,42 +470,38 @@ export function useAdminBrtStations() {
     setShowModal(true);
   };
 
-  const handleOpenEdit = (item: AdminBrtStation) => {
+  const handleOpenEdit = (station: AdminBrtStation) => {
     setError("");
     setSuccess("");
-    setEditingItem(item);
+    setEditingItem(station);
     setFormData({
-      name: item.name || "",
-      location: item.location || "",
-      governorate: item.governorate || "القاهرة",
-      sector: item.sector || "شرق القاهرة",
-      map_url: item.map_url || "",
-      type: item.type || "محطة سطحية قياسية",
-      status: item.status || "تشغيل تجريبي",
-      landmarksText: Array.isArray(item.landmarks) ? item.landmarks.join("، ") : ""
+      name: station.name || "",
+      location: station.location || "",
+      governorate: station.governorate || "القاهرة",
+      sector: station.sector || "شرق القاهرة",
+      map_url: station.map_url || "",
+      type: station.type || "محطة سطحية قياسية",
+      status: station.status || "تشغيل تجريبي",
+      landmarksText: Array.isArray(station.landmarks) ? station.landmarks.join("، ") : "",
     });
-    setVisualRoutes(normalizeBrtRoutes(item.routes));
+    setVisualRoutes(normalizeBrtRoutes(station.routes));
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
+    setEditingItem(null);
   };
 
-  // Form field changes
   const handleFormFieldChange = (field: keyof BrtStationFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleRouteFieldChange = (
-    index: number,
-    field: keyof AdminBrtRoute,
-    value: string
-  ) => {
+  const handleRouteFieldChange = (index: number, field: keyof AdminBrtRoute, value: string) => {
     setVisualRoutes((prev) => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
+      const next = [...prev];
+      next[index] = { ...next[index], [field]: value };
+      return next;
     });
   };
 
@@ -186,14 +510,21 @@ export function useAdminBrtStations() {
   };
 
   const handleRemoveRoute = (index: number) => {
-    setVisualRoutes((prev) => prev.filter((_, i) => i !== index));
+    setVisualRoutes((prev) => {
+      if (prev.length <= 1) return prev;
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
-  // Form Submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+
+    if (!formData.name.trim() || !formData.location.trim()) {
+      setError("يرجى ملء جميع الحقول المطلوبة (اسم المحطة والموقع).");
+      return;
+    }
 
     const routeValidationError = validateBrtRoutes(visualRoutes);
     if (routeValidationError) {
@@ -204,405 +535,122 @@ export function useAdminBrtStations() {
     setIsSubmitting(true);
 
     const landmarksArray = formData.landmarksText
-      ? formData.landmarksText.split(/[\،,\|\n]+/).map((s) => s.trim()).filter(Boolean)
+      ? formData.landmarksText
+          .split(/[\n،,]+/)
+          .map((s) => s.trim())
+          .filter(Boolean)
       : [];
 
-    const payload = {
+    const stationPayload = {
       name: formData.name.trim(),
+      location: formData.location.trim(),
       governorate: formData.governorate.trim(),
       sector: formData.sector,
-      location: formData.location.trim(),
-      map_url: formData.map_url.trim(),
-      type: formData.type.trim(),
-      status: formData.status.trim(),
+      map_url: formData.map_url.trim() || undefined,
+      type: formData.type,
+      status: formData.status,
       landmarks: landmarksArray,
-      routes: visualRoutes
+      routes: visualRoutes,
     };
 
     if (dbConnected && supabase) {
       try {
-        const isEditingDbRecord = Boolean(editingItem?.id && isUUID(editingItem.id));
-
-        if (isEditingDbRecord && editingItem?.id) {
-          const { error: dbErr } = await supabase
+        let dbErr;
+        if (editingItem && editingItem.id) {
+          const { error: updErr } = await supabase
             .from("brt_stations")
-            .update(payload)
+            .update(stationPayload)
             .eq("id", editingItem.id);
-          if (dbErr) throw dbErr;
-          setSuccess("تم تعديل المحطة بنجاح في قاعدة البيانات.");
+          dbErr = updErr;
         } else {
-          const { error: dbErr } = await supabase
+          const { error: insErr } = await supabase
             .from("brt_stations")
-            .insert(payload);
-          if (dbErr) throw dbErr;
-          setSuccess("تم إضافة المحطة بنجاح إلى قاعدة البيانات.");
+            .insert([stationPayload]);
+          dbErr = insErr;
         }
 
-        const { data } = await supabase.from("brt_stations").select("*").order("name", { ascending: true });
-        setBrtStations(data || []);
+        if (dbErr) throw dbErr;
+
+        setSuccess(
+          editingItem
+            ? "تم تعديل المحطة بنجاح في قاعدة البيانات."
+            : "تم إضافة المحطة بنجاح إلى قاعدة البيانات."
+        );
+        await loadBrtStations();
         setShowModal(false);
-      } catch (err: any) {
-        console.error("Database save error:", err);
-        setError("فشلت العملية في قاعدة البيانات: " + (err.message || "حدث خطأ غير متوقع"));
+      } catch (err: unknown) {
+        const errorObj = err as Error;
+        console.error("Save DB Error:", errorObj);
+        setError("فشلت العملية في قاعدة البيانات: " + errorObj.message);
       } finally {
         setIsSubmitting(false);
       }
     } else {
-      // LocalStorage Fallback
-      let currentLocal = getLocalBrtStations();
+      // LocalStorage mode
+      let updated: AdminBrtStation[];
       if (editingItem) {
-        currentLocal = currentLocal.map((item) => {
-          if (editingItem.id && item.id === editingItem.id) {
-            return { ...item, ...payload };
-          }
-          if (!editingItem.id && item.name === editingItem.name) {
-            return { ...item, ...payload };
-          }
-          return item;
-        });
-        setSuccess("تم تعديل السجل بنجاح محلياً (LocalStorage).");
+        const editKey = getStationKey(editingItem);
+        updated = brtStations.map((s) =>
+          getStationKey(s) === editKey ? { ...stationPayload, id: s.id } : s
+        );
       } else {
-        const newRecord: AdminBrtStation = {
-          id: Math.random().toString(36).substring(2, 11),
-          ...payload,
-          created_at: new Date().toISOString()
-        };
-        currentLocal = [newRecord, ...currentLocal];
-        setSuccess("تم إضافة السجل بنجاح محلياً (LocalStorage).");
+        updated = [stationPayload, ...brtStations];
       }
-      saveLocalBrtStations(currentLocal);
-      setBrtStations(currentLocal);
-      setShowModal(false);
+
+      saveLocalBrtStations(updated);
+      setBrtStations(updated);
+      setSuccess(
+        editingItem ? "تم تعديل المحطة بنجاح محلياً." : "تم إضافة المحطة بنجاح محلياً."
+      );
       setIsSubmitting(false);
+      setShowModal(false);
     }
   };
 
-  // Delete Action
-  const handleDeleteClick = (item: AdminBrtStation) => {
-    setItemToDelete(item);
+  // Delete Handlers
+  const handleDeleteClick = (station: AdminBrtStation) => {
+    setItemToDelete(station);
   };
 
   const handleCancelDelete = () => {
-    if (!isDeleting) {
-      setItemToDelete(null);
-    }
+    setItemToDelete(null);
   };
 
   const handleConfirmDelete = async () => {
     if (!itemToDelete) return;
-    const item = itemToDelete;
     setIsDeleting(true);
     setError("");
     setSuccess("");
 
-    if (dbConnected && supabase) {
+    if (dbConnected && supabase && itemToDelete.id) {
       try {
-        const { error: dbErr } = await supabase
+        const { error: delErr } = await supabase
           .from("brt_stations")
           .delete()
-          .eq("id", item.id);
-        if (dbErr) throw dbErr;
-        setSuccess("تم حذف المحطة بنجاح من قاعدة البيانات.");
+          .eq("id", itemToDelete.id);
 
-        const { data } = await supabase.from("brt_stations").select("*").order("name", { ascending: true });
-        setBrtStations(data || []);
-      } catch (err: any) {
-        console.error("Database delete error:", err);
-        setError("فشل الحذف في قاعدة البيانات: " + (err.message || "حدث خطأ غير متوقع"));
+        if (delErr) throw delErr;
+
+        setSuccess("تم حذف المحطة بنجاح من قاعدة البيانات.");
+        await loadBrtStations();
+      } catch (err: unknown) {
+        const errorObj = err as Error;
+        console.error("Delete DB error:", errorObj);
+        setError("فشل حذف المحطة من قاعدة البيانات: " + errorObj.message);
       } finally {
         setIsDeleting(false);
         setItemToDelete(null);
       }
     } else {
-      let currentLocal = getLocalBrtStations();
-      currentLocal = currentLocal.filter((localItem) => {
-        if (item.id && localItem.id !== item.id) return true;
-        if (!item.id && localItem.name !== item.name) return true;
-        return false;
-      });
-      saveLocalBrtStations(currentLocal);
-      setBrtStations(currentLocal);
-      setSuccess("تم حذف المحطة بنجاح محلياً (LocalStorage).");
+      const deleteKey = getStationKey(itemToDelete);
+      const updated = brtStations.filter((s) => getStationKey(s) !== deleteKey);
+      saveLocalBrtStations(updated);
+      setBrtStations(updated);
+      setSuccess("تم حذف المحطة بنجاح محلياً.");
       setIsDeleting(false);
       setItemToDelete(null);
     }
   };
-
-  // Excel Modal Actions
-  const handleOpenExcelModal = () => {
-    setError("");
-    setSuccess("");
-    setShowExcelModal(true);
-  };
-
-  const handleCloseExcelModal = () => {
-    setShowExcelModal(false);
-  };
-
-  // Export to Excel Action
-  const handleExportExcel = () => {
-    try {
-      exportBrtStationsToExcel(brtStations);
-      setSuccess("تم تصدير ملف الإكسل بنجاح.");
-    } catch (err: any) {
-      console.error("Export error:", err);
-      setError("فشل تصدير ملف الإكسل: " + (err?.message || String(err)));
-    }
-  };
-
-  // Import from Excel Action
-  const handleImportExcel = async (
-    parsedStations: ParsedExcelBrtStation[],
-    replaceExisting: boolean
-  ) => {
-    if (parsedStations.length === 0) return;
-
-    if (dbConnected && supabase) {
-      const { data: currentDbStations, error: fetchErr } = await supabase
-        .from("brt_stations")
-        .select("*");
-
-      if (fetchErr) {
-        throw new Error("فشل التحقق من السجلات السابقة في قاعدة البيانات: " + fetchErr.message);
-      }
-
-      const existingMap = new Map<string, AdminBrtStation>();
-      (currentDbStations || []).forEach((st: AdminBrtStation) => {
-        if (st.name) {
-          existingMap.set(st.name.trim().toLowerCase(), st);
-        }
-      });
-
-      for (const st of parsedStations) {
-        const key = st.name.trim().toLowerCase();
-        const existing = existingMap.get(key);
-
-        const payload = {
-          name: st.name.trim(),
-          location: st.location.trim(),
-          governorate: st.governorate.trim(),
-          sector: st.sector,
-          map_url: st.map_url.trim(),
-          type: st.type.trim(),
-          status: st.status.trim(),
-          landmarks: st.landmarks,
-          routes: st.routes
-        };
-
-        if (existing && existing.id) {
-          if (replaceExisting) {
-            const { error: updateErr } = await supabase
-              .from("brt_stations")
-              .update(payload)
-              .eq("id", existing.id);
-            if (updateErr) throw updateErr;
-          } else {
-            const existingRoutes = Array.isArray(existing.routes) ? existing.routes : [];
-            const mergedRoutes = [...existingRoutes, ...st.routes];
-            const { error: updateErr } = await supabase
-              .from("brt_stations")
-              .update({ routes: mergedRoutes })
-              .eq("id", existing.id);
-            if (updateErr) throw updateErr;
-          }
-        } else {
-          const { error: insertErr } = await supabase
-            .from("brt_stations")
-            .insert(payload);
-          if (insertErr) throw insertErr;
-        }
-      }
-
-      const { data: refreshed } = await supabase.from("brt_stations").select("*").order("name", { ascending: true });
-      setBrtStations(refreshed || []);
-      setSuccess(`تم استيراد وحفظ (${parsedStations.length}) محطة بنجاح في قاعدة البيانات.`);
-    } else {
-      // LocalStorage Fallback
-      let currentLocal = getLocalBrtStations();
-      const localMap = new Map<string, AdminBrtStation>();
-      currentLocal.forEach((st) => {
-        if (st.name) {
-          localMap.set(st.name.trim().toLowerCase(), st);
-        }
-      });
-
-      for (const st of parsedStations) {
-        const key = st.name.trim().toLowerCase();
-        const existing = localMap.get(key);
-
-        if (existing) {
-          if (replaceExisting) {
-            existing.location = st.location;
-            existing.governorate = st.governorate;
-            existing.sector = st.sector;
-            existing.map_url = st.map_url;
-            existing.type = st.type;
-            existing.status = st.status;
-            existing.landmarks = st.landmarks;
-            existing.routes = st.routes;
-          } else {
-            const existingRoutes = Array.isArray(existing.routes) ? existing.routes : [];
-            existing.routes = [...existingRoutes, ...st.routes];
-          }
-        } else {
-          const newRecord: AdminBrtStation = {
-            id: Math.random().toString(36).substring(2, 11),
-            name: st.name.trim(),
-            location: st.location.trim(),
-            governorate: st.governorate.trim(),
-            sector: st.sector,
-            map_url: st.map_url.trim(),
-            type: st.type.trim(),
-            status: st.status.trim(),
-            landmarks: st.landmarks,
-            routes: st.routes,
-            created_at: new Date().toISOString()
-          };
-          currentLocal = [newRecord, ...currentLocal];
-          localMap.set(key, newRecord);
-        }
-      }
-
-      saveLocalBrtStations(currentLocal);
-      setBrtStations(currentLocal);
-      setSuccess(`تم استيراد وحفظ (${parsedStations.length}) محطة بنجاح محلياً (LocalStorage).`);
-    }
-  };
-
-  // Selection Actions
-  const toggleSelectStation = (stationKey: string) => {
-    setSelectedStationKeys((prev) => {
-      const updated = { ...prev };
-      if (updated[stationKey]) {
-        delete updated[stationKey];
-      } else {
-        updated[stationKey] = true;
-      }
-      return updated;
-    });
-  };
-
-  const toggleSelectAll = (stations: AdminBrtStation[]) => {
-    const allSelected =
-      stations.length > 0 &&
-      stations.every((s) => {
-        const key = s.id || s.name.trim();
-        return !!selectedStationKeys[key];
-      });
-
-    if (allSelected) {
-      setSelectedStationKeys((prev) => {
-        const updated = { ...prev };
-        stations.forEach((s) => {
-          const key = s.id || s.name.trim();
-          delete updated[key];
-        });
-        return updated;
-      });
-    } else {
-      setSelectedStationKeys((prev) => {
-        const updated = { ...prev };
-        stations.forEach((s) => {
-          const key = s.id || s.name.trim();
-          updated[key] = true;
-        });
-        return updated;
-      });
-    }
-  };
-
-  const clearSelection = () => {
-    setSelectedStationKeys({});
-  };
-
-  const selectedCount = Object.keys(selectedStationKeys).filter(
-    (k) => !!selectedStationKeys[k]
-  ).length;
-
-  // Bulk Delete Actions
-  const handleOpenBulkDelete = () => {
-    if (selectedCount === 0) return;
-    setShowBulkDeleteModal(true);
-  };
-
-  const handleCancelBulkDelete = () => {
-    if (!isBulkDeleting) {
-      setShowBulkDeleteModal(false);
-    }
-  };
-
-  const handleConfirmBulkDelete = async () => {
-    if (selectedCount === 0) return;
-    setIsBulkDeleting(true);
-    setError("");
-    setSuccess("");
-
-    const selectedKeysSet = new Set(
-      Object.keys(selectedStationKeys).filter((k) => !!selectedStationKeys[k])
-    );
-
-    if (dbConnected && supabase) {
-      try {
-        const idsToDelete: string[] = [];
-        const namesToDelete: string[] = [];
-
-        brtStations.forEach((st) => {
-          const key = st.id || st.name.trim();
-          if (selectedKeysSet.has(key)) {
-            if (st.id && isUUID(st.id)) {
-              idsToDelete.push(st.id);
-            } else {
-              namesToDelete.push(st.name);
-            }
-          }
-        });
-
-        if (idsToDelete.length > 0) {
-          const { error: delErr } = await supabase
-            .from("brt_stations")
-            .delete()
-            .in("id", idsToDelete);
-          if (delErr) throw delErr;
-        }
-
-        if (namesToDelete.length > 0) {
-          const { error: delErr } = await supabase
-            .from("brt_stations")
-            .delete()
-            .in("name", namesToDelete);
-          if (delErr) throw delErr;
-        }
-
-        const { data: refreshed } = await supabase.from("brt_stations").select("*").order("name", { ascending: true });
-        setBrtStations(refreshed || []);
-        setSuccess(`تم حذف (${selectedCount}) محطة بنجاح من قاعدة البيانات.`);
-        clearSelection();
-      } catch (err: any) {
-        console.error("Bulk delete error:", err);
-        setError("فشل الحذف الجماعي: " + (err?.message || String(err)));
-      } finally {
-        setIsBulkDeleting(false);
-        setShowBulkDeleteModal(false);
-      }
-    } else {
-      let currentLocal = getLocalBrtStations();
-      currentLocal = currentLocal.filter((localItem) => {
-        const key = localItem.id || localItem.name.trim();
-        return !selectedKeysSet.has(key);
-      });
-      saveLocalBrtStations(currentLocal);
-      setBrtStations(currentLocal);
-      setSuccess(`تم حذف (${selectedCount}) محطة بنجاح محلياً (LocalStorage).`);
-      clearSelection();
-      setIsBulkDeleting(false);
-      setShowBulkDeleteModal(false);
-    }
-  };
-
-  // Filtered List
-  const filteredStations = useMemo(() => {
-    return filterBrtStations(brtStations, searchQuery, sectorFilter);
-  }, [brtStations, searchQuery, sectorFilter]);
 
   return {
     authLoading,
@@ -610,15 +658,46 @@ export function useAdminBrtStations() {
     isAdmin,
     dbConnected,
     error,
+    setError,
     success,
+    setSuccess,
 
+    // Search & Filter
     searchQuery,
     setSearchQuery,
     sectorFilter,
     setSectorFilter,
+    totalStationsCount,
     filteredStations,
-    totalStationsCount: filteredStations.length,
+    paginatedStations,
 
+    // View Mode & Pagination
+    viewMode,
+    setViewMode,
+    pageSize,
+    setPageSize,
+    currentPage,
+    setCurrentPage,
+
+    // Columns Visibility
+    visibleColumns,
+    setVisibleColumns,
+    columnsMenuOpen,
+    setColumnsMenuOpen,
+    columnsMenuPos,
+    handleToggleColumnsMenu,
+    handleToggleColumn,
+
+    // Floating 3-dots action menu
+    actionMenuState,
+    setActionMenuState,
+    handleToggleActionMenu,
+
+    // Viewing Details
+    viewingStation,
+    setViewingStation,
+
+    // Selection & Bulk
     selectedStationKeys,
     selectedCount,
     toggleSelectStation,
@@ -630,13 +709,17 @@ export function useAdminBrtStations() {
     handleCancelBulkDelete,
     handleConfirmBulkDelete,
 
+    // Excel
     showExcelModal,
+    setShowExcelModal,
     handleOpenExcelModal,
     handleCloseExcelModal,
     handleExportExcel,
     handleImportExcel,
 
+    // Form Modal
     showModal,
+    setShowModal,
     editingItem,
     formData,
     visualRoutes,
@@ -650,10 +733,12 @@ export function useAdminBrtStations() {
     handleRemoveRoute,
     handleSubmit,
 
+    // Single Delete
     itemToDelete,
+    setItemToDelete,
     isDeleting,
     handleDeleteClick,
     handleConfirmDelete,
-    handleCancelDelete
+    handleCancelDelete,
   };
 }

@@ -40,6 +40,47 @@ export function saveLocalMicrobusStations(data: AdminMicrobusStation[]): void {
 }
 
 /**
+ * Stable key for selection, action popovers and keys
+ */
+export function getStationKey(station: AdminMicrobusStation): string {
+  return station.id || station.name.trim();
+}
+
+/**
+ * Governorate badge color
+ */
+export function getGovernorateColor(gov?: string): string {
+  switch (gov) {
+    case "القاهرة":
+      return "#3b82f6";
+    case "الجيزة":
+      return "#10b981";
+    case "الإسكندرية":
+      return "#06b6d4";
+    case "القليوبية":
+      return "#f59e0b";
+    case "الشرقية":
+    case "الغربية":
+    case "الدقهلية":
+    case "المنوفية":
+    case "البحيرة":
+    case "كفر الشيخ":
+      return "#8b5cf6";
+    case "السويس":
+    case "الإسماعيلية":
+    case "بورسعيد":
+      return "#ec4899";
+    case "مطروح":
+    case "البحر الأحمر":
+    case "جنوب سيناء":
+    case "شمال سيناء":
+      return "#f97316";
+    default:
+      return "#6366f1";
+  }
+}
+
+/**
  * Sanitizes and normalizes an array of routes for forms
  */
 export function normalizeRoutes(routes: unknown): AdminMicrobusRoute[] {
@@ -67,29 +108,44 @@ export function validateRoutes(routes: AdminMicrobusRoute[]): string | null {
   for (let i = 0; i < routes.length; i++) {
     const route = routes[i];
     if (!route.destination.trim()) {
-      return `يرجى تحديد وجهة المسار رقم ${i + 1}`;
+      return `يرجى تحديد وجهة الخط رقم ${i + 1}`;
     }
     if (!route.fare.trim()) {
-      return `يرجى تحديد الأجرة للمسار رقم ${i + 1}`;
+      return `يرجى تحديد تعريفة الأجرة للخط رقم ${i + 1}`;
     }
   }
   return null;
 }
 
 /**
- * Filters stations based on search query matching name, location, or governorate
+ * Filters stations based on search query matching name, location, governorate, route destinations, or via
  */
 export function filterMicrobusStations(
   stations: AdminMicrobusStation[],
-  query: string
+  query: string,
+  govFilter: string = "all"
 ): AdminMicrobusStation[] {
-  const trimmed = query.trim().toLowerCase();
-  if (!trimmed) return stations;
+  let list = stations;
 
-  return stations.filter((item) => {
+  if (govFilter && govFilter !== "all") {
+    list = list.filter((s) => s.governorate === govFilter);
+  }
+
+  const trimmed = query.trim().toLowerCase();
+  if (!trimmed) return list;
+
+  return list.filter((item) => {
     const nameMatch = item.name?.toLowerCase().includes(trimmed);
     const locationMatch = item.location?.toLowerCase().includes(trimmed);
     const govMatch = item.governorate?.toLowerCase().includes(trimmed);
-    return Boolean(nameMatch || locationMatch || govMatch);
+    const routeMatch =
+      Array.isArray(item.routes) &&
+      item.routes.some(
+        (r) =>
+          r.destination?.toLowerCase().includes(trimmed) ||
+          r.via?.toLowerCase().includes(trimmed) ||
+          r.fare?.toLowerCase().includes(trimmed)
+      );
+    return Boolean(nameMatch || locationMatch || govMatch || routeMatch);
   });
 }

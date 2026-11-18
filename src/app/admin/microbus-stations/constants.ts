@@ -1,4 +1,4 @@
-import { AdminMicrobusStation, AdminMicrobusRoute } from "./types";
+import { AdminMicrobusStation, AdminMicrobusRoute, MicrobusStationFormData, VisibleColumns } from "./types";
 
 export const EGYPT_DESTINATIONS: string[] = [
   "6 أكتوبر",
@@ -96,6 +96,37 @@ export const STATION_TYPE_OPTIONS: { label: string; value: string }[] = [
   { label: "نقطة تحميل عادية", value: "normal" }
 ];
 
+export const GOVERNORATES_LIST: string[] = [
+  "القاهرة",
+  "الجيزة",
+  "القليوبية",
+  "الإسكندرية",
+  "الشرقية",
+  "الغربية",
+  "الدقهلية",
+  "المنوفية",
+  "البحيرة",
+  "كفر الشيخ",
+  "دمياط",
+  "بورسعيد",
+  "الإسماعيلية",
+  "السويس",
+  "شمال سيناء",
+  "جنوب سيناء",
+  "البحر الأحمر",
+  "مطروح",
+  "الفيوم",
+  "بني سويف",
+  "المنيا",
+  "أسيوط",
+  "سوهاج",
+  "قنا",
+  "الأقصر",
+  "أسوان"
+];
+
+export const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
+
 export const createEmptyRoute = (): AdminMicrobusRoute => ({
   destination: "",
   fare: "",
@@ -106,6 +137,22 @@ export const createEmptyRoute = (): AdminMicrobusRoute => ({
   lastUpdated: new Date().toISOString().split("T")[0],
   duration: ""
 });
+
+export const INITIAL_FORM_DATA: MicrobusStationFormData = {
+  name: "",
+  location: "",
+  governorate: "القاهرة",
+  map_url: ""
+};
+
+export const INITIAL_VISIBLE_COLUMNS: VisibleColumns = {
+  name: true,
+  governorate: true,
+  location: true,
+  routesCount: true,
+  destinations: true,
+  mapUrl: true
+};
 
 export const DEFAULT_MICROBUS_STATIONS: AdminMicrobusStation[] = [
   {

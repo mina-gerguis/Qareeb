@@ -1,24 +1,13 @@
-import React from "react";
+"use client";
 
-export function AdminDirectionsLoading() {
+import React from "react";
+import styles from "../admin-directions.module.css";
+
+export const AdminDirectionsLoading: React.FC = () => {
   return (
-    <div
-      style={{
-        padding: "40px",
-        textAlign: "center",
-        color: "#fff",
-        display: "flex",
-        flexDirection: "column",
-        gap: "12px",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "400px"
-      }}
-    >
-      <i className="bx bx-loader-alt bx-spin" style={{ fontSize: "2.5rem", color: "var(--color-primary, #6366f1)" }} />
-      <span style={{ fontWeight: "bold", color: "var(--color-fg)" }}>
-        جاري تحميل إدارة خطوط المواصلات...
-      </span>
+    <div className={styles.loadingContainer}>
+      <div className={styles.spinner} />
+      <span className={styles.loadingText}>جاري تحميل مسارات وخطوط المواصلات...</span>
     </div>
   );
-}
+};

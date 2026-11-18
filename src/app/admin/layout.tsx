@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import styles from "./admin.module.css";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import CustomModal from "@/components/common/Modals";
+import { ALT, ASSETS } from "@/constants/assets";
 
 export default function AdminLayout({
   children,
@@ -744,19 +746,16 @@ export default function AdminLayout({
             {isServicesDropdownOpen && (
               <div className={styles.submenu}>
                 <Link
-                  href="/admin/directions"
-                  className={`${styles.submenuLink} ${pathname === "/admin/directions" ? styles.submenuLinkActive : ""}`}
-                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
-                >
-                  <i className="bx bx-compass" />
-                  <span>إدارة ازاي اروح</span>
-                </Link>
-                <Link
                   href="/admin/metro"
                   className={`${styles.submenuLink} ${pathname === "/admin/metro" ? styles.submenuLinkActive : ""}`}
                   onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
                 >
-                  <i className="bx bxs-train" />
+                  <Image
+                    src={ASSETS.transit.metro}
+                    alt="metro_logo"
+                    width={20}
+                    height={20}
+                  />
                   <span>مترو الأنفاق</span>
                 </Link>
                 <Link
@@ -764,15 +763,25 @@ export default function AdminLayout({
                   className={`${styles.submenuLink} ${pathname === "/admin/lrt" ? styles.submenuLinkActive : ""}`}
                   onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
                 >
-                  <i className="bx bx-train" />
-                  <span>القطار الكهربائي LRT</span>
+                  <Image
+                    src={ASSETS.transit.lrt}
+                    alt="lrt_logo"
+                    width={20}
+                    height={20}
+                  />
+                  <span>القطار الكهربائي</span>
                 </Link>
                 <Link
                   href="/admin/monorail"
                   className={`${styles.submenuLink} ${pathname === "/admin/monorail" ? styles.submenuLinkActive : ""}`}
                   onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
                 >
-                  <i className="bx bx-navigation" />
+                  <Image
+                    src={ASSETS.transit.monorail}
+                    alt="monorail_logo"
+                    width={20}
+                    height={20}
+                  />
                   <span>المنوريل</span>
                 </Link>
                 <Link
@@ -780,7 +789,12 @@ export default function AdminLayout({
                   className={`${styles.submenuLink} ${pathname === "/admin/railways" ? styles.submenuLinkActive : ""}`}
                   onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
                 >
-                  <i className="bx bx-train" />
+                  <Image
+                    src={ASSETS.transit.train}
+                    alt="railways_logo"
+                    width={25}
+                    height={20}
+                  />
                   <span>سكك حديد مصر</span>
                 </Link>
                 <Link
@@ -788,15 +802,25 @@ export default function AdminLayout({
                   className={`${styles.submenuLink} ${pathname === "/admin/brt" ? styles.submenuLinkActive : ""}`}
                   onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
                 >
-                  <i className="bx bx-bus" />
-                  <span>الأتوبيس الترددي (BRT)</span>
+                  <Image
+                    src={ASSETS.transit.ports}
+                    alt="brt_logo"
+                    width={20}
+                    height={20}
+                  />
+                  <span>الأتوبيس الترددي</span>
                 </Link>
                 <Link
                   href="/admin/bus-stations"
                   className={`${styles.submenuLink} ${pathname === "/admin/bus-stations" ? styles.submenuLinkActive : ""}`}
                   onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
                 >
-                  <i className="bx bx-bus" />
+                  <Image
+                    src={ASSETS.transit.bus}
+                    alt="bus_logo"
+                    width={20}
+                    height={20}
+                  />
                   <span>الأتوبيسات (سوبرجيت)</span>
                 </Link>
                 <Link
@@ -804,7 +828,15 @@ export default function AdminLayout({
                   className={`${styles.submenuLink} ${pathname === "/admin/microbus-stations" ? styles.submenuLinkActive : ""}`}
                   onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
                 >
-                  <i className="bx bx-map-pin" />
+                  <Image
+                    src={ASSETS.transit.microbus}
+                    alt="microbus_logo"
+                    width={25}
+                    height={20}
+                    style={{
+                      height: "auto",
+                    }}
+                  />
                   <span>المواقف (سرفيس)</span>
                 </Link>
                 <Link
@@ -812,23 +844,63 @@ export default function AdminLayout({
                   className={`${styles.submenuLink} ${pathname === "/admin/parking" ? styles.submenuLinkActive : ""}`}
                   onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
                 >
-                  <i className="bx bx-car" />
-                  <span>الجراجات ومواقف السيارات</span>
+                  <Image
+                    src={ASSETS.transit.car}
+                    alt="parking_logo"
+                    width={25}
+                    height={20}
+                    style={{
+                      height: "auto",
+                    }}
+                  />
+                  <span>الجراجات</span>
+                </Link>
+                <Link
+                  href="/admin/directions"
+                  className={`${styles.submenuLink} ${pathname === "/admin/directions" ? styles.submenuLinkActive : ""}`}
+                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+                >
+                  <Image
+                    src={ASSETS.locations.governorates.egypt}
+                    alt="egypt_logo"
+                    width={15}
+                    height={20}
+                    style={{
+                      height: "auto",
+                    }}
+                  />
+                  <span> ازاي اروح</span>
                 </Link>
                 <Link
                   href="/admin/roads-info"
                   className={`${styles.submenuLink} ${pathname === "/admin/roads-info" ? styles.submenuLinkActive : ""}`}
                   onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
                 >
-                  <i className="bx bx-tachometer" />
-                  <span>معلومات الطرق والرادار</span>
+                  <Image
+                    src={ASSETS.transit.traffic}
+                    alt="traffic_logo"
+                    width={20}
+                    height={20}
+                    style={{
+                      height: "auto",
+                    }}
+                  />
+                  <span>الطرق والرادار</span>
                 </Link>
                 <Link
                   href="/admin/cities"
                   className={`${styles.submenuLink} ${pathname === "/admin/cities" ? styles.submenuLinkActive : ""}`}
                   onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
                 >
-                  <i className="bx bx-building-house" />
+                  <Image
+                    src={ASSETS.locations.cities.cairo}
+                    alt="cairo_logo"
+                    width={15}
+                    height={20}
+                    style={{
+                      height: "auto",
+                    }}
+                  />
                   <span>المدن الشهيرة والمعالم</span>
                 </Link>
                 <Link
@@ -836,7 +908,12 @@ export default function AdminLayout({
                   className={`${styles.submenuLink} ${pathname === "/admin/airports" ? styles.submenuLinkActive : ""}`}
                   onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
                 >
-                  <i className="bx bxs-plane-alt" />
+                  <Image
+                    src={ASSETS.transit.airport}
+                    alt="airport_logo"
+                    width={20}
+                    height={20}
+                  />
                   <span>المطارات</span>
                 </Link>
                 <Link
@@ -844,7 +921,12 @@ export default function AdminLayout({
                   className={`${styles.submenuLink} ${pathname === "/admin/ports" ? styles.submenuLinkActive : ""}`}
                   onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
                 >
-                  <i className="bx bx-anchor" />
+                  <Image
+                    src={ASSETS.transit.ports}
+                    alt="ports_logo"
+                    width={20}
+                    height={20}
+                  />
                   <span>الموانئ</span>
                 </Link>
                 <Link
@@ -852,7 +934,12 @@ export default function AdminLayout({
                   className={`${styles.submenuLink} ${pathname === "/admin/directory" ? styles.submenuLinkActive : ""}`}
                   onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
                 >
-                  <i className="bx bx-phone-call" />
+                  <Image
+                    src={ASSETS.company.vodafone}
+                    alt={ALT.company.vodafone}
+                    width={20}
+                    height={20}
+                  />
                   <span>دليل الهواتف والأكواد</span>
                 </Link>
               </div>

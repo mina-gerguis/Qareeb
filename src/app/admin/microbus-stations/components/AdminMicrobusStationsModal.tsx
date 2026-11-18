@@ -1,12 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import clsx from "clsx";
-import CancelButton from "@/components/ui/button/CancelButton";
-import SubmitButton from "@/components/ui/button/SubmitButton";
 import { AdminMicrobusStation, AdminMicrobusRoute, MicrobusStationFormData } from "../types";
+import { GOVERNORATES_LIST } from "../constants";
 import { RouteItemEditor } from "./RouteItemEditor";
-import { EGYPT_DESTINATIONS } from "../constants";
+import microStyles from "../admin-microbus-stations.module.css";
+import { IconArchiveFilled, IconPlus, IconRoute, IconMapPin } from "@tabler/icons-react";
 
 interface AdminMicrobusStationsModalProps {
   isOpen: boolean;
@@ -31,219 +31,214 @@ export function AdminMicrobusStationsModal({
   onRouteFieldChange,
   onAddRoute,
   onRemoveRoute,
-  onSubmit
+  onSubmit,
 }: AdminMicrobusStationsModalProps) {
+  const [activeTab, setActiveTab] = useState<"basic" | "routes">("basic");
+
   if (!isOpen) return null;
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 9999,
-        background: "rgba(0,0,0,0.75)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "20px"
-      }}
-    >
-      <div
-        className="glass-panel"
-        style={{
-          width: "100%",
-          maxWidth: "650px",
-          maxHeight: "90vh",
-          overflowY: "auto",
-          padding: "30px",
-          border: "1px solid var(--border-glass)",
-          background: "var(--bg-glass)",
-          borderRadius: "var(--radius-card)",
-          boxShadow: "var(--shadow-card)"
-        }}
-      >
+    <div className={microStyles.modalOverlay}>
+      <div className={microStyles.modalContent} style={{ maxWidth: "680px" }}>
         {/* Modal Header */}
+        <div className={microStyles.modalHeader}>
+          <h3 style={{ margin: 0, fontSize: "1.2rem", fontWeight: "900", color: "var(--color-fg)" }}>
+            {editingItem ? "تعديل موقف السرفيس" : "إضافة موقف سرفيس جديد"}
+          </h3>
+          <button
+            onClick={onClose}
+            className="btn-close"
+            type="button"
+            aria-label="إغلاق"
+          >
+            <i className="bx bx-x" />
+          </button>
+        </div>
+
+        {/* Modal Navigation Tabs */}
         <div
           style={{
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "20px",
-            borderBottom: "1px solid rgba(255,255,255,0.08)",
-            paddingBottom: "12px"
+            gap: "8px",
+            padding: "10px 20px 0 20px",
+            borderBottom: "1px solid var(--border-glass)",
+            background: "var(--bg-secondary)",
           }}
         >
-          <h2 style={{ fontSize: "1.35rem", fontWeight: "900", margin: 0 }}>
-            {editingItem ? "تعديل بيانات الموقف" : "إضافة موقف سرفيس جديد"}
-          </h2>
           <button
-            onClick={onClose}
-            aria-label="إغلاق"
-            className="btn-close"
+            type="button"
+            onClick={() => setActiveTab("basic")}
+            style={{
+              padding: "8px 16px",
+              background: "transparent",
+              border: "none",
+              borderBottom: activeTab === "basic" ? "2px solid #f59e0b" : "2px solid transparent",
+              color: activeTab === "basic" ? "#f59e0b" : "var(--text-muted)",
+              fontWeight: 700,
+              fontSize: "0.88rem",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
           >
-            <i className="bx bx-x" style={{ fontSize: "1.5rem" }} />
+            <IconMapPin size={16} />
+            <span>بيانات الموقف والموقع</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("routes")}
+            style={{
+              padding: "8px 16px",
+              background: "transparent",
+              border: "none",
+              borderBottom: activeTab === "routes" ? "2px solid #f59e0b" : "2px solid transparent",
+              color: activeTab === "routes" ? "#f59e0b" : "var(--text-muted)",
+              fontWeight: 700,
+              fontSize: "0.88rem",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            <IconRoute size={16} />
+            <span>خطوط السير والتعريفة ({visualRoutes.length})</span>
           </button>
         </div>
 
         {/* Modal Body Form */}
-        <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-            <div>
-              <label
-                className={clsx("help-label", "color-white-100")}
-                style={{ display: "block", marginBottom: "6px" }}
-              >
-                اسم الموقف *
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="أدخل اسم الموقف"
-                value={formData.name}
-                onChange={(e) => onFormFieldChange("name", e.target.value)}
-                className="input-fields"
-                style={{ width: "100%" }}
-              />
-            </div>
-            <div>
-              <label
-                className={clsx("help-label", "color-white-100")}
-                style={{ display: "block", marginBottom: "6px" }}
-              >
-                المحافظة *
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="أدخل المحافظة"
-                value={formData.governorate}
-                onChange={(e) => onFormFieldChange("governorate", e.target.value)}
-                className="input-fields"
-                style={{ width: "100%" }}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label
-              className={clsx("help-label", "color-white-100")}
-              style={{ display: "block", marginBottom: "6px" }}
-            >
-              العنوان بالتفصيل *
-            </label>
-            <input
-              type="text"
-              required
-              placeholder="أدخل العنوان بالتفصيل"
-              value={formData.location}
-              onChange={(e) => onFormFieldChange("location", e.target.value)}
-              className="input-fields"
-              style={{ width: "100%" }}
-            />
-          </div>
-
-          <div>
-            <label
-              className={clsx("help-label", "color-white-100")}
-              style={{ display: "block", marginBottom: "6px" }}
-            >
-              رابط خريطة جوجل *
-            </label>
-            <input
-              type="url"
-              required
-              placeholder="أدخل رابط خريطة جوجل"
-              value={formData.map_url}
-              onChange={(e) => onFormFieldChange("map_url", e.target.value)}
-              className="input-fields"
-              style={{ width: "100%" }}
-            />
-          </div>
-
-          {/* Visual Routes Editor Section */}
-          <div
-            style={{
-              borderTop: "1px solid var(--border-primary)",
-              paddingTop: "16px",
-              marginTop: "8px"
-            }}
-          >
-            <h3
-              style={{
-                fontSize: "1.05rem",
-                fontWeight: "800",
-                marginBottom: "14px",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                fontFamily: "var(--font-sub)"
-              }}
-            >
-              <span>تحديد المسارات والتفاصيل :</span>
-            </h3>
-
+        <form onSubmit={onSubmit} className={microStyles.modalBody}>
+          {activeTab === "basic" && (
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              {visualRoutes.map((route, idx) => (
-                <RouteItemEditor
-                  key={idx}
-                  route={route}
-                  index={idx}
-                  totalRoutes={visualRoutes.length}
-                  onFieldChange={(field, val) => onRouteFieldChange(idx, field, val)}
-                  onRemove={() => onRemoveRoute(idx)}
-                />
-              ))}
-            </div>
+              {/* Row 1: Name & Governorate */}
+              <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "12px" }}>
+                <div>
+                  <label className={clsx("help-label")} style={{ display: "block", marginBottom: "6px" }}>
+                    اسم موقف السرفيس *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={(e) => onFormFieldChange("name", e.target.value)}
+                    className="input-fields"
+                    style={{ width: "100%" }}
+                    placeholder="مثال: موقف رمسيس الكبرى (أحمد حلمي)"
+                  />
+                </div>
 
+                <div>
+                  <label className={clsx("help-label")} style={{ display: "block", marginBottom: "6px" }}>
+                    المحافظة *
+                  </label>
+                  <select
+                    value={formData.governorate}
+                    onChange={(e) => onFormFieldChange("governorate", e.target.value)}
+                    className="input-fields"
+                    style={{ width: "100%" }}
+                  >
+                    {GOVERNORATES_LIST.map((gov) => (
+                      <option key={gov} value={gov}>
+                        {gov}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Row 2: Location */}
+              <div>
+                <label className={clsx("help-label")} style={{ display: "block", marginBottom: "6px" }}>
+                  العنوان والموقع بالتفصيل *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.location}
+                  onChange={(e) => onFormFieldChange("location", e.target.value)}
+                  className="input-fields"
+                  style={{ width: "100%" }}
+                  placeholder="مثال: وسط البلد - بجوار محطة قطارات رمسيس ومترو الشهداء"
+                />
+              </div>
+
+              {/* Row 3: Google Maps URL */}
+              <div>
+                <label className={clsx("help-label")} style={{ display: "block", marginBottom: "6px" }}>
+                  رابط موقع الموقف على خرائط Google (اختياري)
+                </label>
+                <input
+                  type="url"
+                  value={formData.map_url}
+                  onChange={(e) => onFormFieldChange("map_url", e.target.value)}
+                  className="input-fields"
+                  style={{ width: "100%", direction: "ltr", textAlign: "left" }}
+                  placeholder="https://maps.google.com/?q=..."
+                />
+              </div>
+            </div>
+          )}
+
+          {activeTab === "routes" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <h4 style={{ margin: 0, fontSize: "0.95rem", fontWeight: 700, color: "var(--color-fg)" }}>
+                    قائمة خطوط السير والتعريفة المعتمدة
+                  </h4>
+                  <p style={{ margin: "2px 0 0 0", fontSize: "0.78rem", color: "var(--text-muted)" }}>
+                    أضف وجهات الخطوط والأجرة الرسمية ونوع المركبة وخط السير
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={onAddRoute}
+                  className="btn btn-secondary btn-sm"
+                  style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}
+                >
+                  <IconPlus size={16} />
+                  <span>إضافة مسار جديد</span>
+                </button>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px", maxHeight: "380px", overflowY: "auto" }}>
+                {visualRoutes.map((route, idx) => (
+                  <RouteItemEditor
+                    key={idx}
+                    index={idx}
+                    route={route}
+                    totalRoutes={visualRoutes.length}
+                    onFieldChange={(field, val) => onRouteFieldChange(idx, field, val)}
+                    onRemove={() => onRemoveRoute(idx)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Modal Footer */}
+          <div className={microStyles.modalFooter} style={{ padding: "16px 0 0 0", marginTop: "10px" }}>
             <button
               type="button"
-              onClick={onAddRoute}
-              className="btn btn-purple mt-12 w-full"
-            >
-              + إضافة مسار سير جديد
-            </button>
-          </div>
-
-          {/* Footer Buttons */}
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              justifyContent: "flex-end"
-            }}
-          >
-            <CancelButton
               onClick={onClose}
-              style={{
-                width: "100%",
-                padding: "10px 30px",
-                margin: "10px 0"
-              }}
+              className="btn btn-cancel"
             >
               إلغاء
-            </CancelButton>
-
-            <SubmitButton
-              editingItem={Boolean(editingItem)}
-              style={{
-                margin: "10px 0",
-                padding: "10px 30px",
-                width: "100%"
-              }}
-            />
+            </button>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+            >
+              <IconArchiveFilled size={18} />
+              <span>{editingItem ? "حفظ التعديلات" : "إضافة الموقف"}</span>
+            </button>
           </div>
         </form>
       </div>
-
-      {/* Datalist helper for common destinations */}
-      <datalist id="egypt-destinations">
-        {EGYPT_DESTINATIONS.map((d) => (
-          <option key={d} value={d} />
-        ))}
-      </datalist>
     </div>
   );
 }

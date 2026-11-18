@@ -37,6 +37,7 @@ export const ASSETS = {
     ports: "/images/transit/arab_republice.webp",
     uber: "/images/transit/uber.webp",
     multi: "/images/transit/multi.webp",
+    traffic: "/images/transit/traffic_police_department.webp",
   },
 
   company: {
@@ -95,4 +96,10 @@ export const ASSETS = {
   fallback: {
     image404: "/images/404.webp",
   },
-} as const ;
+} as const;
+
+export const ALT = {
+  company: {
+    vodafone: "vodafone_logo"
+  },
+} as const;

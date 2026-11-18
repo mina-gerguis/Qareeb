@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../directions.module.css";
+import styles from "../admin-directions.module.css";
 import { FormLeg, FormOption, RouteConnectionIdentifier, TransitVehicleType } from "../types";
 import { createDefaultLeg, createDefaultOption } from "../constants";
 import { RouteOptionFormBox } from "./RouteOptionFormBox";
