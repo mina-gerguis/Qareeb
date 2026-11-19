@@ -3,8 +3,8 @@ import { MonorailLineConfig, MonorailStation, MonorailStationDetail } from "./ty
 export const MONORAIL_LINES_CONFIG: MonorailLineConfig[] = [
   {
     id: "east",
-    name: "مونوريل شرق النيل (العاصمة الإدارية)",
-    shortName: "شرق النيل (العاصمة)",
+    name: "مونوريل العاصمة",
+    shortName: "العاصمة الإدارية",
     color: "#3b82f6",
     icon: "fa-solid fa-train",
     from: "الاستاد",
@@ -15,8 +15,8 @@ export const MONORAIL_LINES_CONFIG: MonorailLineConfig[] = [
   },
   {
     id: "west",
-    name: "مونوريل غرب النيل (السادس من أكتوبر)",
-    shortName: "غرب النيل (أكتوبر)",
+    name: "مونوريل السادس من أكتوبر",
+    shortName: "6 أكتوبر",
     color: "#10b981",
     icon: "fa-solid fa-train",
     from: "وادي النيل",

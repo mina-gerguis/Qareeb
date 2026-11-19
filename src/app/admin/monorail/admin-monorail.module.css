@@ -146,7 +146,7 @@
   right: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-muted);
   font-size: 1.25rem;
   pointer-events: none;
 }
@@ -192,7 +192,7 @@
   align-items: center;
   gap: 6px;
   padding: 7px 14px;
-  border-radius: 10px;
+  border-radius: var(--radius-full);
   font-size: 0.82rem;
   font-weight: 500;
   cursor: pointer;
@@ -212,7 +212,6 @@
   background: var(--color-fg) !important;
   color: var(--color-bg) !important;
   border-color: var(--color-fg) !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* ── Content View Toolbar ── */

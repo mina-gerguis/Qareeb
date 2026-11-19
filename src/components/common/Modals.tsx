@@ -2,6 +2,7 @@
 
 import React, { useRef } from "react";
 import { useGSAP, gsap } from "@/lib/gsap";
+import { IconTrashFilled, IconXFilled } from "@tabler/icons-react";
 
 export interface ModalButtonProps {
   label: string;
@@ -138,7 +139,7 @@ export default function CustomModal({
             </div>
           )}
 
-          <h2 className="font-sub" style={{ fontSize: "1.25rem", fontWeight: "800", margin: "0 0 10px 0", color: titleColor || "var(--color-fg)" }}>
+          <h2 style={{ fontSize: "1.25rem", fontWeight: "800", margin: "0 0 10px 0", color: titleColor || "var(--color-fg)" }}>
             {title}
           </h2>
 
@@ -148,7 +149,7 @@ export default function CustomModal({
                 fontSize: "0.95rem",
                 lineHeight: "1.6",
                 color: "var(--text-secondary)",
-                margin: "0 0 24px 0",
+                margin: "0 0 14px 0",
               }}
             >
               {message}
@@ -168,25 +169,13 @@ export default function CustomModal({
                 <button
                   onClick={primaryButton.onClick}
                   disabled={primaryButton.disabled}
+                  className="btn btn-error w-full fw-700 font-display"
                   style={{
-                    flex: 1,
-                    padding: "var(--padding-btn)",
-                    borderRadius: "var(--radiusBtn)",
-                    border: primaryButton.borderColor ? `1px solid ${primaryButton.borderColor}` : "none",
-                    backgroundColor: primaryButton.bgColor || "var(--btn-primary)",
-                    color: primaryButton.textColor || "var(--btn-primary-text)",
-                    fontWeight: "700",
-                    fontFamily: "var(--font-display)",
-                    fontSize: "0.95rem",
                     cursor: primaryButton.disabled ? "not-allowed" : "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "6px",
                     opacity: primaryButton.disabled ? 0.7 : 1,
                   }}
                 >
-                  {primaryButton.icon}
+                  <IconTrashFilled size={20} />
                   {primaryButton.label}
                 </button>
               )}
@@ -195,25 +184,13 @@ export default function CustomModal({
                 <button
                   onClick={secondaryButton.onClick}
                   disabled={secondaryButton.disabled}
+                  className="btn btn-cancel w-full fw-700 font-display"
                   style={{
-                    flex: 1,
-                    padding: "var(--padding-btn)",
-                    borderRadius: "var(--radiusBtn)",
-                    border: secondaryButton.borderColor || "1px solid var(--btn-cancel)",
-                    backgroundColor: secondaryButton.bgColor || "var(--btn-cancel)",
-                    color: "var(--color-fg)",
-                    fontWeight: "600",
-                    fontFamily: "var(--font-display)",
-                    fontSize: "0.95rem",
                     cursor: secondaryButton.disabled ? "not-allowed" : "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "6px",
                     opacity: secondaryButton.disabled ? 0.7 : 1,
                   }}
                 >
-                  {secondaryButton.icon}
+                  <IconXFilled size={20} />
                   {secondaryButton.label}
                 </button>
               )}

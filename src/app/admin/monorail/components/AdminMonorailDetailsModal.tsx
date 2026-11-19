@@ -164,19 +164,19 @@ export function AdminMonorailDetailsModal({
           <div className={monorailStyles.modalFooter} style={{ marginTop: "6px" }}>
             <button
               type="button"
-              onClick={onClose}
-              className="btn btn-cancel w-full"
-            >
-              <IconSquareRoundedXFilled size={18} />
-              إغلاق
-            </button>
-            <button
-              type="button"
               onClick={() => onEdit(station)}
               className="btn btn-primary w-full"
             >
               <IconWritingSignFilled size={18} />
               تعديل بيانات المحطة
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="btn btn-cancel w-full"
+            >
+              <IconSquareRoundedXFilled size={18} />
+              إغلاق
             </button>
           </div>
         </div>

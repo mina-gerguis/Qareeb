@@ -28,7 +28,7 @@ export function AdminMonorailHeader({
             className={clsx("btn btn-primary", monorailStyles.addStationBtn)}
           >
             <IconSquareRoundedPlusFilled size={20} />
-            <span>إضافة محطة مونوريل جديدة</span>
+            <span>إضافة محطة جديدة</span>
           </button>
         </div>
       )}

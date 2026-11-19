@@ -28,7 +28,7 @@ export default function MonorailMapSection({ mapPanelRef }: MonorailMapSectionPr
           backgroundColor: "rgba(0,0,0,0.25)",
         }}
       >
-        <a href={ASSETS.maps.mapMetro} target="_blank" rel="noopener noreferrer">
+        <a href={ASSETS.maps.mapMonorail} target="_blank" rel="noopener noreferrer">
           <img
             src={ASSETS.maps.mapMonorail}
             alt="Cairo Monorail and Transit Network Official Map"

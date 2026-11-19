@@ -3,6 +3,7 @@ import clsx from "clsx";
 import SearchBox from "@/components/searchBox";
 import { MONORAIL_LINES } from "../constants";
 import monorailStyles from "../admin-monorail.module.css";
+import { IconFilter2 } from "@tabler/icons-react";
 
 interface AdminMonorailFilterBarProps {
   searchQuery: string;
@@ -34,11 +35,12 @@ export function AdminMonorailFilterBar({
 
       {/* Line Selection Tabs */}
       <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-        <span className={monorailStyles.lineFilterLabel}>
-          <i className="bx bx-filter-alt" style={{ fontSize: "0.95rem" }} />
-          تصفية حسب المسار:
-        </span>
+
         <div className={monorailStyles.lineFilterScroll}>
+          <span className={monorailStyles.lineFilterLabel}>
+            <IconFilter2 stroke={2} size={16}/>
+            تصفية حسب :
+          </span>
           {MONORAIL_LINES.map(opt => {
             const isActive = activeLine === opt.id;
             return (

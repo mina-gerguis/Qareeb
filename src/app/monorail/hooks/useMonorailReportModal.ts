@@ -193,12 +193,11 @@ ${reportDetails}`;
 ${reportDetails}`;
       }
 
-      const { error: insertError } = await supabase.from("feedbacks").insert([
+      const { error: insertError } = await supabase.from("app_feedback").insert([
         {
           user_id: user.id,
-          user_name: user.user_metadata?.full_name || user.email || "مستخدم",
-          user_email: user.email || "",
-          type: "report",
+          type: "bug",
+          category: "مونوريل القاهرة",
           title: reportTitle,
           content: contentText,
           image_url: finalImageUrl || null,

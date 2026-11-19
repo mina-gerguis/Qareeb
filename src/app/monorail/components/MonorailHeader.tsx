@@ -23,7 +23,6 @@ export default function MonorailHeader({
       stats={[
         { label: `${linesCount} خطوط رئيسية` },
         { label: `${stationsCount} محطة` },
-        { label: "100 كم إجمالي الشبكة" },
       ]}
     />
   );

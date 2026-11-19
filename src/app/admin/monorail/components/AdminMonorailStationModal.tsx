@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { MonorailStation, MonorailStationFormData } from "../types";
 import { getNextStationOrder } from "../utils";
 import monorailStyles from "../admin-monorail.module.css";
-import { IconArchiveFilled, IconSquareRoundedXFilled } from "@tabler/icons-react";
+import { IconArchiveFilled, IconSquareRoundedXFilled, IconXFilled } from "@tabler/icons-react";
 
 interface AdminMonorailStationModalProps {
   isOpen: boolean;
@@ -40,7 +40,7 @@ export function AdminMonorailStationModal({
             type="button"
             aria-label="إغلاق"
           >
-            <i className="bx bx-x" />
+            <IconXFilled size={18} />
           </button>
         </div>
 
@@ -77,8 +77,8 @@ export function AdminMonorailStationModal({
               className="input-fields"
               style={{ width: "100%" }}
             >
-              <option value="east">مونوريل شرق النيل (الاستاد - العاصمة الإدارية)</option>
-              <option value="west">مونوريل غرب النيل (وادي النيل - 6 أكتوبر)</option>
+              <option value="east">مونوريل العاصمة  </option>
+              <option value="west">مونوريل 6 أكتوبر</option>
             </select>
           </div>
 
@@ -134,19 +134,19 @@ export function AdminMonorailStationModal({
 
           <div className={monorailStyles.modalFooter}>
             <button
+              type="submit"
+              className="btn btn-primary w-full"
+            >
+              <IconArchiveFilled size={18} />
+              {editingStation ? "حفظ التعديلات" : "إضافة المحطة"}
+            </button>
+            <button
               type="button"
               onClick={onClose}
               className="btn btn-cancel w-full"
             >
               <IconSquareRoundedXFilled size={18} />
               إلغاء
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary w-full"
-            >
-              <IconArchiveFilled size={18} />
-              {editingStation ? "حفظ التعديلات" : "إضافة المحطة"}
             </button>
           </div>
         </form>

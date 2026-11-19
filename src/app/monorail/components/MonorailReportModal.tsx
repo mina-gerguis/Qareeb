@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { MonorailReportModalProps } from "../types";
 import { MONORAIL_PROBLEM_OPTIONS } from "../constants";
+import { IconSendFilled, IconXFilled } from "@tabler/icons-react";
 
 export default function MonorailReportModal({
   isOpen,
@@ -342,7 +343,7 @@ export default function MonorailReportModal({
                         borderRadius: "8px",
                         border: "none",
                         background: targetScope === "route" ? "var(--color-fg)" : "transparent",
-                        color: targetScope === "route" ? "var(--bgMode)" : "var(--color-fg)",
+                        color: targetScope === "route" ? "var(--color-bg)" : "var(--color-fg)",
                         fontWeight: "700",
                         fontSize: "0.8rem",
                         cursor: "pointer",
@@ -1038,19 +1039,8 @@ export default function MonorailReportModal({
               <div style={{ display: "flex", gap: "10px", marginTop: "8px" }}>
                 <button
                   type="submit"
-                  className="btn action-btn-delete"
+                  className="btn btn-error w-full"
                   disabled={loading || uploading}
-                  style={{
-                    flex: 1,
-                    fontWeight: "700",
-                    fontSize: "0.92rem",
-                    cursor: loading ? "wait" : "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "6px",
-                    width: "50%",
-                  }}
                 >
                   {loading ? (
                     <>
@@ -1068,22 +1058,18 @@ export default function MonorailReportModal({
                     </>
                   ) : (
                     <>
-                      <i className="bx bx-send"></i>
+                     <IconSendFilled size={18}/>
                       <span>إرسال البلاغ</span>
                     </>
                   )}
                 </button>
                 <button
                   type="button"
-                  className="btn btn-cancel"
+                  className="btn btn-cancel w-full"
                   disabled={loading}
                   onClick={onClose}
-                  style={{
-                    fontWeight: "700",
-                    fontSize: "0.92rem",
-                    width: "50%",
-                  }}
                 >
+                  <IconXFilled size={18}/>
                   إلغاء
                 </button>
               </div>

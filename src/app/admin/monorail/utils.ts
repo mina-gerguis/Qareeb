@@ -5,9 +5,9 @@ import { MONORAIL_STATION_DETAILS } from "@/app/monorail/constants";
 export const getLineLabel = (line: string): string => {
   switch (line) {
     case "east":
-      return "شرق النيل (العاصمة)";
+      return "العاصمة";
     case "west":
-      return "غرب النيل (أكتوبر)";
+      return "6 أكتوبر";
     default:
       return line;
   }
@@ -16,9 +16,9 @@ export const getLineLabel = (line: string): string => {
 export const getLineColor = (line: string): string => {
   switch (line) {
     case "east":
-      return "#3b82f6";
+      return "var(--color-primary)";
     case "west":
-      return "#10b981";
+      return "#006d49ff";
     default:
       return "#6366f1";
   }

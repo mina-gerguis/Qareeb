@@ -9,43 +9,16 @@ import styles from "../monorail.module.css";
 import searchStyles from "@/components/common/RouteSearchCard/RouteSearchCard.module.css";
 import ProjectBanner from "@/components/common/ProjectBanner";
 import { ASSETS } from "@/constants/assets";
+import { IconChevronLeft, IconCurrentLocationFilled, IconInnerShadowTopRightFilled, IconLoader2, IconMapPinFilled, IconXFilled } from "@tabler/icons-react";
 
 const POPULAR_MONORAIL_PRESETS = [
   "الاستاد",
   "الحي الحكومي",
   "مدينة الفنون والثقافة",
   "وادي النيل",
-  "هايبر وان",
   "أكتوبر الجديدة",
 ];
 
-const DefaultOriginIcon = () => (
-  <svg
-    className={searchStyles.inputIconSvg}
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="3.2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="12" cy="12" r="7" />
-  </svg>
-);
-
-const DefaultDestIcon = () => (
-  <svg
-    className={searchStyles.inputIconSvg}
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-  >
-    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" />
-  </svg>
-);
 
 export default function MonorailRouteCalculator({
   panelRef,
@@ -173,15 +146,9 @@ export default function MonorailRouteCalculator({
                 className={searchStyles.inputStartBtn}
               >
                 {locatingNearest ? (
-                  <i
-                    className="bx bx-loader-alt bx-spin"
-                    style={{
-                      fontSize: "1.25rem",
-                      color: "var(--color-secondary, #3b82f6)",
-                    }}
-                  />
+                   <IconLoader2 stroke={2} size={16} className="color-primary" />
                 ) : (
-                  <DefaultOriginIcon />
+                  <IconInnerShadowTopRightFilled size={16} className="color-primary" />
                 )}
               </button>
             </div>
@@ -189,7 +156,7 @@ export default function MonorailRouteCalculator({
             {/* Input field */}
             <input
               className={`input-fields ${searchStyles.input}`}
-              placeholder="هركب من... (محطة الانطلاق أو أقرب معلم)"
+              placeholder="هركب من محطة وادي النيل"
               value={fromQuery}
               onChange={(e) => onFromQueryChange(e.target.value)}
               onFocus={onFromFocus}
@@ -213,19 +180,9 @@ export default function MonorailRouteCalculator({
                   }}
                   title="مسح"
                   aria-label="مسح المحطة"
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    color: "var(--text-muted, #71717a)",
-                    cursor: "pointer",
-                    padding: "4px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "0.9rem",
-                  }}
+                  className="btn-transparent color-muted pointer p-1 flex justify-center content-center"
                 >
-                  <i className="fa-solid fa-xmark" />
+                  <IconXFilled size={16} />
                 </button>
               ) : (
                 <VoiceInputButton
@@ -244,8 +201,8 @@ export default function MonorailRouteCalculator({
                   const q = normalizeArabic(fromQuery.trim());
                   const matchedLandmark = q
                     ? (details?.landmarks || []).find((l) =>
-                        normalizeArabic(l).includes(q)
-                      )
+                      normalizeArabic(l).includes(q)
+                    )
                     : null;
                   const lineCfg = MONORAIL_LINES_CONFIG.find(
                     (l) => l.id === s.line_type
@@ -273,17 +230,12 @@ export default function MonorailRouteCalculator({
                             color: "var(--color-fg)",
                           }}
                         >
-                          {s.name}
+                          محطة {s.name}
                         </span>
                         {matchedLandmark && (
-                          <span
-                            style={{
-                              fontSize: "0.72rem",
-                              color: "var(--color-secondary, #3b82f6)",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            📍 قريب من: {matchedLandmark}
+                          <span className="inline-block gap-1 mt-1">
+                            <IconCurrentLocationFilled size={16} className="color-error" />
+                            <span className="color-error">   <strong className="color-fg">لو عايز تروح</strong>  {matchedLandmark} </span>
                           </span>
                         )}
                       </div>
@@ -299,25 +251,16 @@ export default function MonorailRouteCalculator({
                           <span
                             title={lineCfg.name}
                             style={{
-                              fontSize: "0.7rem",
-                              padding: "2px 7px",
-                              borderRadius: "6px",
-                              background: `${lineCfg.color}18`,
-                              color: lineCfg.color,
-                              border: `1px solid ${lineCfg.color}35`,
+                              background: lineCfg.color,
                               fontWeight: "700",
+                              width: "8px",
+                              height: "8px",
+                              borderRadius: "50%",
                             }}
                           >
-                            {lineCfg.shortName}
                           </span>
                         )}
-                        <i
-                          className="bx bx-chevron-left"
-                          style={{
-                            color: "var(--text-muted, #71717a)",
-                            fontSize: "1.1rem",
-                          }}
-                        />
+                        <IconChevronLeft stroke={2} size={16} className="text-muted" />
                       </div>
                     </button>
                   );
@@ -359,13 +302,13 @@ export default function MonorailRouteCalculator({
           <div className={searchStyles.inputWrapper}>
             {/* Left Destination Icon */}
             <span className={searchStyles.inputStartIcon}>
-              <DefaultDestIcon />
+            <IconMapPinFilled size={16} className="color-muted" />
             </span>
 
             {/* Input field */}
             <input
               className={`input-fields ${searchStyles.input}`}
-              placeholder="هروح لـِ... (محطة الوصول أو أقرب معلم)"
+              placeholder="رايح أستاد القاهرة "
               value={toQuery}
               onChange={(e) => onToQueryChange(e.target.value)}
               onFocus={onToFocus}
@@ -389,19 +332,9 @@ export default function MonorailRouteCalculator({
                   }}
                   title="مسح"
                   aria-label="مسح المحطة"
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    color: "var(--text-muted, #71717a)",
-                    cursor: "pointer",
-                    padding: "4px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "0.9rem",
-                  }}
+                  className="btn-transparent color-muted pointer p-1 flex justify-center content-center"
                 >
-                  <i className="fa-solid fa-xmark" />
+                  <IconXFilled size={16} />
                 </button>
               ) : (
                 <VoiceInputButton
@@ -420,8 +353,8 @@ export default function MonorailRouteCalculator({
                   const q = normalizeArabic(toQuery.trim());
                   const matchedLandmark = q
                     ? (details?.landmarks || []).find((l) =>
-                        normalizeArabic(l).includes(q)
-                      )
+                      normalizeArabic(l).includes(q)
+                    )
                     : null;
                   const lineCfg = MONORAIL_LINES_CONFIG.find(
                     (l) => l.id === s.line_type
@@ -449,17 +382,12 @@ export default function MonorailRouteCalculator({
                             color: "var(--color-fg)",
                           }}
                         >
-                          {s.name}
+                          محطة {s.name}
                         </span>
                         {matchedLandmark && (
-                          <span
-                            style={{
-                              fontSize: "0.72rem",
-                              color: "var(--color-secondary, #3b82f6)",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            📍 قريب من: {matchedLandmark}
+                          <span className="inline-block gap-1 mt-1">
+                            <IconCurrentLocationFilled size={16} className="color-error" />
+                            <span className="color-error">   <strong className="color-fg">لو عايز تروح</strong>  {matchedLandmark} </span>
                           </span>
                         )}
                       </div>
@@ -475,25 +403,16 @@ export default function MonorailRouteCalculator({
                           <span
                             title={lineCfg.name}
                             style={{
-                              fontSize: "0.7rem",
-                              padding: "2px 7px",
-                              borderRadius: "6px",
-                              background: `${lineCfg.color}18`,
-                              color: lineCfg.color,
-                              border: `1px solid ${lineCfg.color}35`,
+                              background: lineCfg.color,
                               fontWeight: "700",
+                              width: "8px",
+                              height: "8px",
+                              borderRadius: "50%",
                             }}
                           >
-                            {lineCfg.shortName}
                           </span>
                         )}
-                        <i
-                          className="bx bx-chevron-left"
-                          style={{
-                            color: "var(--text-muted, #71717a)",
-                            fontSize: "1.1rem",
-                          }}
-                        />
+                        <IconChevronLeft stroke={2} size={16} className="text-muted" />
                       </div>
                     </button>
                   );
@@ -504,15 +423,14 @@ export default function MonorailRouteCalculator({
 
           {/* Quick Preset Destination Chips */}
           <div ref={presetsRef} className={searchStyles.presetChipsWrapper}>
-            <span className={searchStyles.presetLabel}>محطات بتكرر كتير:</span>
+            
             {POPULAR_MONORAIL_PRESETS.map((dest) => (
               <button
                 key={dest}
                 type="button"
                 onClick={() => onSelectTo(dest)}
-                className={`${searchStyles.chipTag} ${
-                  selectedTo === dest ? searchStyles.chipTagActive : ""
-                }`}
+                className={`${searchStyles.chipTag} ${selectedTo === dest ? searchStyles.chipTagActive : ""
+                  }`}
               >
                 {dest}
               </button>
@@ -810,21 +728,21 @@ export default function MonorailRouteCalculator({
                               backgroundColor: isUnderConstruction
                                 ? "transparent"
                                 : isFirst || isLast
-                                ? activeColor
-                                : isTransfer
-                                ? "#f59e0b"
-                                : activeColor,
+                                  ? activeColor
+                                  : isTransfer
+                                    ? "#f59e0b"
+                                    : activeColor,
                               border: isUnderConstruction
                                 ? `2px dashed #ef4444`
                                 : isFirst || isLast
-                                ? `2px solid var(--color-bg, #18181b)`
-                                : "none",
+                                  ? `2px solid var(--color-bg, #18181b)`
+                                  : "none",
                               boxShadow:
                                 isUnderConstruction
                                   ? "none"
                                   : isFirst || isLast
-                                  ? `0 0 0 2px ${activeColor}`
-                                  : "none",
+                                    ? `0 0 0 2px ${activeColor}`
+                                    : "none",
                             }}
                           />
                         )}
@@ -849,10 +767,10 @@ export default function MonorailRouteCalculator({
                               color: isUnderConstruction
                                 ? "#ef4444"
                                 : isCurrent
-                                ? "var(--color-secondary, #3b82f6)"
-                                : isFirst || isLast
-                                ? "var(--color-fg)"
-                                : "var(--text-secondary)",
+                                  ? "var(--color-secondary, #3b82f6)"
+                                  : isFirst || isLast
+                                    ? "var(--color-fg)"
+                                    : "var(--text-secondary)",
                             }}
                           >
                             {node.station}
@@ -927,7 +845,7 @@ export default function MonorailRouteCalculator({
                             <div
                               style={{
                                 background: "var(--tab-active-bg)",
-                                border: "1px solid var(--tab-active-bg)", 
+                                border: "1px solid var(--tab-active-bg)",
                                 borderRadius: "8px",
                                 padding: "6px 10px",
                                 margin: "4px 0",
@@ -944,10 +862,10 @@ export default function MonorailRouteCalculator({
                                   node.targetLine.includes("مترو")
                                     ? ASSETS.transit.metro
                                     : node.targetLine.includes("LRT")
-                                    ? ASSETS.transit.lrt
-                                    : node.targetLine.includes("BRT")
-                                    ? ASSETS.transit.brt
-                                    : ASSETS.transit.walk
+                                      ? ASSETS.transit.lrt
+                                      : node.targetLine.includes("BRT")
+                                        ? ASSETS.transit.brt
+                                        : ASSETS.transit.walk
                                 }
                                 alt={node.targetLine}
                                 width={16}

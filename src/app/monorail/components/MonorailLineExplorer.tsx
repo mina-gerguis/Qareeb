@@ -4,6 +4,8 @@ import { MonorailLineExplorerProps } from "../types";
 import { MONORAIL_STATION_DETAILS, MONORAIL_STATION_COORDINATES } from "../constants";
 import ProjectBanner from "@/components/common/ProjectBanner";
 import styles from "../monorail.module.css";
+import { ALT, ASSETS } from "@/constants/assets";
+import { IconCurrentLocationFilled, IconMapPin2, IconMessageReportFilled, IconXFilled } from "@tabler/icons-react";
 
 /**
  * Returns transit logo and name depending on the transfer type
@@ -12,34 +14,34 @@ function getTransferInfo(typeStr: string) {
   if (typeStr.includes("مترو") || typeStr.includes("المترو")) {
     return {
       name: "مترو الأنفاق (الخط 3)",
-      logo: "/images/transit/metro.webp",
-      alt: "مترو الأنفاق",
+      logo: ASSETS.transit.metro,
+      alt: ALT.transit.metro,
     };
   }
   if (typeStr.includes("LRT") || typeStr.includes("القطار الكهربائي الخفيف")) {
     return {
-      name: "القطار الخفيف LRT",
-      logo: "/images/transit/lrt.webp",
-      alt: "قطار كهربائي خفيف LRT",
+      name: "القطار الخفيف",
+      logo: ASSETS.transit.lrt,
+      alt: ALT.transit.lrt,
     };
   }
   if (typeStr.includes("BRT") || typeStr.includes("الترددي")) {
     return {
-      name: "الأتوبيس الترددي BRT",
-      logo: "/images/transit/brt.webp",
-      alt: "الأتوبيس الترددي BRT",
+      name: "الأتوبيس الترددي",
+      logo: ASSETS.transit.brt,
+      alt: ALT.transit.brt,
     };
   }
   if (typeStr.includes("السريع") || typeStr.includes("HSR") || typeStr.includes("قطار")) {
     return {
       name: "القطار الكهربائي السريع",
-      logo: "/images/transit/train.webp",
-      alt: "القطار الكهربائي السريع",
+      logo: ASSETS.transit.train,
+      alt: ALT.transit.train,
     };
   }
   return {
     name: "محطة تبادلية",
-    logo: "/images/transit/transfer.webp",
+    logo: ASSETS.transit.walk,
     alt: "محطة تبادلية",
   };
 }
@@ -79,7 +81,7 @@ export default function MonorailLineExplorer({
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <div>
             <h2 className={styles.stationName}>{selectedLineObj.name}</h2>
-            <p style={{ margin: 0, fontSize: "0.78rem", color: "var(--text-muted, #71717a)" }}>
+            <p className="mt-2 text-muted fw-500 fs-xs">
               {selectedLineObj.desc || "استعراض مسار المحطات، المعالم القريبة ومحطات التبديل"}
             </p>
           </div>
@@ -170,7 +172,7 @@ export default function MonorailLineExplorer({
               cursor: "pointer",
             }}
           >
-            ✕
+            <IconXFilled size={16} />
           </button>
         )}
       </div>
@@ -254,19 +256,19 @@ export default function MonorailLineExplorer({
                           backgroundColor: isUnderConstruction
                             ? "transparent"
                             : isTransfer
-                            ? "#f59e0b"
-                            : color,
+                              ? "#f59e0b"
+                              : color,
                           border: isUnderConstruction
                             ? `2px dashed #ef4444`
                             : isFirst || isLast
-                            ? `2px solid var(--color-bg, #18181b)`
-                            : "none",
+                              ? `2px solid var(--color-bg, #18181b)`
+                              : "none",
                           boxShadow:
                             isUnderConstruction
                               ? "none"
                               : isFirst || isLast
-                              ? `0 0 0 2px ${color}`
-                              : "none",
+                                ? `0 0 0 2px ${color}`
+                                : "none",
                         }}
                       />
                     </div>
@@ -319,12 +321,12 @@ export default function MonorailLineExplorer({
                       {isTransfer && transferInfo && (
                         <div style={{ display: "flex", gap: "6px", marginRight: "auto" }}>
                           <span
-                          className="font-inter"
+                            className="font-inter"
                             style={{
                               fontSize: "0.7rem",
                               fontWeight: "700",
                               color: "var(--tab-active-color)",
-                              background:"var(--tab-active-bg)",
+                              background: "var(--tab-active-bg)",
                               padding: "4px 8px",
                               borderRadius: "6px",
                               display: "inline-flex",
@@ -365,18 +367,7 @@ export default function MonorailLineExplorer({
                           <span>⚠️ هذه المحطة قيد الإنشاء والتجهيز وليست في الخدمة الفعلية بعد.</span>
                         </div>
                       ) : (
-                        <div
-                          style={{
-                            color: "#3b82f6",
-                            fontSize: "0.78rem",
-                            fontWeight: "bold",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "6px",
-                            marginBottom: "8px",
-                          }}
-                        >
-                          <span>⚡ حالة المحطة: تشغيل تجريبي بالركاب.</span>
+                        <div>
                         </div>
                       )}
 
@@ -396,6 +387,7 @@ export default function MonorailLineExplorer({
                           landmarks.map((landmark: string, lIdx: number) => (
                             <span
                               key={lIdx}
+                              className="flex items-center gap-1"
                               style={{
                                 fontSize: "0.74rem",
                                 background: "rgba(255, 255, 255, 0.05)",
@@ -405,7 +397,7 @@ export default function MonorailLineExplorer({
                                 border: "1px solid var(--border-glass, rgba(255, 255, 255, 0.08))",
                               }}
                             >
-                              📍 {landmark}
+                              <IconCurrentLocationFilled size={16} className="color-error" /> {landmark}
                             </span>
                           ))
                         ) : (
@@ -433,52 +425,22 @@ export default function MonorailLineExplorer({
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "6px",
-                            padding: "6px 12px",
-                            borderRadius: "8px",
-                            fontSize: "0.78rem",
-                            fontWeight: "700",
-                            background: "rgba(59, 130, 246, 0.12)",
-                            color: "var(--color-secondary, #3b82f6)",
-                            border: "1px solid rgba(59, 130, 246, 0.28)",
-                            textDecoration: "none",
-                            transition: "all 0.2s ease",
-                          }}
+                          className="btn btn-blue w-full min-h-min"
                         >
-                          <i className="fa-solid fa-map-location-dot" style={{ fontSize: "0.85rem" }} />
-                          <span>فتح موقع المحطة على خرائط جوجل ↗</span>
+                          <IconMapPin2 stroke={2} size={18}/>
+                          <span>شوف المحطة علي  الخريطة</span>
                         </a>
                       </div>
 
                       {/* Station Report Problem Banner using ProjectBanner */}
-                      <div
-                        style={{ marginTop: "10px" }}
-                        onClick={(e) => e.stopPropagation()}
+                      <button
+                        type="button"
+                        className="btn btn-error min-h-min p-2 w-full mt-3 fs-sm"
+                        onClick={() => onOpenReportModal(station)}
                       >
-                        <ProjectBanner
-                          variant="error"
-                          label={`هل لاحظت بيانات غير دقيقة في محطة ${station}؟`}
-                          icon={
-                            <svg
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              style={{ width: "16px", height: "16px" }}
-                            >
-                              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-                              <line x1="12" y1="9" x2="12" y2="13" />
-                              <line x1="12" y1="17" x2="12.01" y2="17" />
-                            </svg>
-                          }
-                          onClick={() => onOpenReportModal(station)}
-                        />
-                      </div>
+                        <IconMessageReportFilled size={16} />
+                        <span>الإبلاغ عن خطأ في محطة {station}</span>
+                      </button>
                     </div>
                   )}
 

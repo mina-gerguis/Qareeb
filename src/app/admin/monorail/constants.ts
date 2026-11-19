@@ -53,8 +53,8 @@ export const DEFAULT_MONORAIL_PRICES: MonorailPrice[] = [
 
 export const MONORAIL_LINES: MonorailLineOption[] = [
   { id: "all", label: "جميع الخطوط", color: "#818cf8" },
-  { id: "east", label: "شرق النيل (العاصمة الإدارية)", color: "#3b82f6" },
-  { id: "west", label: "غرب النيل (6 أكتوبر)", color: "#10b981" },
+  { id: "east", label: "العاصمة", color: "#3b82f6" },
+  { id: "west", label: "6 أكتوبر", color: "#10b981" },
 ];
 
 export const INITIAL_STATION_FORM: MonorailStationFormData = {

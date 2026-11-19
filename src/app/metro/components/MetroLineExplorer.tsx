@@ -205,7 +205,7 @@ export default function MetroLineExplorer({
                             transition: "all 0.2s ease",
                           }}
                         />
-                       
+
                         {isFirst && (
                           <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginRight: "6px" }}>
                             (بداية الخط)
@@ -281,8 +281,8 @@ export default function MetroLineExplorer({
                         {landmarks.length > 0 ? (
                           landmarks.map((landmark: string, lIdx: number) => (
                             <span
-                              className="flex items-center gap-1"
                               key={lIdx}
+                              className="flex items-center gap-1"
                               style={{
                                 fontSize: "0.74rem",
                                 background: "rgba(255, 255, 255, 0.05)",
