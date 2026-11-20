@@ -21,4 +21,5 @@
 .silverBtn { background: linear-gradient(135deg, #f1f5f9, #94a3b8); }
 .loginBtn { background: var(--color-primary); color: #fff; }
 .homeBtn { display: flex; align-items: center; justify-content: center; min-height: 44px; border-radius: 14px; font-weight: 700; font-size: 0.88rem; text-decoration: none; color: var(--text-secondary); border: 1px solid var(--border-glass); }
+@media (max-width: 768px) { .card { margin-bottom: calc(112px + env(safe-area-inset-bottom, 0px)); } }
 @media (prefers-reduced-motion: reduce) { .primaryBtn { transition: none; } .primaryBtn:hover { transform: none; } }
