@@ -208,10 +208,12 @@ export default function Navbar() {
         { href: "/ai-planner", label: "مخطط الرحلات الذكي", subtitle: "تخطيط خروجتك بالذكاء الاصطناعي", imgLogo: ASSETS.threeD.robot },
         { href: "/had-yaaraf", label: "حد يعرف ؟", subtitle: "اسأل مجتمع قريب وجاوب وتفاعل مع الناس", imgLogo: ASSETS.threeD.lamp },
         { href: "/doc", label: "التوثيق وسجل التحديثات", subtitle: "سجل التحديثات والمميزات وخريطة الطريق", imgLogo: ASSETS.threeD.book },
+        { href: "/pricing", label: "الأسعار والباقات", subtitle: "باقات الاشتراك والباقة المجانية", imgLogo: ASSETS.branding.qareebNoBgBlue },
         { href: "/help", label: "المساعدة والدعم", subtitle: "الأسئلة الشائعة والدعم الفني", imgLogo: ASSETS.branding.qareebNoBgBlue },
       ]
     },
     { href: "/blog", label: "المدونة والمقالات", icon: <IconLibraryFilled /> },
+    { href: "/pricing", label: "الأسعار", icon: <IconTableFilled /> },
     { href: "/doc", label: "التوثيق والتحديثات", icon: <IconTableFilled /> },
   ];
 
