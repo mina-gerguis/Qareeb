@@ -17,6 +17,7 @@ import DirectionsHero from "./components/DirectionsHero";
 import PopularRoutesSlider from "./components/PopularRoutesSlider";
 import RouteSearchCard from "./components/RouteSearchCard";
 import RouteResultsSection from "./components/RouteResultsSection";
+import SavedCommutes from "./components/SavedCommutes";
 import BottomReportBanner from "./components/BottomReportBanner";
 import DirectionsReportModal from "./components/DirectionsReportModal";
 import { isPageOpenByPromotion } from "@/lib/promotions";
@@ -309,6 +310,14 @@ export default function DirectionsPage() {
           onUseGPS={handleUseGPSLocation}
           locationBadge={locationBadge}
           onClearLocationBadge={() => setLocationBadge(null)}
+        />
+
+        {/* Saved commutes (localStorage) */}
+        <SavedCommutes
+          fromInput={fromInput}
+          toInput={toInput}
+          searchTriggered={searchTriggered}
+          onSelect={handlePresetSearch}
         />
 
         {/* Results Section */}
