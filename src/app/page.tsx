@@ -1062,6 +1062,7 @@ export default function HomePage() {
   };
 
   const quickSearchTags = [
+    { label: "اسأل المساعد الذكي", route: "/ai-planner/chat", icon: ASSETS.threeD.robot },
     { label: "حد يعرف؟", route: "/had-yaaraf", icon: ASSETS.threeD.lamp },
     { label: "دليل الجراجات", route: "/parking", icon: ASSETS.transit.parking },
     { label: "موناريل", route: "/monorail", icon: ASSETS.transit.monorail },
