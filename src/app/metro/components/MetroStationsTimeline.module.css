@@ -1,0 +1,32 @@
+.panel { background: var(--bg-secondary); border: 1px solid var(--border-glass); border-radius: 18px; padding: 16px; }
+.head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.title { font-size: 0.98rem; font-weight: 800; margin: 0; color: var(--color-fg); font-family: var(--font-sub, inherit); }
+.hint { font-size: 0.74rem; color: var(--text-muted); }
+.list { list-style: none; margin: 0; padding: 0; position: relative; }
+.item { position: relative; display: flex; gap: 14px; padding-bottom: 6px; }
+.rail { position: relative; display: flex; flex-direction: column; align-items: center; width: 28px; flex-shrink: 0; }
+.rail::after { content: ""; position: absolute; top: 28px; bottom: -6px; width: 4px; border-radius: 4px; background: var(--line-color); opacity: 0.35; }
+.item:last-child .rail::after { display: none; }
+.dot { z-index: 1; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: #fff; background: var(--line-color); box-shadow: 0 0 0 4px color-mix(in srgb, var(--line-color) 22%, transparent); }
+.dotEdge { box-shadow: 0 0 0 3px var(--color-bg, #18181b), 0 0 0 5px var(--line-color); }
+.dotTransfer { background: #f59e0b; box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.25); }
+.dotBuilding { background: transparent; color: #ef4444; border: 2px dashed #ef4444; box-shadow: none; }
+.body { flex: 1; min-width: 0; padding-bottom: 8px; }
+.card { width: 100%; text-align: right; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 8px 12px; min-height: 44px; border-radius: 12px; border: 1px solid transparent; background: transparent; color: var(--color-fg); font-family: inherit; cursor: pointer; transition: background 0.2s ease, border-color 0.2s ease; }
+.card:hover, .cardOpen { background: var(--bg-glass-card); border-color: var(--border-glass); }
+.card:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.name { display: inline-flex; align-items: center; gap: 8px; font-size: 0.92rem; font-weight: 600; flex-wrap: wrap; }
+.nameStrong { font-weight: 800; }
+.building { color: #ef4444; }
+.tag { font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 9999px; background: color-mix(in srgb, var(--line-color) 16%, transparent); color: var(--line-color); }
+.chevron { color: var(--text-muted); transition: transform 0.2s ease; font-size: 1rem; }
+.chevronOpen { transform: rotate(180deg); color: var(--color-secondary, #3b82f6); }
+.transfers { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 12px 0; }
+.transferBtn { font-size: 0.72rem; font-weight: 700; padding: 5px 10px; min-height: 30px; border-radius: 8px; cursor: pointer; font-family: inherit; }
+.details { margin: 6px 0 0; padding: 14px; border-radius: 14px; background: var(--bg-glass-card); border: 1px solid var(--border-glass); }
+.warn { color: #ef4444; font-size: 0.78rem; font-weight: 700; margin-bottom: 8px; }
+.detailsTitle { font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: 700; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 4px; font-size: 0.76rem; background: rgba(255, 255, 255, 0.05); color: var(--color-fg); padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border-glass, rgba(255, 255, 255, 0.08)); }
+.empty { text-align: center; padding: 24px 0; color: var(--text-muted); }
+@media (prefers-reduced-motion: reduce) { .card, .chevron { transition: none; } }

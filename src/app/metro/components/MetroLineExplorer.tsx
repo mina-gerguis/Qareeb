@@ -3,6 +3,7 @@ import { LineId, MetroLineExplorerProps } from "../types";
 import { LINE_COLORS, LINE_NAMES, LINE_SHORT_NAMES } from "../constants";
 import ProjectBanner from "@/components/common/ProjectBanner";
 import styles from "../metro.module.css";
+import tl from "./MetroStationsTimeline.module.css";
 import { IconCurrentLocationFilled, IconMessageReportFilled } from "@tabler/icons-react";
 
 export default function MetroLineExplorer({
@@ -78,271 +79,115 @@ export default function MetroLineExplorer({
       </div>
 
       {/* Detailed stops vertical timeline */}
-      <div className="bg-secondary border border-glass rounded-lg p-4">
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "16px",
-            flexWrap: "wrap",
-            gap: "8px",
-          }}
-        >
-          <h3
-            style={{
-              fontSize: "0.95rem",
-              fontWeight: "800",
-              margin: 0,
-              color: "var(--color-fg)",
-              fontFamily: "var(--font-sub, inherit)",
-            }}
-          >
-            المحطات المسجلة على هذا الخط ({currentExplorerStations.length})
-          </h3>
-          <span style={{ fontSize: "0.74rem", color: "var(--text-muted)" }}>
-            انقر على اسم المحطة لاستعراض المعالم والأماكن الحيوية
-          </span>
+      <div className={tl.panel}>
+        <div className={tl.head}>
+          <h3 className={tl.title}>المحطات المسجلة على هذا الخط ({currentExplorerStations.length})</h3>
+          <span className={tl.hint}>انقر على اسم المحطة لاستعراض المعالم والأماكن الحيوية</span>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          {currentExplorerStations.length > 0 ? (
-            currentExplorerStations.map((stationObj, idx) => {
+        {currentExplorerStations.length > 0 ? (
+          <ol className={tl.list} style={{ ["--line-color" as string]: color }}>
+            {currentExplorerStations.map((stationObj, idx) => {
               const station = stationObj.name;
               const landmarks = stationObj.landmarks || [];
               const status = stationObj.status || "تشغيل فعلي";
               const isUnderConstruction = status === "تحت الإنشاء";
-
               const isFirst = idx === 0;
               const isLast = idx === currentExplorerStations.length - 1;
-
               const allLinesForStation = Array.from(stationLinesMap.get(station) || []);
               const isTransfer = allLinesForStation.length > 1;
+              const isOpen = expandedStation === station;
+
+              const dotClass = [
+                tl.dot,
+                isUnderConstruction ? tl.dotBuilding : isTransfer ? tl.dotTransfer : "",
+                !isUnderConstruction && !isTransfer && (isFirst || isLast) ? tl.dotEdge : "",
+              ].join(" ");
 
               return (
-                <div key={idx} style={{ display: "flex", flexDirection: "column" }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "12px",
-                      minHeight: "36px",
-                    }}
-                  >
-                    {/* Dot */}
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        width: "16px",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: isTransfer || isFirst || isLast ? "12px" : "8px",
-                          height: isTransfer || isFirst || isLast ? "12px" : "8px",
-                          borderRadius: "50%",
-                          backgroundColor: isUnderConstruction
-                            ? "transparent"
-                            : isTransfer
-                              ? "#f59e0b"
-                              : color,
-                          border: isUnderConstruction
-                            ? `2px dashed #ef4444`
-                            : isFirst || isLast
-                              ? `2px solid var(--color-bg, #18181b)`
-                              : "none",
-                          boxShadow:
-                            isUnderConstruction
-                              ? "none"
-                              : isFirst || isLast
-                                ? `0 0 0 2px ${color}`
-                                : "none",
-                        }}
-                      />
-                    </div>
-
-                    {/* Text & Badges */}
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        gap: "8px",
-                        flexGrow: 1,
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      <span
-                        onClick={() => onToggleStation(station)}
-                        style={{
-                          fontSize: "0.88rem",
-                          fontWeight: isFirst || isLast || isTransfer ? "800" : "600",
-                          color: isUnderConstruction
-                            ? "#ef4444"
-                            : isFirst || isLast
-                              ? "var(--color-fg)"
-                              : "var(--color-fg)",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "6px",
-                          cursor: "pointer",
-                        }}
-                      >
-                        {station}
-                        <i
-                          className={`bx ${expandedStation === station ? "bx-chevron-up" : "bx-chevron-down"
-                            }`}
-                          style={{
-                            fontSize: "0.95rem",
-                            color:
-                              expandedStation === station
-                                ? "var(--color-secondary, #3b82f6)"
-                                : "var(--text-muted)",
-                            transition: "all 0.2s ease",
-                          }}
-                        />
-
-                        {isFirst && (
-                          <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginRight: "6px" }}>
-                            (بداية الخط)
-                          </span>
-                        )}
-                        {isLast && (
-                          <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginRight: "6px" }}>
-                            (نهاية الخط)
-                          </span>
-                        )}
-                      </span>
-
-                      {/* Transfer switcher buttons */}
-                      {isTransfer && (
-                        <div style={{ display: "flex", gap: "6px", marginRight: "auto" }}>
-                          {allLinesForStation
-                            .filter((l) => l !== explorerLine)
-                            .map((l) => (
-                              <button
-                                key={l}
-                                type="button"
-                                onClick={() => onSwitchLine(l)}
-                                style={{
-                                  fontSize: "0.7rem",
-                                  fontWeight: "700",
-                                  color: LINE_COLORS[l] || "#3b82f6",
-                                  background: (LINE_COLORS[l] || "#3b82f6") + "1a",
-                                  border: `1px solid ${(LINE_COLORS[l] || "#3b82f6")}40`,
-                                  padding: "3px 8px",
-                                  borderRadius: "6px",
-                                  cursor: "pointer",
-                                  transition: "all 0.2s ease",
-                                }}
-                                title={`انقر للانتقال إلى ${LINE_NAMES[l]}`}
-                              >
-                                تبادل مع {LINE_SHORT_NAMES[l] || l}
-                              </button>
-                            ))}
-                        </div>
-                      )}
-                    </div>
+                <li key={idx} className={tl.item}>
+                  <div className={tl.rail}>
+                    <span className={dotClass}>{idx + 1}</span>
                   </div>
 
-                  {/* Expanded Landmarks / Status details */}
-                  {expandedStation === station && (
-                    <div className="rounded-lg p-4 bg-glass mt-1">
-                      {isUnderConstruction && (
-                        <div
-                          style={{
-                            color: "#ef4444",
-                            fontSize: "0.78rem",
-                            fontWeight: "bold",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "6px",
-                            marginBottom: "8px",
-                          }}
-                        >
-                          <span>⚠️ هذه المحطة قيد الإنشاء والتجهيز وليست في الخدمة الفعلية بعد.</span>
-                        </div>
-                      )}
-                      <div
-                        style={{
-                          fontSize: "0.78rem",
-                          color: "var(--text-secondary)",
-                          marginBottom: "6px",
-                          fontWeight: "700",
-                        }}
+                  <div className={tl.body}>
+                    <button
+                      type="button"
+                      className={`${tl.card} ${isOpen ? tl.cardOpen : ""}`}
+                      onClick={() => onToggleStation(station)}
+                      aria-expanded={isOpen}
+                    >
+                      <span
+                        className={`${tl.name} ${isFirst || isLast || isTransfer ? tl.nameStrong : ""} ${isUnderConstruction ? tl.building : ""}`}
                       >
-                        المعالم والأماكن الحيوية القريبة من المحطة:
-                      </div>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                        {landmarks.length > 0 ? (
-                          landmarks.map((landmark: string, lIdx: number) => (
-                            <span
-                              key={lIdx}
-                              className="flex items-center gap-1"
-                              style={{
-                                fontSize: "0.74rem",
-                                background: "rgba(255, 255, 255, 0.05)",
-                                color: "var(--color-fg)",
-                                padding: "4px 10px",
-                                borderRadius: "6px",
-                                border: "1px solid var(--border-glass, rgba(255, 255, 255, 0.08))",
-                              }}
-                            >
-                              <IconCurrentLocationFilled size={16} className="color-error" /> {landmark}
-                            </span>
-                          ))
-                        ) : (
-                          <span style={{ fontSize: "0.74rem", color: "var(--text-muted)", fontStyle: "italic" }}>
-                            لم يتم تسجيل معالم قريبة لهذه المحطة بعد.
-                          </span>
-                        )}
-                      </div>
-                      <button
-                        type="button"
-                        className="btn btn-error min-h-min p-2 w-full mt-3 fs-sm"
-                        onClick={() => onOpenReportModal(station)}
-                      >
-                        <IconMessageReportFilled size={16} />
-                        <span>الإبلاغ عن خطأ في محطة {station}</span>
-                      </button>
-                    </div>
-                  )}
+                        {station}
+                        {isFirst && <span className={tl.tag}>بداية الخط</span>}
+                        {isLast && <span className={tl.tag}>نهاية الخط</span>}
+                        {isUnderConstruction && <span className={tl.tag}>تحت الإنشاء</span>}
+                      </span>
+                      <i className={`bx bx-chevron-down ${tl.chevron} ${isOpen ? tl.chevronOpen : ""}`} aria-hidden="true" />
+                    </button>
 
-                  {/* Connective Line */}
-                  {!isLast && (
-                    <div style={{ display: "flex", gap: "12px", minHeight: "14px" }}>
-                      <div
-                        style={{
-                          width: "16px",
-                          display: "flex",
-                          justifyContent: "center",
-                          flexShrink: 0,
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: "2px",
-                            backgroundColor: color,
-                            minHeight: "14px",
-                            opacity: 0.35,
-                          }}
-                        />
+                    {isTransfer && (
+                      <div className={tl.transfers}>
+                        {allLinesForStation
+                          .filter((l) => l !== explorerLine)
+                          .map((l) => (
+                            <button
+                              key={l}
+                              type="button"
+                              className={tl.transferBtn}
+                              onClick={() => onSwitchLine(l)}
+                              style={{
+                                color: LINE_COLORS[l] || "#3b82f6",
+                                background: (LINE_COLORS[l] || "#3b82f6") + "1a",
+                                border: `1px solid ${(LINE_COLORS[l] || "#3b82f6")}40`,
+                              }}
+                              title={`انقر للانتقال إلى ${LINE_NAMES[l]}`}
+                            >
+                              تبادل مع {LINE_SHORT_NAMES[l] || l}
+                            </button>
+                          ))}
                       </div>
-                    </div>
-                  )}
-                </div>
+                    )}
+
+                    {isOpen && (
+                      <div className={tl.details}>
+                        {isUnderConstruction && (
+                          <div className={tl.warn}>⚠️ هذه المحطة قيد الإنشاء والتجهيز وليست في الخدمة الفعلية بعد.</div>
+                        )}
+                        <div className={tl.detailsTitle}>المعالم والأماكن الحيوية القريبة من المحطة:</div>
+                        <div className={tl.chips}>
+                          {landmarks.length > 0 ? (
+                            landmarks.map((landmark: string, lIdx: number) => (
+                              <span key={lIdx} className={tl.chip}>
+                                <IconCurrentLocationFilled size={16} className="color-error" /> {landmark}
+                              </span>
+                            ))
+                          ) : (
+                            <span style={{ fontSize: "0.74rem", color: "var(--text-muted)", fontStyle: "italic" }}>
+                              لم يتم تسجيل معالم قريبة لهذه المحطة بعد.
+                            </span>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          className="btn btn-error min-h-min p-2 w-full mt-3 fs-sm"
+                          onClick={() => onOpenReportModal(station)}
+                        >
+                          <IconMessageReportFilled size={16} />
+                          <span>الإبلاغ عن خطأ في محطة {station}</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </li>
               );
-            })
-          ) : (
-            <div style={{ textAlign: "center", padding: "24px 0", color: "var(--text-muted)" }}>
-              لا توجد محطات مسجلة لهذا الخط حالياً.
-            </div>
-          )}
-        </div>
+            })}
+          </ol>
+        ) : (
+          <div className={tl.empty}>لا توجد محطات مسجلة لهذا الخط حالياً.</div>
+        )}
       </div>
     </div>
   );
