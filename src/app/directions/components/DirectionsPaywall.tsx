@@ -1,5 +1,5 @@
 import React, { RefObject } from "react";
-import Link from "next/link";
+import SubscriptionLockCard from "@/components/common/SubscriptionLockCard";
 import { User } from "@supabase/supabase-js";
 
 interface DirectionsPaywallProps {
@@ -35,69 +35,19 @@ export default function DirectionsPaywall({
         </div>
 
         {/* Paywall Card */}
-        <div
-          ref={paywallCardRef}
-          className="bg-glass border border-glass rounded-2xl shadow-xl max-w-lg mx-auto text-center px-7 py-9 flex flex-col items-center overflow-hidden relative"
-        >
-          {/* Badge Icon */}
-          <div className="mb-4">
-            <img
-              src="/images/threeD/CairoSilver.webp"
-              alt="Silver Access"
-              loading="lazy"
-              decoding="async"
-              className="w-28 sm:w-32 h-auto object-contain mx-auto"
-            />
-          </div>
-
-          <h2 className="text-xl sm:text-2xl font-extrabold text-primary font-sub m-0 mb-2.5 leading-snug">
-            دليل مسارات المواصلات يتطلب الاشتراك في الباقة الفضية
-          </h2>
-
-          <p className="text-sm text-secondary leading-relaxed m-0 mb-4">
-            محرك البحث المتقدم عن خطوط المواصلات والطرق المختصرة (ميكروباص، أتوبيسات، مترو، ومونوريل) متاح للمشتركين في الباقة الفضية أو الذهبية أو المشوار.
-          </p>
-
-          {/* Perks list */}
-          <div className="bg-subtle border border-subtle rounded-2xl p-4 text-right m-0 mb-6 w-full">
-            <div className="font-extrabold text-primary text-sm mb-2.5 flex items-center gap-1.5">
-              <i className="bx bxs-award text-muted" />
-              <span>ما الذي يميز الباقة الفضية؟</span>
-            </div>
-            <ul className="list-none p-0 pr-4 m-0 text-xs sm:text-sm text-secondary leading-loose flex flex-col gap-1.5">
-              <li>✨ البحث عن مسارات مواصلات بين أي منطقتين بالتفصيل</li>
-              <li>✨ حساب تكلفة الرحلة والمدة المتوقعة بدقة لكل مرحلة</li>
-              <li>✨ خيارات متعددة للتنقل (مباشر، مترو + ميكروباص، إلخ)</li>
-              <li>✨ تشمل أيضاً دليل القطارات والمونوريل والقطار الكهربائي</li>
-            </ul>
-          </div>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col gap-3 w-full">
-            {user ? (
-              <Link
-                href="/profile?expand=subscription"
-                className="btn btn-silver w-full"
-              >
-                اشترك الآن في الباقة الفضية
-              </Link>
-            ) : (
-              <Link
-                href="/login"
-                className="btn btn-primary w-full"
-              >
-                سجل دخولك أولاً لتفعيل الاشتراك
-              </Link>
-            )}
-
-            <Link
-              href="/"
-              className="btn btn-cancel w-full"
-            >
-              الرجوع للرئيسية
-            </Link>
-          </div>
-        </div>
+        <SubscriptionLockCard
+          cardRef={paywallCardRef}
+          isLoggedIn={!!user}
+          tier="silver"
+          title="دليل مسارات المواصلات يتطلب الاشتراك في الباقة الفضية"
+          description="محرك البحث المتقدم عن خطوط المواصلات والطرق المختصرة (ميكروباص، أتوبيسات، مترو، ومونوريل) متاح للمشتركين في الباقة الفضية أو الذهبية أو المشوار."
+          features={[
+            "البحث عن مسارات مواصلات بين أي منطقتين بالتفصيل",
+            "حساب تكلفة الرحلة والمدة المتوقعة بدقة لكل مرحلة",
+            "خيارات متعددة للتنقل (مباشر، مترو + ميكروباص، إلخ)",
+            "تشمل أيضاً دليل القطارات والمونوريل والقطار الكهربائي"
+          ]}
+        />
       </div>
     </div>
   );

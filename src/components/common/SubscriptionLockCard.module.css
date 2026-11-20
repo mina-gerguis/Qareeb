@@ -1,0 +1,23 @@
+.card { position: relative; overflow: hidden; max-width: 520px; margin: 0 auto; padding: 32px 24px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; background: var(--bg-glass-card); border: 1px solid var(--border-glass); border-radius: 24px; box-shadow: var(--shadow-md); }
+.gold { --tier: #fbbf24; }
+.silver { --tier: #cbd5e1; }
+.glow { position: absolute; top: -90px; left: 50%; width: 280px; height: 280px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--tier) 35%, transparent), transparent 70%); pointer-events: none; }
+.badgeWrap { position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 14px; }
+.badgeImg { width: 120px; height: auto; object-fit: contain; filter: drop-shadow(0 8px 18px color-mix(in srgb, var(--tier) 40%, transparent)); }
+.lockChip { font-size: 0.75rem; font-weight: 800; padding: 4px 12px; border-radius: 9999px; color: var(--tier); background: color-mix(in srgb, var(--tier) 14%, transparent); border: 1px solid color-mix(in srgb, var(--tier) 40%, transparent); }
+.title { position: relative; font-size: clamp(1.15rem, 3.4vw, 1.45rem); font-weight: 800; color: var(--color-fg); margin: 0 0 10px; line-height: 1.5; font-family: var(--font-sub, inherit); }
+.desc { position: relative; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.8; margin: 0 0 18px; max-width: 440px; }
+.perks { position: relative; width: 100%; text-align: right; padding: 16px; margin-bottom: 20px; background: var(--bg-secondary); border: 1px solid var(--border-glass); border-radius: 16px; }
+.perksTitle { font-weight: 800; font-size: 0.88rem; color: var(--color-fg); margin-bottom: 10px; }
+.perksList { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.perksList li { display: flex; align-items: flex-start; gap: 10px; font-size: 0.84rem; color: var(--text-secondary); line-height: 1.6; }
+.check { flex-shrink: 0; width: 20px; height: 20px; margin-top: 1px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: #1a1a1a; background: var(--tier); }
+.actions { position: relative; width: 100%; display: flex; flex-direction: column; gap: 10px; }
+.primaryBtn { display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: 14px; font-weight: 800; font-size: 0.95rem; text-decoration: none; color: #1a1a1a; transition: transform 0.15s ease, filter 0.15s ease; }
+.primaryBtn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+.primaryBtn:focus-visible, .homeBtn:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.goldBtn { background: linear-gradient(135deg, #fde68a, #f59e0b); }
+.silverBtn { background: linear-gradient(135deg, #f1f5f9, #94a3b8); }
+.loginBtn { background: var(--color-primary); color: #fff; }
+.homeBtn { display: flex; align-items: center; justify-content: center; min-height: 44px; border-radius: 14px; font-weight: 700; font-size: 0.88rem; text-decoration: none; color: var(--text-secondary); border: 1px solid var(--border-glass); }
+@media (prefers-reduced-motion: reduce) { .primaryBtn { transition: none; } .primaryBtn:hover { transform: none; } }
