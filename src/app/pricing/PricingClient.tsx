@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 import { DEFAULT_PLANS, FREE_TRIAL_ANNOUNCEMENT, type PlanInfo } from "./plans";
@@ -77,9 +78,15 @@ export default function PricingClient() {
   }, []);
 
   const ctaHref = user ? "/profile" : "/signup";
+  const gold = plans.find((x) => x.id === "gold");
+  const yearlySaving =
+    gold && gold.priceMonthly && gold.priceYearly
+      ? Math.max(0, Math.round((1 - gold.priceYearly / (gold.priceMonthly * 12)) * 100))
+      : 0;
 
   return (
     <main className={styles.container} dir="rtl">
+      <div className={styles.gridBg} aria-hidden="true" />
       <section className={styles.hero}>
         <h1 className={styles.title}>الأسعار والباقات</h1>
         <p className={styles.subtitle}>اختار الباقة اللي تناسبك. تقدر تبدأ مجاناً وتترقى في أي وقت.</p>
@@ -89,22 +96,23 @@ export default function PricingClient() {
           </div>
         )}
         <div className={styles.toggle} role="tablist" aria-label="مدة الاشتراك">
-          <button
-            role="tab"
-            aria-selected={period === "monthly"}
-            className={period === "monthly" ? styles.toggleActive : styles.toggleBtn}
-            onClick={() => setPeriod("monthly")}
-          >
-            شهري
-          </button>
-          <button
-            role="tab"
-            aria-selected={period === "yearly"}
-            className={period === "yearly" ? styles.toggleActive : styles.toggleBtn}
-            onClick={() => setPeriod("yearly")}
-          >
-            سنوي
-          </button>
+          {(["monthly", "yearly"] as Period[]).map((k) => (
+            <button
+              key={k}
+              role="tab"
+              aria-selected={period === k}
+              className={period === k ? styles.toggleActive : styles.toggleBtn}
+              onClick={() => setPeriod(k)}
+            >
+              {period === k && (
+                <motion.span layoutId="pricing-pill" className={styles.pill} transition={{ type: "spring", stiffness: 400, damping: 32 }} />
+              )}
+              <span className={styles.toggleLabel}>
+                {k === "monthly" ? "شهري" : "سنوي"}
+                {k === "yearly" && yearlySaving > 0 && <em className={styles.save}>وفّر {yearlySaving}%</em>}
+              </span>
+            </button>
+          ))}
         </div>
       </section>
 
@@ -115,7 +123,14 @@ export default function PricingClient() {
           const amount = isDaily ? p.priceDaily : period === "monthly" ? p.priceMonthly : p.priceYearly;
           const suffix = isDaily ? " / 24 ساعة" : period === "monthly" ? " / شهر" : " / سنة";
           return (
-            <article key={p.id} className={`${styles.card} ${p.highlight ? styles.cardHighlight : ""}`}>
+            <motion.article
+              key={p.id}
+              className={`${styles.card} ${p.highlight ? styles.cardHighlight : ""}`}
+              initial={{ opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.4 }}
+            >
               {p.highlight && <span className={styles.badge}>الأكثر شمولاً</span>}
               <h2 className={styles.planName}>{p.name}</h2>
               <p className={styles.tagline}>{p.tagline}</p>
@@ -128,7 +143,7 @@ export default function PricingClient() {
               <Link href={isFree ? ctaHref : user ? "/profile" : "/signup"} className={styles.cta}>
                 {isFree ? (user ? "حسابك" : "ابدأ مجاناً") : user ? "اشترك من حسابك" : "سجّل واشترك"}
               </Link>
-            </article>
+            </motion.article>
           );
         })}
       </section>
