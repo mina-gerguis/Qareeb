@@ -1,4 +1,6 @@
-import React, { RefObject } from "react";
+"use client";
+
+import React, { RefObject, useState } from "react";
 import Link from "next/link";
 import styles from "./SubscriptionLockCard.module.css";
 
@@ -17,13 +19,13 @@ interface SubscriptionLockCardProps {
 const TIER_META: Record<LockTier, { label: string; image: string; alt: string; cta: string }> = {
   silver: {
     label: "الباقة الفضية",
-    image: "/images/threeD/CairoSilver.webp",
+    image: "/images/threeD/qareeb_silver.webp",
     alt: "الباقة الفضية",
     cta: "اشترك في الباقة الفضية",
   },
   gold: {
     label: "الباقة الذهبية",
-    image: "/images/threeD/CairoGold.webp",
+    image: "/images/threeD/qareeb_gold.webp",
     alt: "الباقة الذهبية",
     cta: "اشترك في الباقة الذهبية",
   },
@@ -39,11 +41,25 @@ export default function SubscriptionLockCard({
   cardRef,
 }: SubscriptionLockCardProps) {
   const meta = TIER_META[tier];
+  const [imgFailed, setImgFailed] = useState(false);
   return (
     <div ref={cardRef} className={`${styles.card} ${tier === "gold" ? styles.gold : styles.silver}`} dir="rtl">
       <div className={styles.glow} aria-hidden="true" />
       <div className={styles.badgeWrap}>
-        <img src={meta.image} alt={meta.alt} loading="lazy" decoding="async" className={styles.badgeImg} />
+        {imgFailed ? (
+          <span className={styles.badgeFallback} aria-hidden="true">{tier === "gold" ? "👑" : "⭐"}</span>
+        ) : (
+          <img
+            src={meta.image}
+            alt=""
+            width={96}
+            height={96}
+            loading="lazy"
+            decoding="async"
+            className={styles.badgeImg}
+            onError={() => setImgFailed(true)}
+          />
+        )}
         <span className={styles.lockChip}>
           <span aria-hidden="true">🔒</span> محتوى للمشتركين
         </span>

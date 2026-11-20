@@ -21,8 +21,8 @@ export default function DirectionsPaywall({
         <div ref={paywallRef} className="text-center mb-7">
           <h1 className="flex items-center justify-center gap-3 font-extrabold font-sub text-3xl sm:text-4xl m-0 mb-2.5">
             <img
-              src="/images/transit/arab_republic _of_egypt.webp"
-              alt="Cairo Directions"
+              src="/images/transit/arab_republice.webp"
+              alt=""
               loading="lazy"
               decoding="async"
               className="w-10 h-auto object-contain"
