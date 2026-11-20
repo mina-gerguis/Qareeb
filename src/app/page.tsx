@@ -18,6 +18,7 @@ import dynamic from "next/dynamic";
 import VideoAdBanner from "@/components/VideoAdBanner";
 const WeatherComfortWidget = dynamic(() => import("@/components/WeatherComfortWidget"), { ssr: false });
 const MetroMapGallery = dynamic(() => import("@/components/ui/MetroMapGallery"), { ssr: false });
+const HomeMetro3D = dynamic(() => import("@/components/home/HomeMetro3D"), { ssr: false });
 const HomeGlassFolders = dynamic(() => import("@/components/home/HomeGlassFolders"), { ssr: false });
 import { CAIRO_METRO_LINES, CAIRO_METRO_STATIONS, CAIRO_METRO_LABELS } from "@/data/cairoMetroGalleryData";
 import { FamousCity, INITIAL_FAMOUS_CITIES, getStoredCities, saveStoredCities } from "@/data/cities";
@@ -1327,6 +1328,9 @@ export default function HomePage() {
         {/* ── HOME VIDEO AD BANNER: SLOT 1 (TOP / HERO) ── */}
         <VideoAdBanner slotId="[ heroTop#1 ]" />
       </section>
+
+      {/* ── مجسم المترو ثلاثي الأبعاد (Three.js) ── */}
+      <HomeMetro3D />
 
       {/* ── 2. FAMOUS CITIES SECTION (المدن الشهيرة - سلايدر بنقط تنقل) ── */}
       <section ref={citiesSectionRef} style={{ padding: "60px 20px 40px 20px", maxWidth: "1200px", margin: "0 auto" }}>
