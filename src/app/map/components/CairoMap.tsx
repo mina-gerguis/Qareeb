@@ -78,6 +78,7 @@ export default function CairoMap({
       zoom: DEFAULT_ZOOM,
       zoomControl: false,
       attributionControl: true,
+      maxZoom: 19,
     });
 
     internalMapRef.current = map;
