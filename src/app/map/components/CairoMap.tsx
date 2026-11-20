@@ -3,6 +3,8 @@
 import React, { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import "leaflet.markercluster";
+import "leaflet.markercluster/dist/MarkerCluster.css";
 import { MapPlacePoint, UserLocation, MapLayerType } from "../types";
 import { getCategoryColor, CATEGORY_EMOJIS } from "@/app/places/constants";
 import styles from "../map.module.css";
@@ -76,6 +78,7 @@ export default function CairoMap({
       zoom: DEFAULT_ZOOM,
       zoomControl: false,
       attributionControl: true,
+      maxZoom: 19,
     });
 
     internalMapRef.current = map;
@@ -83,7 +86,22 @@ export default function CairoMap({
       mapInstanceRef.current = map;
     }
 
-    markersLayerRef.current = L.layerGroup().addTo(map);
+    // تجميع الدبابيس المتقاربة في دوائر بعدد الأماكن، وتتفتح مع الزووم
+    markersLayerRef.current = L.markerClusterGroup({
+      showCoverageOnHover: false,
+      maxClusterRadius: 48,
+      spiderfyOnMaxZoom: true,
+      disableClusteringAtZoom: 16,
+      iconCreateFunction: (cluster) => {
+        const n = cluster.getChildCount();
+        const size = n < 10 ? 38 : n < 50 ? 44 : 52;
+        return L.divIcon({
+          html: `<div class="cairo-cluster-bubble"><span>${n}</span></div>`,
+          className: "cairo-cluster-wrapper",
+          iconSize: [size, size],
+        });
+      },
+    }).addTo(map);
 
     // Initial tile layer (Always Light by default)
     const activeLayerKey: MapLayerType = mapLayer === "dark" ? "light" : (mapLayer || "light");
