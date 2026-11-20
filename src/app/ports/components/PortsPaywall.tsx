@@ -1,4 +1,5 @@
 import React, { RefObject } from "react";
+import SubscriptionLockCard from "@/components/common/SubscriptionLockCard";
 import Link from "next/link";
 import { User } from "@supabase/supabase-js";
 import styles from "../ports.module.css";
@@ -45,56 +46,19 @@ export default function PortsPaywall({
         </div>
 
         {/* Lock Panel */}
-        <div ref={paywallCardRef} className={styles.paywallCard}>
-          <div className={styles.paywallGlowOrb} />
-
-          <div style={{ marginBottom: "20px" }}>
-            <img
-              src="/images/threeD/CairoGold.webp"
-              alt="Gold Subscription"
-              loading="lazy"
-              decoding="async"
-              style={{ width: "130px", height: "auto", objectFit: "contain", margin: "0 auto" }}
-            />
-          </div>
-
-          <h2 className={styles.paywallTitle}>
-            دليل الموانئ يتطلب اشتراك في الباقة الذهبية
-          </h2>
-
-          <p className={styles.paywallDescription}>
-            تصفح دليل الموانئ البحرية التجارية، اللوجستية، وموانئ الركاب وطاقتها الاستيعابية وأرصفتها متاح حصرياً لمشتركي الباقة الذهبية المميزة.
-          </p>
-
-          <div className={styles.paywallFeaturesBox}>
-            <div className={styles.paywallFeaturesTitle}>
-              <i className="bx bxs-award" style={{ color: "#fbbf24", fontSize: "1.2rem" }} />
-              <span>ماذا ستحصل في الباقة الذهبية؟</span>
-            </div>
-            <ul className={styles.paywallFeaturesList}>
-              <li>✨ دليل الموانئ البحرية (الإسكندرية، دمياط، السخنة، بورسعيد، سفاجا، إلخ).</li>
-              <li>✨ الطاقة الاستيعابية والقدرة التشغيلية وأرصفة التداول والملاحة.</li>
-              <li>✨ شبكات الربط المباشرة مع الطرق السريعة وسكك حديد مصر والقطار السريع.</li>
-              <li>✨ تشمل أيضاً مواقف الميكروباص، المطارات، ومخطط الرحلات الذكي بالكامل.</li>
-            </ul>
-          </div>
-
-          <div className={styles.paywallActions}>
-            {user ? (
-              <Link href="/profile?expand=subscription" className="btn btn-gold">
-                ترقية إلى الباقة الذهبية الآن
-              </Link>
-            ) : (
-              <Link href="/login" className="btn btn-primary">
-                تسجيل الدخول لتفعيل الاشتراك
-              </Link>
-            )}
-
-            <Link href="/" className="btn btn-cancel">
-              الرجوع للرئيسية
-            </Link>
-          </div>
-        </div>
+        <SubscriptionLockCard
+          cardRef={paywallCardRef}
+          isLoggedIn={!!user}
+          tier="gold"
+          title="دليل الموانئ يتطلب اشتراك في الباقة الذهبية"
+          description="تصفح دليل الموانئ البحرية التجارية، اللوجستية، وموانئ الركاب وطاقتها الاستيعابية وأرصفتها متاح حصرياً لمشتركي الباقة الذهبية المميزة."
+          features={[
+            "دليل الموانئ البحرية (الإسكندرية، دمياط، السخنة، بورسعيد، سفاجا، إلخ)",
+            "الطاقة الاستيعابية والقدرة التشغيلية وأرصفة التداول والملاحة",
+            "شبكات الربط المباشرة مع الطرق السريعة وسكك حديد مصر والقطار السريع",
+            "تشمل أيضاً مواقف الميكروباص، المطارات، ومخطط الرحلات الذكي بالكامل"
+          ]}
+        />
       </div>
     </div>
   );
