@@ -1,5 +1,5 @@
 // Service Worker for Cairo Map PWA
-const CACHE_NAME = "cairo-map-cache-v1";
+const CACHE_NAME = "cairo-map-cache-v2";
 const STATIC_ASSETS = [
   "/",
   "/metro",
@@ -7,6 +7,7 @@ const STATIC_ASSETS = [
   "/live-updates",
   "/intercity-buses",
   "/parking",
+  "/offline.html",
   "/favicon.ico",
   "/images/brand/qareeb_touch.webp",
   "/images/logo/darkMode_logo.png",
@@ -44,7 +45,7 @@ self.addEventListener("activate", (event) => {
 // Fetch Event - Network First with Cache Fallback
 self.addEventListener("fetch", (event) => {
   // Ignore non-GET requests or browser extension requests
-  if (event.request.method !== "GET" || !event.request.url.startsWith("http")) {
+  if (event.request.method !== "GET" || !event.request.url.startsWith("http") || new URL(event.request.url).pathname.startsWith("/api/")) {
     return;
   }
 
@@ -67,8 +68,10 @@ self.addEventListener("fetch", (event) => {
             return cachedResponse;
           }
           if (event.request.mode === "navigate") {
-            return caches.match("/");
+            // صفحة اتزارت قبل كده -> الرئيسية المحفوظة، وإلا صفحة "مفيش نت" الثابتة
+            return caches.match("/").then((home) => home || caches.match("/offline.html"));
           }
+          return Response.error();
         });
       })
   );
