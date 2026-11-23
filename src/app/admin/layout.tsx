@@ -74,7 +74,9 @@ export default function AdminLayout({
           { label: "البلاغات والاقتراحات الواردة", href: "/admin/reports", category: "صفحة إدارية", icon: "bx bx-inbox" },
           { label: "الرصيد والشحن المالي", href: "/admin/points?tab=users", category: "صفحة إدارية", icon: "bx bx-coin-stack" },
           { label: "طلبات الإيداع والسحب المعلقة", href: "/admin/points?tab=requests", category: "صفحة إدارية", icon: "bx bx-transfer" },
+          { label: "سجل الرصيد الترويجي", href: "/admin/points?tab=promo_ledger", category: "صفحة إدارية", icon: "bx bx-gift" },
           { label: "إدارة القسائم والأكواد الترويجية", href: "/admin/vouchers", category: "صفحة إدارية", icon: "bx bxs-coupon" },
+          { label: "إدارة نظام الإحالات والدعوات", href: "/admin/referrals", category: "صفحة إدارية", icon: "bx bx-share-alt" },
           { label: "إدارة الحسابات والمستخدمين", href: "/admin/users", category: "صفحة إدارية", icon: "bx bx-group" },
           { label: "الاشتراكات المميزة والذهبية", href: "/admin/subscriptions", category: "صفحة إدارية", icon: "bx bx-crown" },
           { label: "العروض والخصومات للاشتراكات", href: "/admin/subscriptions?tab=promotions", category: "صفحة إدارية", icon: "bx bx-gift" },
@@ -413,9 +415,11 @@ export default function AdminLayout({
   else if (pathname === "/admin/reports" || pathname === "/admin/incoming-reports") pageTitle = "البلاغات والاقتراحات الواردة";
   else if (pathname === "/admin/points") {
     if (activeSubTab === "requests") pageTitle = "طلبات الإيداع والسحب";
+    else if (activeSubTab === "promo_ledger") pageTitle = "سجل الرصيد الترويجي";
     else pageTitle = "الرصيد والشحن";
   }
   else if (pathname === "/admin/vouchers") pageTitle = "إدارة القسائم والأكواد";
+  else if (pathname === "/admin/referrals") pageTitle = "إدارة نظام الإحالات والدعوات";
   else if (pathname === "/admin/subscriptions") {
     if (activeSubTab === "promotions" || activeSubTab === "offers") pageTitle = "العروض والخصومات";
     else pageTitle = "الاشتراكات المميزة";
@@ -536,6 +540,20 @@ export default function AdminLayout({
             </Link>
 
             <Link
+              href="/admin/points?tab=promo_ledger"
+              className={`${styles.sidebarNavLink} ${pathname === "/admin/points" && activeSubTab === "promo_ledger" ? styles.sidebarNavLinkActive : ""}`}
+              onClick={() => {
+                setActiveSubTab("promo_ledger");
+                if (isMobile) setIsSidebarOpen(false);
+              }}
+            >
+              <div className={styles.linkLeftGroup}>
+                <i className={`bx bx-gift ${styles.linkIcon}`} />
+                <span className={styles.linkLabel}>سجل الرصيد الترويجي</span>
+              </div>
+            </Link>
+
+            <Link
               href="/admin/vouchers"
               className={`${styles.sidebarNavLink} ${pathname === "/admin/vouchers" ? styles.sidebarNavLinkActive : ""}`}
               onClick={() => {
@@ -546,6 +564,20 @@ export default function AdminLayout({
               <div className={styles.linkLeftGroup}>
                 <i className={`bx bxs-coupon ${styles.linkIcon}`} />
                 <span className={styles.linkLabel}>إدارة القسائم والأكواد</span>
+              </div>
+            </Link>
+
+            <Link
+              href="/admin/referrals"
+              className={`${styles.sidebarNavLink} ${pathname === "/admin/referrals" ? styles.sidebarNavLinkActive : ""}`}
+              onClick={() => {
+                setActiveSubTab(null);
+                if (isMobile) setIsSidebarOpen(false);
+              }}
+            >
+              <div className={styles.linkLeftGroup}>
+                <i className={`bx bx-share-alt ${styles.linkIcon}`} />
+                <span className={styles.linkLabel}>نظام الإحالات والمكافآت</span>
               </div>
             </Link>
 
@@ -694,256 +726,242 @@ export default function AdminLayout({
 
             {/* ── الخدمات والمواقع (قائمة قابلة للطي) ── */}
             <div className={styles.sidebarGroupLabel}>الخدمات والمواقع</div>
+            <div className={styles.submenu}>
+              <Link
+                href="/admin/places"
+                className={`${styles.submenuLink} ${pathname === "/admin/places" ? styles.submenuLinkActive : ""}`}
+                onClick={() => {
+                  if (isMobile) setIsSidebarOpen(false);
+                }}
+              >
+                <div className={styles.linkLeftGroup}>
+                    <Image
+                  src={ASSETS.threeD.street}
+                  alt=""
+                  width={20}
+                  height={20}
+                />
+                  <span className={styles.linkLabel}>إدارة الأماكن</span>
+                </div>
+              </Link>
 
-            <Link
-              href="/admin/places"
-              className={`${styles.sidebarNavLink} ${pathname === "/admin/places" ? styles.sidebarNavLinkActive : ""}`}
-              onClick={() => {
-                if (isMobile) setIsSidebarOpen(false);
-              }}
-            >
-              <div className={styles.linkLeftGroup}>
-                <i className={`bx bx-map ${styles.linkIcon}`} />
-                <span className={styles.linkLabel}>إدارة الأماكن</span>
-              </div>
-            </Link>
+              <Link
+                href="/admin/places/suggestions"
+                className={`${styles.submenuLink} ${pathname === "/admin/places/suggestions" ? styles.submenuLinkActive : ""}`}
+                onClick={() => {
+                  if (isMobile) setIsSidebarOpen(false);
+                }}
+              >
+                <div className={styles.linkLeftGroup}>
+                  <Image
+                  src={ASSETS.threeD.places}
+                  alt=""
+                  width={20}
+                  height={20}
+                />
+                  <span className={styles.linkLabel}>اقتراحات الأماكن</span>
+                </div>
+              </Link>
 
-            <Link
-              href="/admin/places/suggestions"
-              className={`${styles.sidebarNavLink} ${pathname === "/admin/places/suggestions" ? styles.sidebarNavLinkActive : ""}`}
-              onClick={() => {
-                if (isMobile) setIsSidebarOpen(false);
-              }}
-            >
-              <div className={styles.linkLeftGroup}>
-                <i className={`bx bx-map-pin ${styles.linkIcon}`} />
-                <span className={styles.linkLabel}>اقتراحات الأماكن</span>
-              </div>
-            </Link>
+              <Link
+                href="/admin/metro"
+                className={`${styles.submenuLink} ${pathname === "/admin/metro" ? styles.submenuLinkActive : ""}`}
+                onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+              >
+                <Image
+                  src={ASSETS.transit.metro}
+                  alt="metro_logo"
+                  width={20}
+                  height={20}
+                />
+                <span>مترو الأنفاق</span>
+              </Link>
+              <Link
+                href="/admin/lrt"
+                className={`${styles.submenuLink} ${pathname === "/admin/lrt" ? styles.submenuLinkActive : ""}`}
+                onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+              >
+                <Image
+                  src={ASSETS.transit.lrt}
+                  alt="lrt_logo"
+                  width={20}
+                  height={20}
+                />
+                <span>القطار الكهربائي</span>
+              </Link>
+              <Link
+                href="/admin/monorail"
+                className={`${styles.submenuLink} ${pathname === "/admin/monorail" ? styles.submenuLinkActive : ""}`}
+                onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+              >
+                <Image
+                  src={ASSETS.transit.monorail}
+                  alt="monorail_logo"
+                  width={20}
+                  height={20}
+                />
+                <span>المنوريل</span>
+              </Link>
+              <Link
+                href="/admin/railways"
+                className={`${styles.submenuLink} ${pathname === "/admin/railways" ? styles.submenuLinkActive : ""}`}
+                onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+              >
+                <Image
+                  src={ASSETS.transit.train}
+                  alt="railways_logo"
+                  width={25}
+                  height={20}
+                />
+                <span>سكك حديد مصر</span>
+              </Link>
+              <Link
+                href="/admin/brt"
+                className={`${styles.submenuLink} ${pathname === "/admin/brt" ? styles.submenuLinkActive : ""}`}
+                onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+              >
+                <Image
+                  src={ASSETS.transit.ports}
+                  alt="brt_logo"
+                  width={20}
+                  height={20}
+                />
+                <span>الأتوبيس الترددي</span>
+              </Link>
+              <Link
+                href="/admin/bus-stations"
+                className={`${styles.submenuLink} ${pathname === "/admin/bus-stations" ? styles.submenuLinkActive : ""}`}
+                onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+              >
+                <Image
+                  src={ASSETS.transit.bus}
+                  alt="bus_logo"
+                  width={20}
+                  height={20}
+                />
+                <span>الأتوبيسات (سوبرجيت)</span>
+              </Link>
+              <Link
+                href="/admin/microbus-stations"
+                className={`${styles.submenuLink} ${pathname === "/admin/microbus-stations" ? styles.submenuLinkActive : ""}`}
+                onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+              >
+                <Image
+                  src={ASSETS.transit.microbus}
+                  alt="microbus_logo"
+                  width={25}
+                  height={20}
+                  style={{
+                    height: "auto",
+                  }}
+                />
+                <span>المواقف (سرفيس)</span>
+              </Link>
+              <Link
+                href="/admin/parking"
+                className={`${styles.submenuLink} ${pathname === "/admin/parking" ? styles.submenuLinkActive : ""}`}
+                onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+              >
+                <Image
+                  src={ASSETS.transit.car}
+                  alt="parking_logo"
+                  width={25}
+                  height={20}
+                  style={{
+                    height: "auto",
+                  }}
+                />
+                <span>الجراجات</span>
+              </Link>
+              <Link
+                href="/admin/directions"
+                className={`${styles.submenuLink} ${pathname === "/admin/directions" ? styles.submenuLinkActive : ""}`}
+                onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+              >
+                <Image
+                  src={ASSETS.locations.governorates.egypt}
+                  alt="egypt_logo"
+                  width={15}
+                  height={20}
+                  style={{
+                    height: "auto",
+                  }}
+                />
+                <span> ازاي اروح</span>
+              </Link>
+              <Link
+                href="/admin/roads-info"
+                className={`${styles.submenuLink} ${pathname === "/admin/roads-info" ? styles.submenuLinkActive : ""}`}
+                onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+              >
+                <Image
+                  src={ASSETS.transit.traffic}
+                  alt="traffic_logo"
+                  width={20}
+                  height={20}
+                  style={{
+                    height: "auto",
+                  }}
+                />
+                <span>الطرق والرادار</span>
+              </Link>
+              <Link
+                href="/admin/cities"
+                className={`${styles.submenuLink} ${pathname === "/admin/cities" ? styles.submenuLinkActive : ""}`}
+                onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+              >
+                <Image
+                  src={ASSETS.locations.cities.cairo}
+                  alt="cairo_logo"
+                  width={15}
+                  height={20}
+                  style={{
+                    height: "auto",
+                  }}
+                />
+                <span>المدن الشهيرة والمعالم</span>
+              </Link>
+              <Link
+                href="/admin/airports"
+                className={`${styles.submenuLink} ${pathname === "/admin/airports" ? styles.submenuLinkActive : ""}`}
+                onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+              >
+                <Image
+                  src={ASSETS.transit.airport}
+                  alt="airport_logo"
+                  width={20}
+                  height={20}
+                />
+                <span>المطارات</span>
+              </Link>
+              <Link
+                href="/admin/ports"
+                className={`${styles.submenuLink} ${pathname === "/admin/ports" ? styles.submenuLinkActive : ""}`}
+                onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+              >
+                <Image
+                  src={ASSETS.transit.ports}
+                  alt="ports_logo"
+                  width={20}
+                  height={20}
+                />
+                <span>الموانئ</span>
+              </Link>
+              <Link
+                href="/admin/directory"
+                className={`${styles.submenuLink} ${pathname === "/admin/directory" ? styles.submenuLinkActive : ""}`}
+                onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
+              >
+                <Image
+                  src={ASSETS.company.vodafone}
+                  alt={ALT.company.vodafone}
+                  width={20}
+                  height={20}
+                />
+                <span>دليل الهواتف والأكواد</span>
+              </Link>
+            </div>
 
-            <button
-              type="button"
-              onClick={() => setIsServicesDropdownOpen((prev) => !prev)}
-              className={styles.sidebarNavLink}
-              style={{
-                width: "100%",
-                background: "transparent",
-                cursor: "pointer",
-                textAlign: "right",
-              }}
-              aria-expanded={isServicesDropdownOpen}
-            >
-              <div className={styles.linkLeftGroup}>
-                <i className={`bx bx-directions ${styles.linkIcon}`} />
-                <span className={styles.linkLabel}>شبكات النقل والدليل</span>
-              </div>
-              <i
-                className={`bx ${isServicesDropdownOpen ? "bx-chevron-down" : "bx-chevron-left"}`}
-                style={{ fontSize: "1.1rem", opacity: 0.7 }}
-              />
-            </button>
-
-            {isServicesDropdownOpen && (
-              <div className={styles.submenu}>
-                <Link
-                  href="/admin/metro"
-                  className={`${styles.submenuLink} ${pathname === "/admin/metro" ? styles.submenuLinkActive : ""}`}
-                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
-                >
-                  <Image
-                    src={ASSETS.transit.metro}
-                    alt="metro_logo"
-                    width={20}
-                    height={20}
-                  />
-                  <span>مترو الأنفاق</span>
-                </Link>
-                <Link
-                  href="/admin/lrt"
-                  className={`${styles.submenuLink} ${pathname === "/admin/lrt" ? styles.submenuLinkActive : ""}`}
-                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
-                >
-                  <Image
-                    src={ASSETS.transit.lrt}
-                    alt="lrt_logo"
-                    width={20}
-                    height={20}
-                  />
-                  <span>القطار الكهربائي</span>
-                </Link>
-                <Link
-                  href="/admin/monorail"
-                  className={`${styles.submenuLink} ${pathname === "/admin/monorail" ? styles.submenuLinkActive : ""}`}
-                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
-                >
-                  <Image
-                    src={ASSETS.transit.monorail}
-                    alt="monorail_logo"
-                    width={20}
-                    height={20}
-                  />
-                  <span>المنوريل</span>
-                </Link>
-                <Link
-                  href="/admin/railways"
-                  className={`${styles.submenuLink} ${pathname === "/admin/railways" ? styles.submenuLinkActive : ""}`}
-                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
-                >
-                  <Image
-                    src={ASSETS.transit.train}
-                    alt="railways_logo"
-                    width={25}
-                    height={20}
-                  />
-                  <span>سكك حديد مصر</span>
-                </Link>
-                <Link
-                  href="/admin/brt"
-                  className={`${styles.submenuLink} ${pathname === "/admin/brt" ? styles.submenuLinkActive : ""}`}
-                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
-                >
-                  <Image
-                    src={ASSETS.transit.ports}
-                    alt="brt_logo"
-                    width={20}
-                    height={20}
-                  />
-                  <span>الأتوبيس الترددي</span>
-                </Link>
-                <Link
-                  href="/admin/bus-stations"
-                  className={`${styles.submenuLink} ${pathname === "/admin/bus-stations" ? styles.submenuLinkActive : ""}`}
-                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
-                >
-                  <Image
-                    src={ASSETS.transit.bus}
-                    alt="bus_logo"
-                    width={20}
-                    height={20}
-                  />
-                  <span>الأتوبيسات (سوبرجيت)</span>
-                </Link>
-                <Link
-                  href="/admin/microbus-stations"
-                  className={`${styles.submenuLink} ${pathname === "/admin/microbus-stations" ? styles.submenuLinkActive : ""}`}
-                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
-                >
-                  <Image
-                    src={ASSETS.transit.microbus}
-                    alt="microbus_logo"
-                    width={25}
-                    height={20}
-                    style={{
-                      height: "auto",
-                    }}
-                  />
-                  <span>المواقف (سرفيس)</span>
-                </Link>
-                <Link
-                  href="/admin/parking"
-                  className={`${styles.submenuLink} ${pathname === "/admin/parking" ? styles.submenuLinkActive : ""}`}
-                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
-                >
-                  <Image
-                    src={ASSETS.transit.car}
-                    alt="parking_logo"
-                    width={25}
-                    height={20}
-                    style={{
-                      height: "auto",
-                    }}
-                  />
-                  <span>الجراجات</span>
-                </Link>
-                <Link
-                  href="/admin/directions"
-                  className={`${styles.submenuLink} ${pathname === "/admin/directions" ? styles.submenuLinkActive : ""}`}
-                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
-                >
-                  <Image
-                    src={ASSETS.locations.governorates.egypt}
-                    alt="egypt_logo"
-                    width={15}
-                    height={20}
-                    style={{
-                      height: "auto",
-                    }}
-                  />
-                  <span> ازاي اروح</span>
-                </Link>
-                <Link
-                  href="/admin/roads-info"
-                  className={`${styles.submenuLink} ${pathname === "/admin/roads-info" ? styles.submenuLinkActive : ""}`}
-                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
-                >
-                  <Image
-                    src={ASSETS.transit.traffic}
-                    alt="traffic_logo"
-                    width={20}
-                    height={20}
-                    style={{
-                      height: "auto",
-                    }}
-                  />
-                  <span>الطرق والرادار</span>
-                </Link>
-                <Link
-                  href="/admin/cities"
-                  className={`${styles.submenuLink} ${pathname === "/admin/cities" ? styles.submenuLinkActive : ""}`}
-                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
-                >
-                  <Image
-                    src={ASSETS.locations.cities.cairo}
-                    alt="cairo_logo"
-                    width={15}
-                    height={20}
-                    style={{
-                      height: "auto",
-                    }}
-                  />
-                  <span>المدن الشهيرة والمعالم</span>
-                </Link>
-                <Link
-                  href="/admin/airports"
-                  className={`${styles.submenuLink} ${pathname === "/admin/airports" ? styles.submenuLinkActive : ""}`}
-                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
-                >
-                  <Image
-                    src={ASSETS.transit.airport}
-                    alt="airport_logo"
-                    width={20}
-                    height={20}
-                  />
-                  <span>المطارات</span>
-                </Link>
-                <Link
-                  href="/admin/ports"
-                  className={`${styles.submenuLink} ${pathname === "/admin/ports" ? styles.submenuLinkActive : ""}`}
-                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
-                >
-                  <Image
-                    src={ASSETS.transit.ports}
-                    alt="ports_logo"
-                    width={20}
-                    height={20}
-                  />
-                  <span>الموانئ</span>
-                </Link>
-                <Link
-                  href="/admin/directory"
-                  className={`${styles.submenuLink} ${pathname === "/admin/directory" ? styles.submenuLinkActive : ""}`}
-                  onClick={() => { if (isMobile) setIsSidebarOpen(false); }}
-                >
-                  <Image
-                    src={ASSETS.company.vodafone}
-                    alt={ALT.company.vodafone}
-                    width={20}
-                    height={20}
-                  />
-                  <span>دليل الهواتف والأكواد</span>
-                </Link>
-              </div>
-            )}
           </nav>
 
           {/* Sidebar Footer Operations */}

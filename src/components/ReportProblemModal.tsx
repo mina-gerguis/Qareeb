@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 import { parseWorkingHours, DAYS_OF_WEEK, WorkingHoursData, ScheduleDay } from "@/lib/workingHours";
 import { CATEGORIES_STRUCTURE } from "@/data/places";
+import { CategoryIcon } from "@/components/ui/CategoryIcon";
 
 interface ReportProblemModalProps {
   isOpen: boolean;
@@ -793,8 +794,7 @@ export default function ReportProblemModal({ isOpen, onClose, place }: ReportPro
           {(() => {
             const activeMain = CATEGORIES_STRUCTURE.find(m => m.name === selectedMainCategory);
             const activeSub = activeMain?.subCategories.find(s => s.name === selectedSubCategory);
-            const rawIcon = activeSub?.icon || activeMain?.icon || "bx-category";
-            const iconClass = rawIcon.startsWith("bx") || rawIcon.startsWith("fa") ? rawIcon : `bx ${rawIcon}`;
+            const rawIcon = activeSub?.icon || activeMain?.icon;
             const color = activeMain?.color || "var(--color-secondary)";
 
             return (
@@ -809,7 +809,7 @@ export default function ReportProblemModal({ isOpen, onClose, place }: ReportPro
                   justifyContent: "center",
                   fontSize: "1.35rem"
                 }}>
-                  <i className={iconClass}></i>
+                  <CategoryIcon icon={rawIcon} size={24} style={{ color }} />
                 </div>
                 <div style={{ display: "flex", flexDirection: "column" }}>
                   <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", fontWeight: "600" }}>الفئة الجديدة المحددة</span>

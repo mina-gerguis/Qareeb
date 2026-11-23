@@ -17,7 +17,7 @@ import {
 } from "../types";
 import { getProblemLabelAr } from "../utils";
 import { CONTACT_SUBJECT_OPTIONS } from "../constants";
-import { ChessKing, HeartPlus, Sun, Moon, Bookmark, Bell, Store, GalleryHorizontalEnd, ShieldLock, ScanFace, TabletSmartphone, Lightbulb, Bug, BadgeQuestionMark, Shield, BookMarked, LogOut, Trash, BookmarkCheck, Shredder, Send, Fingerprint, Ticket } from 'lucide-react';
+import { ChessKing, HeartPlus, Sun, Moon, Bookmark, Bell, Store, GalleryHorizontalEnd, ShieldLock, ScanFace, TabletSmartphone, Lightbulb, Bug, BadgeQuestionMark, Shield, BookMarked, LogOut, Trash, BookmarkCheck, Shredder, Send, Fingerprint, Ticket, Share2 } from 'lucide-react';
 import styles from "../page.module.css";
 
 interface ProfileActionsListProps {
@@ -87,6 +87,7 @@ interface ProfileActionsListProps {
   // Account
   onOpenSubModal: () => void;
   onOpenVoucherModal?: (variant: "vouchers" | "coupons") => void;
+  onOpenReferralModal?: () => void;
   unlockedPerksCount?: number;
   onOpenRemindersModal: () => void;
   onOpenLogoutModal: () => void;
@@ -155,6 +156,7 @@ export const ProfileActionsList: React.FC<ProfileActionsListProps> = ({
   handleContactSubmit,
   onOpenSubModal,
   onOpenVoucherModal,
+  onOpenReferralModal,
   unlockedPerksCount = 0,
   onOpenRemindersModal,
   onOpenLogoutModal,
@@ -426,6 +428,36 @@ export const ProfileActionsList: React.FC<ProfileActionsListProps> = ({
                     </div>
                   </div>
                   <div className={styles.badgeRight}>
+                    <i className={`bx bx-chevron-left ${styles.chevronIcon}`}></i>
+                  </div>
+                </div>
+                <hr className={styles.dividerDashed} />
+              </>
+            )}
+
+            {/* Referrals & Invite Friends («ادعُ أصدقاءك واربح») */}
+            {isOwnProfile && onOpenReferralModal && (
+              <>
+                <div
+                  className={styles.cardContainer}
+                  onClick={onOpenReferralModal}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className={styles.cardContent}>
+                    <div className={styles.cardIcon} style={{ background: "rgba(59, 130, 246, 0.15)", color: "#3b82f6" }}>
+                      <Share2 size={22} />
+                    </div>
+                    <div>
+                      <h3 className={styles.cardTitle}>ادعُ أصدقاءك واربح المكافآت</h3>
+                      <p style={{ margin: "2px 0 0", fontSize: "0.78rem", color: "#94a3b8" }}>
+                        شارك كودك واكسب رصيداً ونقاطاً فورية عند انضمامهم
+                      </p>
+                    </div>
+                  </div>
+                  <div className={styles.badgeRight}>
+                    <span style={{ fontSize: "0.75rem", background: "rgba(59, 130, 246, 0.2)", color: "#38bdf8", padding: "2px 8px", borderRadius: "6px", fontWeight: "700" }}>
+                      هدية
+                    </span>
                     <i className={`bx bx-chevron-left ${styles.chevronIcon}`}></i>
                   </div>
                 </div>

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { applyNewUserTrialIfActive } from "@/lib/promotions";
+import { processReferralSignupCall } from "@/lib/referrals";
 import { SignupFormData, SignupFieldErrors, PasswordRules } from "../types";
 import { INITIAL_FORM_DATA, INITIAL_FIELD_ERRORS } from "../constants";
 import {
@@ -56,6 +57,17 @@ export const useSignupForm = () => {
     }, 1000);
     return () => clearInterval(interval);
   }, [emailOtpTimer]);
+
+  // Capture referral code from URL query parameter (?ref=...) and save to localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const ref = params.get("ref");
+      if (ref) {
+        localStorage.setItem("qareeb_referral_code", ref.trim().toUpperCase());
+      }
+    }
+  }, []);
 
   // Name validation & username suggestions
   useEffect(() => {
@@ -442,6 +454,28 @@ export const useSignupForm = () => {
               await applyNewUserTrialIfActive(signUpData.user.id, fullNameCombined);
             } catch (trialErr) {
               console.warn("Trial application notice:", trialErr);
+            }
+
+            // Process referral bonus & anti-fraud check if user registered via a referral code
+            try {
+              const refCode = localStorage.getItem("qareeb_referral_code");
+              if (refCode) {
+                let clientIp = "unknown";
+                try {
+                  const ipRes = await fetch("/api/client-ip");
+                  if (ipRes.ok) {
+                    const ipData = await ipRes.json();
+                    if (ipData?.ip) clientIp = ipData.ip;
+                  }
+                } catch {
+                  // Ignore IP fetch failure, fallback to unknown
+                }
+
+                await processReferralSignupCall(signUpData.user.id, refCode, clientIp);
+                localStorage.removeItem("qareeb_referral_code");
+              }
+            } catch (refErr) {
+              console.warn("Referral processing notice:", refErr);
             }
           } catch (profileErr) {
             console.error("Error updating profile fields on signup:", profileErr);

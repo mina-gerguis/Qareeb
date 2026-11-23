@@ -3,7 +3,7 @@ import { DAYS_OF_WEEK, ScheduleDay } from "@/lib/workingHours";
 import { DBPlace } from "./types";
 import { AVAILABLE_INTERESTS_MAP } from "./constants";
 
-export const CATEGORY_ICONS: Record<string, string> = {
+export const CATEGORY_ICONS: Record<string, any> = {
   all: "bx-grid-alt",
 };
 

@@ -67,7 +67,7 @@ export function AdminSuggestionsActionDropdown({
             type="button"
             role="menuitem"
             className={suggestionsStyles.actionDropdownItem}
-            style={{ color: "#10b981" }}
+            style={{ color: "var(--color-success)" }}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -83,7 +83,7 @@ export function AdminSuggestionsActionDropdown({
             type="button"
             role="menuitem"
             className={suggestionsStyles.actionDropdownItem}
-            style={{ color: "#f59e0b" }}
+            style={{ color: "var(--color-error)" }}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();

@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { PlaceProposal, VisibleColumns, UserProfile } from "../types";
 import { STATUS_META } from "../constants";
 import { getCategoryColor, CATEGORY_ICONS } from "../utils";
+import { CategoryIcon } from "@/components/ui/CategoryIcon";
 import suggestionsStyles from "../admin-suggestions.module.css";
 import {
   IconDotsFilled,
@@ -82,7 +83,7 @@ export function AdminSuggestionsTable({
               {visibleColumns.category && (
                 <th
                   className={suggestionsStyles.table05Th}
-                  style={{ minWidth: "130px" }}
+                  style={{ minWidth: "180px" }}
                 >
                   التصنيف
                 </th>
@@ -100,7 +101,7 @@ export function AdminSuggestionsTable({
               {visibleColumns.date && (
                 <th
                   className={suggestionsStyles.table05Th}
-                  style={{ minWidth: "120px" }}
+                  style={{ minWidth: "150px" }}
                 >
                   تاريخ التقديم
                 </th>
@@ -109,7 +110,7 @@ export function AdminSuggestionsTable({
               {visibleColumns.status && (
                 <th
                   className={suggestionsStyles.table05Th}
-                  style={{ width: "120px", textAlign: "center" }}
+                  style={{ minWidth: "150px", textAlign: "center" }}
                 >
                   الحالة
                 </th>
@@ -259,6 +260,7 @@ export function AdminSuggestionsTable({
                     {visibleColumns.category && (
                       <td className={suggestionsStyles.table05Td}>
                         <span
+                        className="font-sub"
                           style={{
                             display: "inline-flex",
                             alignItems: "center",
@@ -267,14 +269,14 @@ export function AdminSuggestionsTable({
                             borderRadius: "8px",
                             fontSize: "0.82rem",
                             fontWeight: 600,
-                            background: "rgba(255, 255, 255, 0.04)",
+                            background: "var(--color-primary)",
                             border: `1px solid ${catColor}40`,
-                            color: "var(--color-fg)",
+                            color: "#fff",
                           }}
                         >
-                          <i
-                            className={`bx ${catIcon}`}
-                            style={{ color: catColor, fontSize: "0.95rem" }}
+                          <CategoryIcon
+                            icon={catIcon}
+                            size={15}
                           />
                           <span>{prop.category_label || prop.category}</span>
                         </span>
@@ -377,12 +379,13 @@ export function AdminSuggestionsTable({
                         style={{ textAlign: "center" }}
                       >
                         <span
+                        className="font-sub"
                           style={{
                             display: "inline-flex",
                             alignItems: "center",
                             gap: "5px",
-                            padding: "3px 10px",
-                            borderRadius: "12px",
+                            padding: "4px 10px",
+                            borderRadius: "8px",
                             fontSize: "0.78rem",
                             fontWeight: 700,
                             background: statusInfo?.bg || "rgba(255, 255, 255, 0.05)",

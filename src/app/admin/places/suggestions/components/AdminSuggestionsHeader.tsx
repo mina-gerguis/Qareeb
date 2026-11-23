@@ -33,6 +33,12 @@ export function AdminSuggestionsHeader({
     icon: React.ReactNode;
     color: string;
   }[] = [
+     {
+      id: "all",
+      label: "الكل",
+      icon: <IconListDetails size={18} />,
+      color: "#3b82f6",
+    },
     {
       id: "pending",
       label: "قيد المراجعة",
@@ -57,17 +63,11 @@ export function AdminSuggestionsHeader({
       icon: <IconArrowBackUp size={18} />,
       color: "#8e8e93",
     },
-    {
-      id: "all",
-      label: "الكل",
-      icon: <IconListDetails size={18} />,
-      color: "#3b82f6",
-    },
   ];
 
   return (
     <div>
-      <div className={`pt-3 ${suggestionsStyles.headerBar}`}>
+      <div className={` ${suggestionsStyles.headerBar}`}>
         <div className={suggestionsStyles.headerTextGroup}>
           <div
             style={{
@@ -77,50 +77,17 @@ export function AdminSuggestionsHeader({
               marginBottom: "4px",
             }}
           >
-            <span
-              style={{
-                width: "36px",
-                height: "36px",
-                borderRadius: "10px",
-                background: "rgba(59, 130, 246, 0.15)",
-                color: "#3b82f6",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <IconMapPin size={22} />
-            </span>
             <h2 className="fs-3xl fw-900 color-fg" style={{ margin: 0 }}>
-              مراجعة اقتراحات الأماكن
+             اقتراحات الأماكن
             </h2>
           </div>
-          <p
-            style={{
-              color: "var(--text-muted, #94a3b8)",
-              fontSize: "0.88rem",
-              margin: 0,
-              lineHeight: 1.5,
-            }}
-          >
-            مراجعة واعتماد أو رفض الأماكن المقترحة من قبل المستخدمين ونشرها في الدليل الرئيسي
-          </p>
         </div>
 
         <button
           type="button"
           onClick={onRefresh}
           disabled={isProcessing}
-          className="btn btn-secondary"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "8px 16px",
-            borderRadius: "10px",
-            fontSize: "0.88rem",
-            fontWeight: 600,
-          }}
+          className="btn btn-primary min-h-min"
           title="تحديث البيانات"
         >
           <IconRefresh size={18} className={isProcessing ? "animate-spin" : ""} />
@@ -131,7 +98,7 @@ export function AdminSuggestionsHeader({
       {/* Main Status Tabs Segmented Control */}
       <div
         className={suggestionsStyles.mainNavTabs}
-        style={{ maxWidth: "680px", overflowX: "auto" }}
+        style={{ maxWidth: "100%", overflowX: "auto" }}
       >
         {tabs.map((tab) => {
           const isActive = statusTab === tab.id;

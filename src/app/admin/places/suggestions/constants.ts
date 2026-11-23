@@ -26,22 +26,22 @@ export const STATUS_META: Record<
 > = {
   pending: {
     label: "قيد المراجعة",
-    color: "#f59e0b",
-    bg: "rgba(245, 158, 11, 0.12)",
+    color: "#ffffffff",
+    bg: "rgba(255, 162, 0, 1)",
     border: "rgba(245, 158, 11, 0.3)",
     icon: "bx-time-five",
   },
   approved: {
     label: "معتمد ومقبول",
-    color: "#10b981",
-    bg: "rgba(16, 185, 129, 0.12)",
+    color: "#ffffffff",
+    bg: "rgba(6, 148, 100, 1)",
     border: "rgba(16, 185, 129, 0.3)",
     icon: "bx-check-circle",
   },
   rejected: {
     label: "مرفوض",
-    color: "#ef4444",
-    bg: "rgba(239, 68, 68, 0.12)",
+    color: "#ffffffff",
+    bg: "rgba(255, 0, 0, 1)",
     border: "rgba(239, 68, 68, 0.3)",
     icon: "bx-x-circle",
   },

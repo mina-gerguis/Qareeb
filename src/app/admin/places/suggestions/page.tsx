@@ -124,7 +124,7 @@ export default function PlacesSuggestionsPage() {
         "app-container"
       )}
       style={{
-        padding: "120px 10px 40px",
+        padding: "20px 10px 40px",
         maxWidth: "100%",
         width: "100%",
       }}

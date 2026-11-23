@@ -59,6 +59,6 @@ export interface PlaceProposal {
 export interface CategoryItem {
   name: string;
   label: string;
-  icon: string;
+  icon: React.ReactNode | string;
   color?: string;
 }

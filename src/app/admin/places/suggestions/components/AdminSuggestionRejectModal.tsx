@@ -28,23 +28,16 @@ export function AdminSuggestionRejectModal({
       isOpen={Boolean(proposal)}
       onClose={() => !isProcessing && onCancel()}
       title="تأكيد رفض الاقتراح"
-      titleColor="#ff3b30"
-      iconSrc="/images/threeD/alert.webp"
-      borderColor="rgba(255, 59, 48, 0.25)"
       message={`سبب رفض المكان: « ${proposal.name} »`}
       primaryButton={{
-        label: isProcessing ? "جاري الحفظ..." : "تأكيد الرفض",
+        label: isProcessing ? "جاري ..." : "تأكيد الرفض",
         onClick: onConfirm,
-        bgColor: "#ff3b30",
         disabled: isProcessing || !rejectionReason.trim(),
-        icon: <i className="bx bx-x-circle" style={{ fontSize: "1.2rem" }} />,
       }}
       secondaryButton={{
         label: "إلغاء",
         onClick: onCancel,
-        bgColor: "var(--btn-cancel)",
         disabled: isProcessing,
-        icon: <i className="bx bx-x" style={{ fontSize: "1.2rem" }} />,
       }}
     >
       <div style={{ textAlign: "right" }}>
@@ -60,7 +53,7 @@ export function AdminSuggestionRejectModal({
           إمكانية تعديل الاقتراح وإعادة إرساله.
         </p>
         <textarea
-          rows={4}
+          rows={6}
           required
           placeholder="اكتب سبب الرفض هنا بالتفصيل..."
           className="input-fields"

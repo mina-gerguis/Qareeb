@@ -44,8 +44,8 @@ export function AdminSuggestionDetailsModal({
     proposal.images && proposal.images.length > 0
       ? proposal.images
       : proposal.image_url
-      ? [proposal.image_url]
-      : [];
+        ? [proposal.image_url]
+        : [];
 
   return (
     <div className={suggestionsStyles.modalOverlay} onClick={onClose}>
@@ -57,19 +57,6 @@ export function AdminSuggestionDetailsModal({
         {/* Modal Header */}
         <div className={suggestionsStyles.modalHeader}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span
-              style={{
-                fontSize: "0.78rem",
-                padding: "4px 10px",
-                borderRadius: "10px",
-                background: statusInfo?.bg || "rgba(255, 255, 255, 0.08)",
-                color: statusInfo?.color || "var(--color-fg)",
-                border: `1px solid ${statusInfo?.border || "transparent"}`,
-                fontWeight: 700,
-              }}
-            >
-              {statusInfo?.label || proposal.status}
-            </span>
             <div>
               <h3
                 style={{
@@ -86,14 +73,20 @@ export function AdminSuggestionDetailsModal({
               </span>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className={suggestionsStyles.modalCloseBtn}
-            aria-label="إغلاق"
-            type="button"
+          <span
+            className="font-sub"
+            style={{
+              fontSize: "0.78rem",
+              padding: "4px 10px",
+              borderRadius: "8px",
+              background: statusInfo?.bg || "rgba(255, 255, 255, 0.08)",
+              color: statusInfo?.color || "var(--color-fg)",
+              border: `1px solid ${statusInfo?.border || "transparent"}`,
+              fontWeight: 700,
+            }}
           >
-            <IconSquareRoundedXFilled size={20} />
-          </button>
+            {statusInfo?.label || proposal.status}
+          </span>
         </div>
 
         {/* Modal Body */}
@@ -213,19 +206,10 @@ export function AdminSuggestionDetailsModal({
               }
               target="_blank"
               rel="noopener noreferrer"
-              className="btn btn-secondary"
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: "10px 8px",
-                borderRadius: "12px",
-                gap: "4px",
-                textDecoration: "none",
-              }}
+              className="btn btn-blue flex column"
+              
             >
-              <IconMapPin size={20} style={{ color: "#3b82f6" }} />
+              <IconMapPin size={20} style={{ color: "#ffffffff" }} />
               <span style={{ fontSize: "0.8rem", fontWeight: 700 }}>الاتجاهات</span>
             </a>
 
@@ -233,34 +217,14 @@ export function AdminSuggestionDetailsModal({
             {proposal.phone ? (
               <a
                 href={`tel:${proposal.phone}`}
-                className="btn btn-secondary"
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "10px 8px",
-                  borderRadius: "12px",
-                  gap: "4px",
-                  textDecoration: "none",
-                }}
+                className="btn btn-secondary flex column"
               >
                 <IconPhoneCall size={20} style={{ color: "#10b981" }} />
                 <span style={{ fontSize: "0.8rem", fontWeight: 700 }}>اتصال</span>
               </a>
             ) : (
               <div
-                className="btn btn-secondary"
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "10px 8px",
-                  borderRadius: "12px",
-                  gap: "4px",
-                  opacity: 0.5,
-                }}
+                className="btn btn-secondary flex column"
               >
                 <IconPhoneCall size={20} />
                 <span style={{ fontSize: "0.8rem", fontWeight: 700 }}>بلا هاتف</span>
@@ -274,18 +238,7 @@ export function AdminSuggestionDetailsModal({
                   type="button"
                   onClick={() => onApprove(proposal)}
                   disabled={isProcessing}
-                  className="btn btn-primary"
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: "10px 8px",
-                    borderRadius: "12px",
-                    gap: "4px",
-                    background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-                    borderColor: "#10b981",
-                  }}
+                  className="btn btn-primary flex column"
                 >
                   <IconCheck size={20} />
                   <span style={{ fontSize: "0.8rem", fontWeight: 700 }}>موافقة ونشر</span>
@@ -295,16 +248,7 @@ export function AdminSuggestionDetailsModal({
                   type="button"
                   onClick={() => onReject(proposal)}
                   disabled={isProcessing}
-                  className="btn btn-error"
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: "10px 8px",
-                    borderRadius: "12px",
-                    gap: "4px",
-                  }}
+                  className="btn btn-error flex column"
                 >
                   <IconX size={20} />
                   <span style={{ fontSize: "0.8rem", fontWeight: 700 }}>رفض</span>
@@ -317,16 +261,7 @@ export function AdminSuggestionDetailsModal({
               type="button"
               onClick={() => onDelete(proposal)}
               disabled={isProcessing}
-              className="btn btn-error"
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: "10px 8px",
-                borderRadius: "12px",
-                gap: "4px",
-              }}
+              className="btn btn-error flex column"
             >
               <IconTrashFilled size={20} />
               <span style={{ fontSize: "0.8rem", fontWeight: 700 }}>حذف</span>
@@ -351,9 +286,9 @@ export function AdminSuggestionDetailsModal({
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                background: "rgba(59, 130, 246, 0.08)",
-                border: "1px solid rgba(59, 130, 246, 0.25)",
-                borderRadius: "14px",
+                background: "var(--bg-glass)",
+                border: "1px solid var(--border-primary)",
+                borderRadius: "8px",
                 padding: "12px 16px",
               }}
             >
@@ -382,10 +317,10 @@ export function AdminSuggestionDetailsModal({
                     تاريخ التقديم:{" "}
                     {proposal.created_at
                       ? new Date(proposal.created_at).toLocaleDateString("ar-EG", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })
                       : "-"}
                   </div>
                 </div>
@@ -396,15 +331,7 @@ export function AdminSuggestionDetailsModal({
                 onClick={() =>
                   onViewProposer(proposal.user_profile || null, proposal.user_id)
                 }
-                className="btn btn-secondary"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  padding: "6px 14px",
-                  fontSize: "0.82rem",
-                  fontWeight: 700,
-                }}
+                className="btn btn-primary fs-sm min-h-min"
               >
                 <IconUser size={16} />
                 <span>البروفايل الكامل</span>
@@ -613,7 +540,7 @@ export function AdminSuggestionDetailsModal({
 
         {/* Modal Footer */}
         <div className={suggestionsStyles.modalFooter}>
-          <button type="button" onClick={onClose} className="btn btn-cancel">
+          <button type="button" onClick={onClose} className="btn btn-primary mb-2 w-full">
             إغلاق
           </button>
         </div>

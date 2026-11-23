@@ -1,5 +1,5 @@
 /* ============================================================================
-   21ST.DEV AESTHETIC — PROPOSE PLACE PAGE MODULE (MATCHING MICROBUS STATIONS)
+
    ============================================================================ */
 
 /* Main Outer Wrapper */
@@ -311,7 +311,6 @@
 }
 
 .pillBtn:hover {
-  transform: translateY(-1px);
   border-color: rgba(108, 99, 255, 0.4);
 }
 
@@ -320,7 +319,6 @@
   color: #ffffff !important;
   border-color: var(--color-primary, #6c63ff) !important;
   font-weight: 700;
-  box-shadow: 0 3px 10px rgba(108, 99, 255, 0.3);
 }
 
 /* ==================== MEDIA / IMAGE UPLOAD ==================== */
@@ -643,8 +641,8 @@
 }
 
 .statusBadgePending {
-  background: rgba(255, 149, 0, 0.14);
-  color: #ff9500;
+  background: rgb(255, 149, 0);
+  color: #ffffff;
   border: 1px solid rgba(255, 149, 0, 0.3);
   padding: 3px 10px;
   border-radius: 20px;
@@ -656,8 +654,8 @@
 }
 
 .statusBadgeApproved {
-  background: rgba(52, 199, 89, 0.14);
-  color: #34c759;
+  background: rgb(0, 133, 33);
+  color: #ffffff;
   border: 1px solid rgba(52, 199, 89, 0.3);
   padding: 3px 10px;
   border-radius: 20px;
@@ -669,8 +667,8 @@
 }
 
 .statusBadgeRejected {
-  background: rgba(255, 59, 48, 0.14);
-  color: #ff3b30;
+  background: rgb(255, 13, 0);
+  color: #ffffff;
   border: 1px solid rgba(255, 59, 48, 0.3);
   padding: 3px 10px;
   border-radius: 20px;

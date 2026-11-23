@@ -1,6 +1,7 @@
 import React, { RefObject } from "react";
 import { PlaceProposal } from "../types";
 import styles from "../propose-place.module.css";
+import { IconCalendarEventFilled, IconFolderOpenFilled, IconGpsFilled, IconWritingFilled } from "@tabler/icons-react";
 
 interface ProposePlaceHistoryProps {
   historyRef?: RefObject<HTMLDivElement | null>;
@@ -24,25 +25,11 @@ export default function ProposePlaceHistory({
       {/* Header */}
       <div className={styles.historyHeader}>
         <h2 className={styles.historyTitle}>
-          <i
-            className="bx bx-list-ul"
-            style={{ color: "var(--color-primary, #6c63ff)", fontSize: "1.4rem" }}
-          />
           <span>أماكني المقترحة</span>
           {proposals.length > 0 && (
             <span className={styles.historyCount}>{proposals.length}</span>
           )}
         </h2>
-
-        <button
-          type="button"
-          onClick={onRefresh}
-          disabled={loading}
-          className={styles.refreshBtn}
-        >
-          <i className={`bx bx-refresh ${loading ? "bx-spin" : ""}`} />
-          <span>تحديث القائمة</span>
-        </button>
       </div>
 
       {/* Content states */}
@@ -75,22 +62,6 @@ export default function ProposePlaceHistory({
                   isCurrentEditing ? styles.proposalCardEditing : ""
                 }`}
               >
-                {/* Image Thumbnail */}
-                <div className={styles.proposalThumb}>
-                  {displayImage ? (
-                    <img
-                      src={displayImage}
-                      alt={prop.name}
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                    />
-                  ) : (
-                    <i
-                      className="bx bx-store-alt"
-                      style={{ fontSize: "2rem", color: "var(--text-muted)" }}
-                    />
-                  )}
-                </div>
-
                 {/* Details */}
                 <div className={styles.proposalBody}>
                   <div className={styles.proposalHeaderRow}>
@@ -104,38 +75,31 @@ export default function ProposePlaceHistory({
                     )}
                     {isRejected && (
                       <span className={styles.statusBadgeRejected}>
-                        <i className="bx bx-x-circle" /> مرفوض من الإدارة
+                        <i className="bx bx-x-circle" /> مرفوض  
                       </span>
                     )}
                     {isApproved && (
                       <span className={styles.statusBadgeApproved}>
-                        <i className="bx bx-check-circle" /> مقبول ومُعتمد ✓
+                        <i className="bx bx-check-circle" /> مقبول  
                       </span>
                     )}
 
-                    {isCurrentEditing && (
-                      <span className={styles.editingBadge}>✏️ جاري التعديل</span>
-                    )}
                   </div>
-
                   {/* Metadata */}
                   <div className={styles.proposalMeta}>
-                    <span>
-                      <i className="bx bx-folder" style={{ color: "var(--color-primary, #6c63ff)" }} />{" "}
+                    <span className="flex gap-1">
+                      <IconFolderOpenFilled size={18}/>{" "}
                       {prop.category_label || prop.category}
                     </span>
                     {prop.governorate && (
-                      <span>
-                        <i
-                          className="bx bx-map-pin"
-                          style={{ color: "var(--color-primary, #6c63ff)" }}
-                        />{" "}
+                      <span className="flex gap-1">
+                       <IconGpsFilled size={18}/>{" "}
                         {prop.governorate} - {prop.city}
                       </span>
                     )}
                     {prop.created_at && (
-                      <span style={{ color: "var(--text-muted)" }}>
-                        <i className="bx bx-calendar" />{" "}
+                      <span className="flex gap-1">
+                       <IconCalendarEventFilled size={18}/>{" "}
                         {new Date(prop.created_at).toLocaleDateString("ar-EG")}
                       </span>
                     )}
@@ -143,9 +107,9 @@ export default function ProposePlaceHistory({
 
                   {/* Rejection Note */}
                   {isRejected && prop.rejection_reason && (
-                    <div className={styles.rejectionCallout}>
-                      <strong style={{ color: "#ff3b30" }}>سبب الرفض:</strong> &ldquo;
-                      {prop.rejection_reason}&rdquo;
+                    <div className="alert-error py-1 px-2 rounded fs-sm">
+                      <strong>تم الرفض لأن </strong> 
+                      {prop.rejection_reason}
                     </div>
                   )}
                 </div>
@@ -155,12 +119,12 @@ export default function ProposePlaceHistory({
                   <button
                     type="button"
                     onClick={() => onSelectEdit(prop.id)}
-                    className={`${styles.editProposalBtn} ${
-                      isCurrentEditing ? styles.editProposalBtnActive : ""
+                    className={`btn min-h-min btn-primary  ${
+                      isCurrentEditing ? "btn-blue" : ""
                     }`}
                   >
-                    <i className="bx bx-edit-alt" style={{ fontSize: "1.1rem" }} />
-                    <span>{isCurrentEditing ? "جاري التعديل..." : "تعديل وإعادة إرسال"}</span>
+                   <IconWritingFilled size={18}/>
+                    <span>{isCurrentEditing ? "يتم التعديل..." : "تعديل وإعادة إرسال"}</span>
                   </button>
                 )}
               </div>

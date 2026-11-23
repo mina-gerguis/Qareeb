@@ -19,6 +19,8 @@ export interface UserProfile {
   subscription_end?: string | null;
   is_admin?: boolean;
   last_username_change?: string | null;
+  referral_code?: string;
+  referred_by?: string;
 }
 
 export interface ProfileFormData {

@@ -1,11 +1,13 @@
+import React from "react";
 import { CATEGORIES_STRUCTURE } from "@/data/places";
+import { IconGridDots } from "@tabler/icons-react";
 
 export const CATEGORY_EMOJIS: Record<string, string> = {
   all: "🗂️",
 };
 
-export const CATEGORY_ICONS: Record<string, string> = {
-  all: "bx-grid-alt",
+export const CATEGORY_ICONS: Record<string, React.ReactNode | string> = {
+  all: <IconGridDots size={18} />,
 };
 
 export const CATEGORY_LABELS: Record<string, string> = {

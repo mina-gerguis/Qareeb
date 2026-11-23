@@ -1,5 +1,6 @@
 "use client";
 
+import { IconSearch } from "@tabler/icons-react";
 import React, { useState, useEffect, useRef } from "react";
 
 // Helper function to normalize Arabic text for smarter search
@@ -164,7 +165,7 @@ export function MultiSelectSearch({
         onClick={() => setIsOpen(!isOpen)}
         className="input-fields"
         style={{
-          minHeight: "50px",
+          minHeight: "min-content",
           display: "flex",
           flexWrap: "wrap",
           gap: "6px",
@@ -252,7 +253,7 @@ export function MultiSelectSearch({
               }}
             />
             <div style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }}>
-              <i className="bx bx-search" style={{ fontSize: "1.1rem" }}></i>
+              <IconSearch stroke={2} size={18}/>
             </div>
           </div>
 
@@ -328,8 +329,8 @@ export function MultiSelectSearch({
                     }}
                     onMouseEnter={(e) => {
                       if (!isChecked) {
-                        e.currentTarget.style.background = "var(--hover-btn, rgba(39, 39, 42, 0.8))";
-                        e.currentTarget.style.color = "var(--color-fg)";
+                        e.currentTarget.style.background = "var(--color-fg)";
+                        e.currentTarget.style.color = "var(--color-bg)";
                       }
                     }}
                     onMouseLeave={(e) => {

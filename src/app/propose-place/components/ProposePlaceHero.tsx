@@ -17,7 +17,7 @@ export default function ProposePlaceHero({
       {/* Main Title */}
       <h1 className={styles.heroTitle}>
         <span className={styles.heroTitleGradient}>
-          {isEditMode ? "تعديل بيانات المكان المقترح" : "ساهم في إضافة مكان جديد"}
+          {isEditMode ? "تعديل بيانات المكان المقترح" : " إضافة مكان جديد"}
         </span>
       </h1>
 

@@ -5,6 +5,7 @@ import { FaMapPin } from "react-icons/fa";
 import { AiOutlineBranches } from "react-icons/ai";
 import { PlaceCardProps } from "../types";
 import { CATEGORY_ICONS } from "../constants";
+import { CategoryIcon } from "@/components/ui/CategoryIcon";
 import ImageWithSkeleton from "./ImageWithSkeleton";
 
 export default function PlaceCard({
@@ -89,9 +90,9 @@ export default function PlaceCard({
             gap: "5px",
           }}
         >
-          <i
-            className={`bx ${CATEGORY_ICONS[place.category] || "bx-tag"}`}
-            style={{ fontSize: "0.95rem" }}
+          <CategoryIcon
+            icon={CATEGORY_ICONS[place.category]}
+            size={15}
           />
           {place.categoryLabel}
         </span>

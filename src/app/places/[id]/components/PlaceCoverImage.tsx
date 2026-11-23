@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { PlaceCoverImageProps } from "../types";
+import { CategoryIcon } from "@/components/ui/CategoryIcon";
 
 export default function PlaceCoverImage({
   place,
@@ -48,10 +49,7 @@ export default function PlaceCoverImage({
           zIndex: 2,
         }}
       >
-        <i
-          className={`bx ${categoryIcon || "bx-category"}`}
-          style={{ fontSize: "1rem" }}
-        ></i>
+        <CategoryIcon icon={categoryIcon} size={16} />
         {categoryLabel}
         {place.place_type && ` - ${place.place_type}`}
       </span>

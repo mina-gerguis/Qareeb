@@ -6,6 +6,7 @@ import { CategoryIcon } from "@/components/ui/CategoryIcon";
 import { SERVICES_LIST } from "@/data/services";
 import { PlaceProposalFormData, CategoryItem } from "../types";
 import styles from "../propose-place.module.css";
+import { IconDatabaseFilled, IconMapPinFilled } from "@tabler/icons-react";
 
 interface ProposePlaceFormProps {
   formRef?: RefObject<HTMLFormElement | null>;
@@ -66,8 +67,8 @@ export default function ProposePlaceForm({
       {/* ==================== Section 1: Basic Info ==================== */}
       <div className={styles.sectionGroup}>
         <h2 className={styles.sectionTitle}>
-          <i className="bx bx-info-circle" /> البيانات الأساسية للمكان
-          <i className="icon-user"></i>
+          <IconDatabaseFilled size={18}/> 
+          البيانات الأساسية للمكان
         </h2>
 
         <div className={styles.gridRow}>
@@ -96,7 +97,7 @@ export default function ProposePlaceForm({
             </label>
             <select
               required
-              className="input-fields help-select"
+              className="input-fields help-select font-sub"
               value={formData.category}
               onChange={(e) => onCategoryChange(e.target.value)}
               style={{ width: "100%" }}
@@ -118,7 +119,7 @@ export default function ProposePlaceForm({
           {/* Sub Categories Pill Toggle */}
           {formData.category && availableSubCategories.length > 0 && (
             <div className={`${styles.fullCol} ${styles.pillsBox}`}>
-              <label className={styles.fieldLabel} style={{ marginBottom: "10px", color: "var(--color-fg)" }}>
+              <label className={styles.fieldLabel} style={{ marginBottom: "14px", color: "var(--color-fg)" }}>
                 التصنيفات الفرعية التابعة للقسم الرئيسي
               </label>
               <div className={styles.pillsWrap}>
@@ -159,7 +160,7 @@ export default function ProposePlaceForm({
                 النوع الفرعي للمكان (مثل: المطبخ الصيني أو السوري للمطاعم، القهوة العربية للكافيهات):
               </label>
               <input
-                className="input-fields"
+                className="input-fields font-sub"
                 placeholder="مثال: سوري، صيني، إيطالي..."
                 value={formData.place_type}
                 onChange={(e) => setFormData({ ...formData, place_type: e.target.value })}
@@ -211,7 +212,8 @@ export default function ProposePlaceForm({
       {/* ==================== Section 2: Location & Address ==================== */}
       <div className={styles.sectionGroup}>
         <h2 className={styles.sectionTitle}>
-          <i className="bx bx-map" /> الموقع والعنوان التفصيلي
+         <IconMapPinFilled size={20}/>
+           الموقع والعنوان التفصيلي
         </h2>
 
         <div className={styles.gridRow}>
@@ -374,7 +376,7 @@ export default function ProposePlaceForm({
             <input
               type="url"
               placeholder="أو ضع رابط صورة من الإنترنت (https://...)"
-              className="input-fields"
+              className="input-fields py-2"
               value={newImgInput}
               onChange={(e) => setNewImgInput(e.target.value)}
               onKeyDown={(e) => {
@@ -389,7 +391,7 @@ export default function ProposePlaceForm({
               type="button"
               onClick={onAddImage}
               disabled={!newImgInput.trim()}
-              className={styles.addUrlBtn}
+              className="btn btn-cancel"
             >
               <i className="bx bx-link" /> إضافة رابط
             </button>
@@ -426,7 +428,7 @@ export default function ProposePlaceForm({
         <textarea
           rows={4}
           placeholder="اكتب نبذة عن المكان والخدمات أو المميزات التي يشتهر بها..."
-          className="input-fields"
+          className="input-fields min-h-min"
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           style={{ resize: "vertical" }}

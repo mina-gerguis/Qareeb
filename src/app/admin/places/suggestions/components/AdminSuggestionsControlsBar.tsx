@@ -2,7 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import { Columns, Trash2 } from "lucide-react";
 import suggestionsStyles from "../admin-suggestions.module.css";
-import { IconColumns3Filled, IconLayoutListFilled } from "@tabler/icons-react";
+import { IconColumns3Filled, IconEraser, IconLayoutListFilled, IconTrashFilled } from "@tabler/icons-react";
 import { ViewMode } from "../types";
 import { PAGE_SIZE_OPTIONS } from "../constants";
 
@@ -35,39 +35,34 @@ export function AdminSuggestionsControlsBar({
       {selectedCount > 0 && (
         <div className={suggestionsStyles.bulkSelectionRibbon}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ fontWeight: 700, color: "var(--color-fg)" }}>
+            <span className="font-sub color-fg fw-700">
               تم تحديد ({selectedCount}) اقتراح
             </span>
+          </div>
+          <div className="flex gap-1">
             {onClearSelection && (
               <button
                 type="button"
                 onClick={onClearSelection}
-                className="btn btn-cancel"
-                style={{ padding: "4px 10px", minHeight: "32px", fontSize: "0.8rem" }}
+                className="btn btn-cancel min-h-min fs-sm"
               >
-                إلغاء التحديد
+                <IconEraser stroke={2} size={16}/>
+                إلغاء
+              </button>
+            )}
+
+            {onBulkDelete && (
+              <button
+                type="button"
+                onClick={onBulkDelete}
+                className="btn btn-error min-h-min fs-sm"
+              >
+               <IconTrashFilled size={16}/>
+               حذف {selectedCount} عنصر
               </button>
             )}
           </div>
 
-          {onBulkDelete && (
-            <button
-              type="button"
-              onClick={onBulkDelete}
-              className="btn btn-error"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                padding: "4px 12px",
-                minHeight: "32px",
-                fontSize: "0.85rem",
-              }}
-            >
-              <Trash2 className="h-4 w-4" />
-              <span>حذف المحدد ({selectedCount})</span>
-            </button>
-          )}
         </div>
       )}
 
@@ -116,7 +111,6 @@ export function AdminSuggestionsControlsBar({
               title="عرض الكروت"
             >
               <IconColumns3Filled size={18} />
-              <span>كروت</span>
             </button>
             <button
               type="button"
@@ -128,7 +122,6 @@ export function AdminSuggestionsControlsBar({
               title="عرض الجدول"
             >
               <IconLayoutListFilled size={18} />
-              <span>جدول</span>
             </button>
           </div>
         </div>

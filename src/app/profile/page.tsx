@@ -19,6 +19,7 @@ import {
   ProfilePointsModal,
   ProfileWalletModal,
   ProfileVoucherModal,
+  ProfileReferralModal,
   ProfileSubscriptionModal,
   ProfileSubscriptionConfirmModal,
   ProfilePasswordModal,
@@ -48,6 +49,7 @@ export default function ProfilePage() {
 
   // Voucher Redemption & Perks state (backed by Supabase)
   const [showVoucherModal, setShowVoucherModal] = useState(false);
+  const [showReferralModal, setShowReferralModal] = useState(false);
   const [unlockedPerks, setUnlockedPerks] = useState<ActiveUnlockedPerk[]>([]);
   const [voucherRedemptions, setVoucherRedemptions] = useState<VoucherRedemptionLog[]>([]);
   const [loadingVouchers, setLoadingVouchers] = useState(false);
@@ -283,6 +285,7 @@ export default function ProfilePage() {
           subscription.setShowSubModal(true);
         }}
         onOpenVoucherModal={() => handleOpenVoucherModal()}
+        onOpenReferralModal={() => setShowReferralModal(true)}
         unlockedPerksCount={unlockedPerks.length}
         onOpenRemindersModal={handleOpenRemindersModal}
         onOpenLogoutModal={() => security.setShowLogoutModal(true)}
@@ -365,6 +368,14 @@ export default function ProfilePage() {
         onRedeemSuccess={handleVoucherRedeemSuccess}
         onOpenWalletPromo={() => wallet.handleOpenWalletModal("promo")}
         onOpenWalletMain={() => wallet.handleOpenWalletModal("main")}
+      />
+
+      {/* 2C. Referral & Invite Friends Modal */}
+      <ProfileReferralModal
+        isOpen={showReferralModal}
+        onClose={() => setShowReferralModal(false)}
+        userId={user?.id}
+        referralCode={profile?.referral_code}
       />
 
       {/* 3. Subscription Modal */}

@@ -2,6 +2,7 @@ import React from "react";
 import { PlaceProposal, VisibleColumns, UserProfile } from "../types";
 import { STATUS_META } from "../constants";
 import { getCategoryColor, CATEGORY_ICONS } from "../utils";
+import { CategoryIcon } from "@/components/ui/CategoryIcon";
 import suggestionsStyles from "../admin-suggestions.module.css";
 import {
   IconMapPin,
@@ -10,6 +11,7 @@ import {
   IconX,
   IconTrashFilled,
   IconCalendar,
+  IconPhotoFilled,
 } from "@tabler/icons-react";
 
 interface AdminSuggestionsCardsProps {
@@ -102,12 +104,13 @@ export function AdminSuggestionsCards({
                     fontSize: "2rem",
                   }}
                 >
-                  <i className="bx bx-image" />
+                  <IconPhotoFilled />
                 </div>
               )}
 
               {/* Category Badge (Top Right) */}
               <span
+                className="font-sub"
                 style={{
                   position: "absolute",
                   top: "10px",
@@ -125,12 +128,13 @@ export function AdminSuggestionsCards({
                   boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
                 }}
               >
-                <i className={`bx ${catIcon}`} />
+                <CategoryIcon icon={catIcon} size={14} />
                 <span>{prop.category_label || prop.category}</span>
               </span>
 
               {/* Status Badge (Top Left) */}
               <span
+                className="font-sub"
                 style={{
                   position: "absolute",
                   top: "10px",
@@ -293,10 +297,6 @@ export function AdminSuggestionsCards({
                     onClick={() => onApprove(prop)}
                     disabled={isProcessing}
                     className="btn btn-primary w-full"
-                    style={{
-                      background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-                      borderColor: "#10b981",
-                    }}
                     title="موافقة ونشر المكان"
                   >
                     <IconCheck size={18} />
@@ -318,7 +318,6 @@ export function AdminSuggestionsCards({
                     type="button"
                     onClick={() => onViewDetails(prop)}
                     className="btn btn-cancel"
-                    style={{ padding: "0 12px" }}
                     title="عرض التفاصيل"
                   >
                     <IconListDetailsFilled size={18} />
@@ -340,7 +339,7 @@ export function AdminSuggestionsCards({
                   <button
                     type="button"
                     onClick={() => onViewDetails(prop)}
-                    className="btn btn-cancel w-full"
+                    className="btn btn-blue  w-full"
                     title="عرض التفاصيل"
                   >
                     <IconListDetailsFilled size={18} />
@@ -351,11 +350,11 @@ export function AdminSuggestionsCards({
                     type="button"
                     onClick={() => onDelete(prop)}
                     disabled={isProcessing}
-                    className="btn btn-error"
-                    style={{ padding: "0 12px" }}
+                    className="btn btn-error w-full"
                     title="حذف الاقتراح"
                   >
                     <IconTrashFilled size={18} />
+                    حذف
                   </button>
                 </>
               )}

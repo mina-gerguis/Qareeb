@@ -1,3 +1,4 @@
+import React from "react";
 import { Place } from "@/data/places";
 
 export interface PlaceDetailsHeaderProps {
@@ -9,7 +10,7 @@ export interface PlaceDetailsHeaderProps {
 export interface PlaceCoverImageProps {
   place: Place;
   categoryColor: string;
-  categoryIcon: string;
+  categoryIcon: React.ReactNode | string;
   categoryLabel: string;
 }
 

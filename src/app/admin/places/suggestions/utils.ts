@@ -11,7 +11,7 @@ export const getInterestObj = (intKey: string) => {
   return { label: intKey, icon: "bx bx-star" };
 };
 
-export const CATEGORY_ICONS: Record<string, string> = {
+export const CATEGORY_ICONS: Record<string, any> = {
   all: "bx-grid-alt",
 };
 

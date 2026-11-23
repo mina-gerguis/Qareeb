@@ -30,6 +30,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^22.20.2",
     "@types/nodemailer": "^8.0.1",

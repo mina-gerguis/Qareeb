@@ -5,6 +5,7 @@ import styles from "../admin-places.module.css";
 import { CATEGORIES_STRUCTURE } from "@/data/places";
 import { governoratesList } from "@/data/egypt_locations";
 import { IconFilter, IconGridDots, IconMapPin } from "@tabler/icons-react";
+import { CategoryIcon } from "@/components/ui/CategoryIcon";
 
 interface Props {
   searchQuery: string;
@@ -80,7 +81,7 @@ export const AdminPlacesFilterBar: React.FC<Props> = ({
                   isSelected && styles.linePillActive
                 )}
               >
-                <i className={`bx ${mainCat.icon}`} style={{ fontSize: "1.05rem" }} />
+                <CategoryIcon icon={mainCat.icon} size={16} />
                 <span>{mainCat.label}</span>
                 {count > 0 && (
                   <span className={styles.linePillCount}>{count}</span>

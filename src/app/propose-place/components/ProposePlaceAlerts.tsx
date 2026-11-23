@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "../propose-place.module.css";
+import { IconXFilled } from "@tabler/icons-react";
 
 interface ProposePlaceAlertsProps {
   editId: string | null;
@@ -20,10 +21,9 @@ export default function ProposePlaceAlerts({
     <>
       {/* 1. Pending Limit Reached Notice (only if not editing) */}
       {limitReached && !editId && (
-        <div className={`${styles.alertBox} ${styles.alertWarning}`}>
-          <div style={{ fontSize: "1.8rem", color: "#ff9500", flexShrink: 0 }}>⚠️</div>
+        <div className="alert-warning flex items-center gap-3 py-3 px-5 rounded-lg mb-4">
           <div>
-            <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "#ff9500", margin: "0 0 4px" }}>
+            <h3 style={{ fontSize: "1rem", fontWeight: "800", margin: "0 0 4px" }}>
               وصلت للحد الأقصى (5 طلبات معلقة)
             </h3>
             <p style={{ margin: 0, color: "var(--color-fg)", fontSize: "0.88rem", lineHeight: 1.5 }}>
@@ -52,26 +52,23 @@ export default function ProposePlaceAlerts({
           <button
             type="button"
             onClick={onCancelEdit}
-            className={styles.cancelEditBtn}
+            className="btn btn-error min-h-min"
           >
-            <i className="bx bx-x" /> إلغاء التعديل واقتراح مكان جديد
+            <IconXFilled size={20}/>
+             إلغاء التعديل
           </button>
         </div>
       )}
 
       {/* 3. Rejection Reason Banner if rejected & in edit mode */}
       {editId && rejectionReason && (
-        <div className={`${styles.alertBox} ${styles.alertDanger}`}>
-          <div style={{ fontSize: "1.8rem", color: "#ff3b30", flexShrink: 0 }}>⚠️</div>
+        <div className="alert-error flex items-center gap-3 py-3 px-5 rounded-lg mb-4">
           <div>
-            <h3 style={{ fontSize: "1.05rem", fontWeight: "800", color: "#ff3b30", margin: "0 0 6px" }}>
-              سبب رفض الاقتراح السابق من الإدارة:
+            <h3 style={{ fontSize: "1.05rem", fontWeight: "800", margin: "0 0 6px" }}>
+              سبب رفض الاقتراح السابق :
             </h3>
             <p style={{ margin: 0, color: "var(--color-fg)", fontSize: "0.92rem", lineHeight: 1.6 }}>
-              &ldquo;{rejectionReason}&rdquo;
-            </p>
-            <p style={{ margin: "10px 0 0", color: "var(--text-muted)", fontSize: "0.82rem" }}>
-              قم بتعديل النقاط المذكورة أعلاه ثم اضغط على زر &quot;إعادة إرسال للمراجعة&quot; بالأسفل.
+              {rejectionReason}
             </p>
           </div>
         </div>

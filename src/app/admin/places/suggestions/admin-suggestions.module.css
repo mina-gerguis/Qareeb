@@ -212,7 +212,6 @@
   background: var(--color-fg) !important;
   color: var(--color-bg) !important;
   border-color: var(--color-fg) !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* ── Content View Toolbar ── */
@@ -1142,9 +1141,9 @@ border-radius: var(--radius);
 
 /* Bulk Selection Ribbon */
 .bulkSelectionRibbon {
-  background: rgba(99, 102, 241, 0.12);
-  border: 1px solid rgba(99, 102, 241, 0.25);
-  border-radius: 10px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-card);
   padding: 8px 14px;
   display: flex;
   align-items: center;
@@ -1153,10 +1152,6 @@ border-radius: var(--radius);
   margin-bottom: 12px;
   font-size: 0.85rem;
 }
-
-
-
-
 
 /* Port Specific Badges */
 .seaMedBadge {

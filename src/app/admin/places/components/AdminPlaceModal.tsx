@@ -6,6 +6,7 @@ import { egyptLocations, governoratesList } from "@/data/egypt_locations";
 import { ScheduleDay, generateTimeOptions } from "@/lib/workingHours";
 import { SERVICES_LIST } from "@/data/services";
 import { IconX, IconMapPin, IconClock, IconTag, IconPlus } from "@tabler/icons-react";
+import { CategoryIcon } from "@/components/ui/CategoryIcon";
 
 interface Props {
   isOpen: boolean;
@@ -206,7 +207,7 @@ export const AdminPlaceModal: React.FC<Props> = ({
                     }}
                     className={`${styles.subCatPill} ${isSelected ? styles.subCatPillActive : ""}`}
                   >
-                    <i className={`bx ${cat.icon}`} />
+                    <CategoryIcon icon={cat.icon} size={15} />
                     <span>{cat.label}</span>
                     {isSelected && " ✓"}
                   </button>

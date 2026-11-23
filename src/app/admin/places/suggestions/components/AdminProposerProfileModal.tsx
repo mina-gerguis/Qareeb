@@ -13,6 +13,7 @@ import {
   IconCalendar,
   IconTargetArrow,
   IconNotes,
+  IconXFilled,
 } from "@tabler/icons-react";
 
 interface AdminProposerProfileModalProps {
@@ -47,11 +48,11 @@ export function AdminProposerProfileModal({
           </h3>
           <button
             onClick={onClose}
-            className={suggestionsStyles.modalCloseBtn}
+            className="btn-close"
             aria-label="إغلاق"
             type="button"
           >
-            <IconSquareRoundedXFilled size={20} />
+           <IconXFilled size={20}/>
           </button>
         </div>
 
@@ -374,7 +375,7 @@ export function AdminProposerProfileModal({
           <button
             type="button"
             onClick={onClose}
-            className="btn btn-primary w-full"
+            className="btn btn-primary w-full mb-1"
           >
             إغلاق
           </button>

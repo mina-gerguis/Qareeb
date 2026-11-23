@@ -1,7 +1,9 @@
+import React from "react";
 import { CATEGORIES_STRUCTURE } from "@/data/places";
+import { IconGridDots } from "@tabler/icons-react";
 
-export const CATEGORY_ICONS: Record<string, string> = {
-  all: "bx-grid-alt",
+export const CATEGORY_ICONS: Record<string, React.ReactNode | string> = {
+  all: <IconGridDots size={18} />,
 };
 
 CATEGORIES_STRUCTURE.forEach((main) => {

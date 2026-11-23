@@ -3,7 +3,8 @@ import clsx from "clsx";
 import SearchBox from "@/components/searchBox";
 import suggestionsStyles from "../admin-suggestions.module.css";
 import { CATEGORIES_STRUCTURE } from "@/data/places";
-import { IconFilter, IconGridDots } from "@tabler/icons-react";
+import { IconGridDots } from "@tabler/icons-react";
+import { CategoryIcon } from "@/components/ui/CategoryIcon";
 
 interface AdminSuggestionsFilterBarProps {
   searchQuery: string;
@@ -37,11 +38,6 @@ export function AdminSuggestionsFilterBar({
 
       {/* Category Filter Pills */}
       <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-        <span className={suggestionsStyles.lineFilterLabel}>
-          <IconFilter size={16} />
-          <span>تصفية حسب النشاط والتصنيف:</span>
-        </span>
-
         <div className={suggestionsStyles.lineFilterScroll}>
           {/* All Categories */}
           <button
@@ -93,7 +89,7 @@ export function AdminSuggestionsFilterBar({
                     : {}
                 }
               >
-                <i className={`bx ${cat.icon || "bx-category"}`} style={{ fontSize: "1rem" }} />
+                <CategoryIcon icon={cat.icon} size={16} />
                 <span>{cat.label}</span>
                 <span
                   style={{

@@ -30,23 +30,16 @@ export function AdminSuggestionDeleteModal({
       isOpen={Boolean(deleteModal)}
       onClose={() => !isProcessing && onCancel()}
       title={title}
-      titleColor="#ff3b30"
-      iconSrc="/images/threeD/trash.webp"
-      borderColor="rgba(255, 59, 48, 0.25)"
       message={message}
       primaryButton={{
-        label: isProcessing ? "جاري الحذف..." : "نعم، احذف",
+        label: isProcessing ? "جاري ..." : " احذف",
         onClick: onConfirm,
-        bgColor: "#ff3b30",
         disabled: isProcessing,
-        icon: <i className="bx bx-trash" style={{ fontSize: "1.2rem" }} />,
       }}
       secondaryButton={{
         label: "إلغاء",
         onClick: onCancel,
-        bgColor: "var(--btn-cancel)",
         disabled: isProcessing,
-        icon: <i className="bx bx-x" style={{ fontSize: "1.2rem" }} />,
       }}
     >
       {!isBulk && deleteModal.proposal && (
