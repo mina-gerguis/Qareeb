@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { blobatarUri } from "blobatar/uri";
 import { UserProfile } from "../types";
 import { getInterestObj } from "../utils";
 import suggestionsStyles from "../admin-suggestions.module.css";
@@ -81,7 +82,7 @@ export function AdminProposerProfileModal({
             <img
               src={
                 userProfile.avatar_url ||
-                "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80"
+                blobatarUri(userProfile.full_name || userProfile.email || "User")
               }
               alt="Avatar"
               style={{

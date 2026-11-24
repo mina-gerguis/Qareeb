@@ -1,4 +1,5 @@
 import { BlogArticle } from "@/types/blog";
+import { blobatarUri } from "blobatar/uri";
 
 export const SAVED_ARTICLES_CATEGORY = "🔖 المقالات المحفوظة";
 
@@ -18,8 +19,7 @@ export const DEFAULT_COVER_IMAGE =
 
 export const getAuthorAvatar = (authorName?: string, authorAvatar?: string): string => {
   if (authorAvatar) return authorAvatar;
-  const seed = encodeURIComponent(authorName || "Author");
-  return `https://api.dicebear.com/7.x/initials/svg?seed=${seed}`;
+  return blobatarUri(authorName || "Author");
 };
 
 export const SAMPLE_ARTICLES: BlogArticle[] = [

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import { Blobatar } from "@blobatar/react";
 import adminStyles from "../admin.module.css";
 import rStyles from "./referrals.module.css";
 import {
@@ -695,9 +696,11 @@ export default function AdminReferralsPage() {
                                 className={rStyles.userAvatar}
                               />
                             ) : (
-                              <div className={rStyles.userAvatar} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                <i className="bx bx-user" style={{ color: "#94a3b8" }} />
-                              </div>
+                              <Blobatar
+                                name={row.referrer?.full_name || row.referrer?.email || "User"}
+                                size={34}
+                                className={rStyles.userAvatar}
+                              />
                             )}
                             <div className={rStyles.userMeta}>
                               <span className={rStyles.userName}>{row.referrer?.full_name || "مستخدم"}</span>
@@ -718,9 +721,11 @@ export default function AdminReferralsPage() {
                                 className={rStyles.userAvatar}
                               />
                             ) : (
-                              <div className={rStyles.userAvatar} style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                <i className="bx bx-user-plus" style={{ color: "#94a3b8" }} />
-                              </div>
+                              <Blobatar
+                                name={row.referred?.full_name || row.referred?.email || "User"}
+                                size={34}
+                                className={rStyles.userAvatar}
+                              />
                             )}
                             <div className={rStyles.userMeta}>
                               <span className={rStyles.userName}>{row.referred?.full_name || "مسجل جديد"}</span>

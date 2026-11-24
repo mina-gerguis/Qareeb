@@ -9,6 +9,7 @@ import { PROFILE_AVATARS, AVAILABLE_INTERESTS } from "../constants";
 import styles from "../page.module.css";
 import { LogIn } from "lucide-react";
 import { ASSETS } from "@/constants/assets";
+import { Blobatar } from "@blobatar/react";
 
 interface ProfileCardProps {
   user: any;
@@ -79,9 +80,11 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({
               // eslint-disable-next-line @next/next/no-img-element
               <img src={profile.avatar_url} alt="Profile" className={styles.profileAvatar} />
             ) : (
-              <div className={styles.profileAvatarPlaceholder}>
-                <i className={`bx bxs-user ${styles.profileAvatarIcon}`}></i>
-              </div>
+              <Blobatar
+                name={profile?.full_name || profile?.email || "CairoUser"}
+                size={54}
+                className={styles.profileAvatar}
+              />
             )}
             <div className={styles.profileInfoText}>
               <h3 className={styles.profileName}>{profile?.full_name}</h3>

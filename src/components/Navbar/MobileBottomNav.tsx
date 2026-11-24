@@ -13,6 +13,7 @@ import { IoSearchOutline, IoSearch, IoChevronBack, IoMapOutline, IoMap, IoPerson
 import { IconRadar, IconRadarFilled, IconSearchFilled } from '@tabler/icons-react';
 import { FaLightbulb, FaMapMarkerAlt } from "react-icons/fa";
 import { useGSAP, gsap } from "@/lib/gsap";
+import { Blobatar } from "@blobatar/react";
 
 const BUBBLE_W = 60;
 const BUBBLE_W_DRAG = 76;
@@ -703,22 +704,35 @@ export default function MobileBottomNav() {
             aria-label="حسابي"
           >
             <div className="mobile-nav-item-wrapper" style={{ position: "relative" }}>
-              {user && (profile?.avatar_url || user.user_metadata?.avatar_url) ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={profile?.avatar_url || user.user_metadata.avatar_url}
-                  alt="Profile"
-                  loading="lazy"
-                  decoding="async"
-                  style={{
-                    width: "25px",
-                    height: "25px",
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                    border: displayActiveIndex === 4 ? "2px solid var(--color-fg)" : "1px solid transparent",
-                    transition: "border-color 0.2s",
-                  }}
-                />
+              {user ? (
+                profile?.avatar_url || user.user_metadata?.avatar_url ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={profile?.avatar_url || user.user_metadata.avatar_url}
+                    alt="Profile"
+                    loading="lazy"
+                    decoding="async"
+                    style={{
+                      width: "25px",
+                      height: "25px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                      border: displayActiveIndex === 4 ? "2px solid var(--color-fg)" : "1px solid transparent",
+                      transition: "border-color 0.2s",
+                    }}
+                  />
+                ) : (
+                  <Blobatar
+                    name={profile?.full_name || profile?.username || user.email || "User"}
+                    size={25}
+                    style={{
+                      borderRadius: "50%",
+                      border: displayActiveIndex === 4 ? "2px solid var(--color-fg)" : "1px solid transparent",
+                      transition: "border-color 0.2s",
+                      display: "block",
+                    }}
+                  />
+                )
               ) : (
                 <>
                   {displayActiveIndex === 4 ? <IoPerson size={24} /> : <IoPersonOutline size={24} />}

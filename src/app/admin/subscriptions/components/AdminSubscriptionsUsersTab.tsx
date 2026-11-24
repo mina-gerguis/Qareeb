@@ -12,6 +12,7 @@ import {
   IconPhone,
 } from "@tabler/icons-react";
 import styles from "../subscriptions.module.css";
+import { Blobatar } from "@blobatar/react";
 import { UserProfile, UsersVisibleColumns } from "../types";
 import { AdminSubscriptionsPagination } from "./AdminSubscriptionsPagination";
 
@@ -297,12 +298,19 @@ export function AdminSubscriptionsUsersTab({
                       {visibleColumns.user && (
                         <td className={styles.table05Td}>
                           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                            <div
-                              className={styles.dataCardAvatar}
-                              style={{ width: "38px", height: "38px", fontSize: "1rem" }}
-                            >
-                              {initial}
-                            </div>
+                            {u.avatar_url ? (
+                              <img
+                                src={u.avatar_url}
+                                alt="avatar"
+                                style={{ width: "38px", height: "38px", borderRadius: "50%", objectFit: "cover" }}
+                              />
+                            ) : (
+                              <Blobatar
+                                name={u.full_name || u.username || u.email || "User"}
+                                size={38}
+                                style={{ borderRadius: "50%", flexShrink: 0 }}
+                              />
+                            )}
                             <div>
                               <div style={{ fontWeight: 700, fontSize: "0.9rem" }}>
                                 {u.full_name || "مستخدم بدون اسم"}
@@ -422,7 +430,19 @@ export function AdminSubscriptionsUsersTab({
               <div key={u.id} className={styles.dataCard}>
                 <div className={styles.dataCardHeader}>
                   <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0, flex: 1 }}>
-                    <div className={styles.dataCardAvatar}>{initial}</div>
+                    {u.avatar_url ? (
+                      <img
+                        src={u.avatar_url}
+                        alt="avatar"
+                        style={{ width: "42px", height: "42px", borderRadius: "50%", objectFit: "cover" }}
+                      />
+                    ) : (
+                      <Blobatar
+                        name={u.full_name || u.username || u.email || "User"}
+                        size={42}
+                        style={{ borderRadius: "50%", flexShrink: 0 }}
+                      />
+                    )}
                     <div style={{ minWidth: 0, flex: 1 }}>
                       <h4
                         className={styles.dataCardTitle}

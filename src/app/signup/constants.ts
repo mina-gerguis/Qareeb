@@ -1,4 +1,5 @@
 import { OnboardingSlide, StepInfo, SignupFormData, SignupFieldErrors } from "./types";
+import { blobatarUri } from "blobatar/uri";
 
 export const ONBOARDING_SLIDES: OnboardingSlide[] = [
   {
@@ -19,16 +20,16 @@ export const ONBOARDING_SLIDES: OnboardingSlide[] = [
 ];
 
 export const AVATARS_LIST: string[] = [
-  "https://api.dicebear.com/7.x/notionists/svg?seed=Ahmed&backgroundColor=b6e3f4",
-  "https://api.dicebear.com/7.x/notionists/svg?seed=Omar&backgroundColor=d1d4f9",
-  "https://api.dicebear.com/7.x/notionists/svg?seed=Tarek&backgroundColor=b6e3f4",
-  "https://api.dicebear.com/7.x/notionists/svg?seed=Youssef&backgroundColor=d1d4f9",
-  "https://api.dicebear.com/7.x/notionists/svg?seed=Ali&backgroundColor=b6e3f4",
-  "https://api.dicebear.com/7.x/notionists/svg?seed=Sara&backgroundColor=ffdfbf",
-  "https://api.dicebear.com/7.x/notionists/svg?seed=Nour&backgroundColor=c0aede",
-  "https://api.dicebear.com/7.x/notionists/svg?seed=Layla&backgroundColor=ffdfbf",
-  "https://api.dicebear.com/7.x/notionists/svg?seed=Hala&backgroundColor=c0aede",
-  "https://api.dicebear.com/7.x/notionists/svg?seed=Mona&backgroundColor=ffdfbf",
+  blobatarUri("Ahmed"),
+  blobatarUri("Omar"),
+  blobatarUri("Tarek"),
+  blobatarUri("Youssef"),
+  blobatarUri("Ali"),
+  blobatarUri("Sara"),
+  blobatarUri("Nour"),
+  blobatarUri("Layla"),
+  blobatarUri("Hala"),
+  blobatarUri("Mona"),
 ];
 
 export const STEP_INFO: Record<number, StepInfo> = {

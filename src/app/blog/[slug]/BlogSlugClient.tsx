@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import BlogLoader from "@/components/blog/BlogLoader";
+import { blobatarUri } from "blobatar/uri";
 import styles from "./singleBlog.module.css";
 
 export interface BlogArticle {
@@ -87,7 +88,7 @@ export const SAMPLE_COMMENTS: Comment[] = [
     blog_id: "sample-1",
     user_id: "u1",
     user_name: "أحمد علي",
-    user_avatar: "https://api.dicebear.com/7.x/initials/svg?seed=Ahmed",
+    user_avatar: blobatarUri("أحمد علي"),
     content: "مقال ممتاز وشرح مفصل جداً! شكراً لكم على هذا المجهود الرائع.",
     created_at: new Date(Date.now() - 3600000 * 5).toISOString(),
   },
@@ -96,7 +97,7 @@ export const SAMPLE_COMMENTS: Comment[] = [
     blog_id: "sample-1",
     user_id: "u2",
     user_name: "سارة محمود",
-    user_avatar: "https://api.dicebear.com/7.x/initials/svg?seed=Sarah",
+    user_avatar: blobatarUri("سارة محمود"),
     content: "هل خط المنوريل يعتمد نفس سعر تذكرة المترو أم له فئات مختلفة؟",
     created_at: new Date(Date.now() - 3600000 * 2).toISOString(),
   },
@@ -304,9 +305,7 @@ export default function BlogSlugClient({ slug }: BlogSlugClientProps) {
       user_name: profile?.full_name || user.email?.split("@")[0] || "مستخدم",
       user_avatar:
         profile?.avatar_url ||
-        `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
-          profile?.full_name || "User"
-        )}`,
+        blobatarUri(profile?.full_name || user.email?.split("@")[0] || "User"),
       content: commentInput.trim(),
       created_at: new Date().toISOString(),
     };
@@ -414,12 +413,7 @@ export default function BlogSlugClient({ slug }: BlogSlugClientProps) {
           <div className={styles.metaRow}>
             <div className={styles.authorInfo}>
               <img
-                src={
-                  blog.author_avatar ||
-                  `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
-                    blog.author_name || "Author"
-                  )}`
-                }
+                src={blog.author_avatar || blobatarUri(blog.author_name || "Author")}
                 alt={blog.author_name}
                 loading="lazy"
                 decoding="async"
@@ -553,9 +547,7 @@ export default function BlogSlugClient({ slug }: BlogSlugClientProps) {
                   <img
                     src={
                       profile?.avatar_url ||
-                      `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
-                        profile?.full_name || "User"
-                      )}`
+                      blobatarUri(profile?.full_name || user.email?.split("@")[0] || "User")
                     }
                     alt="User"
                     loading="lazy"
@@ -615,12 +607,7 @@ export default function BlogSlugClient({ slug }: BlogSlugClientProps) {
               comments.map((c) => (
                 <div key={c.id} className={styles.commentCard}>
                   <img
-                    src={
-                      c.user_avatar ||
-                      `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
-                        c.user_name || "User"
-                      )}`
-                    }
+                    src={c.user_avatar || blobatarUri(c.user_name || "User")}
                     alt={c.user_name}
                     loading="lazy"
                     decoding="async"

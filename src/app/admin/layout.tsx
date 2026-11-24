@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import CustomModal from "@/components/common/Modals";
 import { ALT, ASSETS } from "@/constants/assets";
+import { blobatarUri } from "blobatar/uri";
 
 export default function AdminLayout({
   children,
@@ -368,7 +369,7 @@ export default function AdminLayout({
 
   // Helper to extract a friendly admin username
   const adminName = profile?.full_name || user?.email?.split("@")[0] || "مدير النظام";
-  const avatarUrl = profile?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(adminName)}&backgroundType=gradientLinear`;
+  const avatarUrl = profile?.avatar_url || blobatarUri(adminName);
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);

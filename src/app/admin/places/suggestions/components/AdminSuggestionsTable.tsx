@@ -1,4 +1,5 @@
 import React from "react";
+import { blobatarUri } from "blobatar/uri";
 import clsx from "clsx";
 import { PlaceProposal, VisibleColumns, UserProfile } from "../types";
 import { STATUS_META } from "../constants";
@@ -305,7 +306,7 @@ export function AdminSuggestionsTable({
                           <img
                             src={
                               prop.user_profile?.avatar_url ||
-                              "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&h=80&q=80"
+                              blobatarUri(prop.user_profile?.full_name || prop.user_profile?.email || "Proposer")
                             }
                             alt="Proposer"
                             style={{

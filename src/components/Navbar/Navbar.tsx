@@ -9,6 +9,7 @@ import { useNotifications } from "@/context/NotificationContext";
 import CustomModal from "@/components/common/Modals";
 import { useGSAP, gsap } from "@/lib/gsap";
 import { ASSETS } from "@/constants/assets";
+import { Blobatar } from "@blobatar/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import "./Navbar.css";
@@ -497,7 +498,11 @@ export default function Navbar() {
                     {profile?.avatar_url || user.user_metadata?.avatar_url ? (
                       <img src={profile?.avatar_url || user.user_metadata.avatar_url} alt="Avatar" style={{ width: "26px", height: "26px", borderRadius: "50%", objectFit: "cover" }} />
                     ) : (
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="8" r="5" /><path d="M20 21a8 8 0 0 0-16 0" /></svg>
+                      <Blobatar
+                        name={profile?.full_name || profile?.username || user.email || "CairoUser"}
+                        size={26}
+                        style={{ borderRadius: "50%", display: "block" }}
+                      />
                     )}
                     {unreadCount > 0 && (
                       <span style={{

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { blobatarUri } from "blobatar/uri";
 import { PlaceProposal, UserProfile } from "../types";
 import { STATUS_META } from "../constants";
 import suggestionsStyles from "../admin-suggestions.module.css";
@@ -296,7 +297,7 @@ export function AdminSuggestionDetailsModal({
                 <img
                   src={
                     proposal.user_profile?.avatar_url ||
-                    "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&h=120&q=80"
+                    blobatarUri(proposal.user_profile?.full_name || proposal.user_profile?.email || "Proposer")
                   }
                   alt="Proposer"
                   style={{

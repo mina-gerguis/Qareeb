@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase";
 import RichTextEditor from "@/components/admin/RichTextEditor";
 import styles from "./blogs.module.css";
 import CustomModal from "@/components/common/Modals";
+import { blobatarUri } from "blobatar/uri";
 
 interface BlogArticle {
   id: string;
@@ -131,7 +132,7 @@ export default function AdminBlogsPage() {
     setReadingTime(3);
     setTagsInput("");
     const defaultName = profile?.full_name || user?.email?.split("@")[0] || "فريق قريب";
-    const defaultAvatar = profile?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(defaultName)}`;
+    const defaultAvatar = profile?.avatar_url || blobatarUri(defaultName);
     setAuthorName(defaultName);
     setAuthorAvatar(defaultAvatar);
     setIsFormOpen(true);
@@ -149,7 +150,7 @@ export default function AdminBlogsPage() {
     setReadingTime(blog.reading_time || 3);
     setTagsInput((blog.tags || []).join(", "));
     const name = blog.author_name || profile?.full_name || "فريق قريب";
-    const avatar = blog.author_avatar || profile?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`;
+    const avatar = blog.author_avatar || profile?.avatar_url || blobatarUri(name);
     setAuthorName(name);
     setAuthorAvatar(avatar);
     setIsFormOpen(true);
@@ -184,7 +185,7 @@ export default function AdminBlogsPage() {
         .filter(Boolean);
 
       const finalAuthorName = authorName.trim() || profile?.full_name || user?.email?.split("@")[0] || "فريق قريب";
-      const finalAuthorAvatar = authorAvatar.trim() || profile?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(finalAuthorName)}`;
+      const finalAuthorAvatar = authorAvatar.trim() || profile?.avatar_url || blobatarUri(finalAuthorName);
 
       const payload = {
         title: title.trim(),

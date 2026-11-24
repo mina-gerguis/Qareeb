@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import styles from "../admin.module.css";
 import uStyles from "./users.module.css";
 import CustomModal from "@/components/common/Modals";
+import { Blobatar } from "@blobatar/react";
 
 interface UserProfile {
   id: string;
@@ -1571,7 +1572,11 @@ export default function AdminUsersPage() {
                                 className={uStyles.userAvatarImg}
                               />
                             ) : (
-                              <div className={uStyles.userAvatarInitial}>{initial}</div>
+                              <Blobatar
+                                name={u.full_name || u.username || u.email || "user"}
+                                size={36}
+                                className={uStyles.userAvatarImg}
+                              />
                             )}
                             {/* Live Dot Status */}
                             <span
@@ -2050,9 +2055,11 @@ export default function AdminUsersPage() {
                 {viewUser.avatar_url ? (
                   <img src={viewUser.avatar_url} alt="avatar" className={uStyles.detailAvatar} />
                 ) : (
-                  <div className={uStyles.detailAvatarFallback}>
-                    {(viewUser.full_name || viewUser.username || "U").charAt(0).toUpperCase()}
-                  </div>
+                  <Blobatar
+                    name={viewUser.full_name || viewUser.username || viewUser.email || "user"}
+                    size={54}
+                    className={uStyles.detailAvatar}
+                  />
                 )}
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>

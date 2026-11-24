@@ -21,6 +21,7 @@ export interface UserProfile {
   username: string | null;
   email: string | null;
   phone: string | null;
+  avatar_url?: string | null;
   governorate: string | null;
   city: string | null;
   subscription_tier: string;

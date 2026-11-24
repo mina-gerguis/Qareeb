@@ -4,6 +4,7 @@ import React from "react";
 import { IconDotsFilled, IconUser, IconEdit, IconPhone, IconMail } from "@tabler/icons-react";
 import { UserProfile } from "../types";
 import styles from "../admin-points.module.css";
+import { Blobatar } from "@blobatar/react";
 
 interface AdminPointsUsersCardsProps {
   users: UserProfile[];
@@ -37,9 +38,11 @@ export function AdminPointsUsersCards({
           {/* Header */}
           <div className={styles.dataCardHeader}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px", minWidth: 0, flex: 1 }}>
-              <div className={styles.dataCardAvatar}>
-                <IconUser size={22} />
-              </div>
+              <Blobatar
+                name={u.full_name || u.email || "User"}
+                size={40}
+                style={{ borderRadius: "50%", flexShrink: 0 }}
+              />
               <div style={{ minWidth: 0, flex: 1 }}>
                 <h4
                   className={styles.dataCardTitle}
