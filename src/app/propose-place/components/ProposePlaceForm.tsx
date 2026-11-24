@@ -203,7 +203,7 @@ export default function ProposePlaceForm({
               options={SERVICES_LIST}
               selected={formData.services || []}
               onChange={(selected) => setFormData({ ...formData, services: selected })}
-              placeholder="ابحث عن خدمات مثل: قاعة أفراح، شركة شحن، كهربائي سيارات..."
+              placeholder="ابحث عن خدمات مثل: قاعة أفراح..."
             />
           </div>
         </div>
@@ -426,7 +426,7 @@ export default function ProposePlaceForm({
       <div>
         <label className={styles.fieldLabel}>وصف عن المكان والخدمات المقدمة</label>
         <textarea
-          rows={4}
+          rows={6}
           placeholder="اكتب نبذة عن المكان والخدمات أو المميزات التي يشتهر بها..."
           className="input-fields min-h-min"
           value={formData.description}
